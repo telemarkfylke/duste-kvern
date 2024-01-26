@@ -1,0 +1,27 @@
+{
+  "name": "db-update",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard",
+    "start:sds": "node index.js sds",
+    "start:users": "node index.js users",
+    "start:ot": "node index.js ot",
+    "start:laerling": "node index.js laerling"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Rune Moskvil Lyngås",
+    "email": "rune.moskvil.lyngaas@vtfk.no",
+    "url": "https://github.com/runely"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "mongodb": "^6.3.0"
+  },
+  "devDependencies": {
+    "standard": "17.0.0"
+  }
+}
