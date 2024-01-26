@@ -1,5 +1,7 @@
-﻿$envPath = Join-Path -Path $PSScriptRoot -ChildPath "..\envs.ps1"
+﻿<#
+$envPath = Join-Path -Path $PSScriptRoot -ChildPath "..\envs.ps1"
 . $envPath
+#>
 
 $scriptName = "DUSTDBUsers"
 $folder = "$($idm.autoRun)\$scriptName"
