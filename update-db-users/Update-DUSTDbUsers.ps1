@@ -152,7 +152,7 @@ Function Update-DUSTVigoLaerlingUsers {
 $dbUpdateFolder = Resolve-Path -Path "$($PSScriptRoot)\db-update" | Select-Object -ExpandProperty Path
 
 # vigo-update folder path
-$vigoUpdateFolder = Resolve-Path -Path "$($PSScriptRoot)\node\vigo-update" | Select-Object -ExpandProperty Path
+$vigoUpdateFolder = Resolve-Path -Path "$($PSScriptRoot)\vigo-update" | Select-Object -ExpandProperty Path
 
 # call update functions for AD users
 Update-DUSTADUsers
