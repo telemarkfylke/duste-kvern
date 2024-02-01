@@ -1,72 +1,71 @@
 (async () => {
-  const { MONGODB, GET_READY_REQUESTS_INTERVAL, RUN_READY_REQUESTS_INTERVAL } = require('./config')
+  const { MONGODB, GET_NEW_REPORTS_INTERVAL, RUN_READY_REPORTS_INTERVAL } = require('./config')
   const { getMongoClient } = require('./lib/mongo-client')
-  const { ObjectId } = require('mongodb')
   const { logger } = require('@vtfk/logger')
   const Cache = require('file-system-cache').default
-  const { handleDustRequest } = require('./lib/handle-dust-request')
+  const { handleDustReport } = require('./lib/handle-dust-report')
 
   const fileCacheQueue = Cache({ basePath: './.queue-file-cache', hash: 'sha1' })
   
-  let readyForNewRequests = true
+  let readyForNewReports = true
   
-  const getReadyRequests = async () => {
-    if (!readyForNewRequests) {
+  const getNewReports = async () => {
+    if (!readyForNewReports) {
       console.log('not ready for run - skipping')
       return null
     }
-    readyForNewRequests = false
+    readyForNewReports = false
     try {
-      // Get ready requests from mongodb
+      // Get ready reports from mongodb
       const client = await getMongoClient()
       const db = client.db(MONGODB.DB_NAME)
-      const collection = db.collection(MONGODB.REQUEST_COLLECTION)
-      const readyRequests = await collection.find({ ready: true }).toArray() // Consider sorting on oldest
+      const collection = db.collection(MONGODB.REPORT_COLLECTION)
+      const newReports = await collection.find({ ready: true }).toArray() // Consider sorting on oldest
       
-      // Save requests to file-cache-queue - if it already exists, just overwrite - updateMany probably failed...
+      // Save reports to file-cache-queue - if it already exists, just overwrite - updateMany probably failed...
       const updateProps = { ready: false, queued: true, started: new Date().toISOString() } // To make sure we set the same values both in cache, and in mongodb when running updateMany
-      await fileCacheQueue.save(readyRequests.map(request => {
-        return { key: request._id.toString(), value: { ...request, ...updateProps } } // request._id.toString() because mongoDb returns ObjectId(_id) intead of _id directly
+      await fileCacheQueue.save(newReports.map(report => {
+        return { key: report._id.toString(), value: { ...report, ...updateProps } } // request._id.toString() because mongoDb returns ObjectId(_id) intead of _id directly
       }))
 
       // Set requests in mongodb to running
-      await collection.updateMany( { _id: { $in: readyRequests.map(doc => doc._id) } }, { $set: updateProps } )
-      readyForNewRequests = true
+      await collection.updateMany( { _id: { $in: newReports.map(doc => doc._id) } }, { $set: updateProps } )
+      readyForNewReports = true
       
-      if (readyRequests.length > 0) logger('info', ['getReadyRequests', `Got ${readyRequests.length} new requests`])
-      return readyRequests.length
+      if (newReports.length > 0) logger('info', ['getNewReports', `Got ${newReports.length} new reports`])
+      return newReports.length
     } catch (error) {
-      logger('warn', ['Failed when getting ready requests', error.stack || error.toString()])
-      readyForNewRequests = true
+      logger('warn', ['Failed when getting new reports', error.stack || error.toString()])
+      readyForNewReports = true
       return null
     }
   }
 
-  const runReadyRequests = async () => {
+  const runReadyReports = async () => {
     try {
-      // Get all ready requests create promise for each, then set to running and save to queue again - and promise all
+      // Get all ready reports create promise for each, then set to running and save to queue again - and promise all
       const queue = (await fileCacheQueue.load()).files
-      const readyForRun = queue.filter(queueRequest => !queueRequest.value.running).map(queueRequest => queueRequest.value)
+      const readyForRun = queue.filter(queueReport => !queueReport.value.running).map(queueReport => queueReport.value)
       // Set to running in filecache
-      await fileCacheQueue.save(readyForRun.map(request => {
-        return { key: request._id, value: { ...request, running: true } }
+      await fileCacheQueue.save(readyForRun.map(report => {
+        return { key: report._id, value: { ...report, running: true } }
       }))
-      if (readyForRun.length > 0) logger('info', ['runReadyRequests', `Got ${readyForRun.length} new requests`])
+      if (readyForRun.length > 0) logger('info', ['runReadyReports', `Got ${readyForRun.length} new reports`])
       
       // Set up promises
-      const runPromises = readyForRun.map(async (request) => {
-        return handleDustRequest(request)
+      const runPromises = readyForRun.map(async (report) => {
+        return handleDustReport(report)
       })
+      // Run all tests - I/O (network and file-system) in parallell, consider CPU (threads) in parallell as well if too slow)
       const results = await Promise.all(runPromises)
-      console.log(results)
     } catch (error) {
       logger('warn', ['Failed when getting ready for run from fileCacheQueue', error.stack || error.toString()])
     }
   }
 
-  // Run getReadyRequest every GET_READY_REQUESTS_INTERVAL seconds
-  setInterval(getReadyRequests, GET_READY_REQUESTS_INTERVAL)
-  // Run runReadyRequest every RUN_READY_REQUESTS_INTERVAL seconds
-  setInterval(runReadyRequests, RUN_READY_REQUESTS_INTERVAL)
+  // Run getReadyRequest every GET_NEW_REPORTS_INTERVAL seconds
+  setInterval(getNewReports, GET_NEW_REPORTS_INTERVAL)
+  // Run runReadyRequest every RUN_READY_REPORTS_INTERVAL seconds
+  setInterval(runReadyReports, RUN_READY_REPORTS_INTERVAL)
 
 })()
