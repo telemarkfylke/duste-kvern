@@ -3,6 +3,46 @@ const { success, warn, error } = require("../lib/test-result")
 const systemsAndTests = [
   // System
   {
+    id: 'ad',
+    name: 'AD',
+    description: 'AD',
+    // Tester
+    tests: [
+      {
+        id: "ad_dust",
+        title: 'Er bruker en dust?',
+        description: 'Sjekker om bruker er dust',
+        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        /**
+         * 
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          //return success({ message: "ahaahaha" })
+          // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
+          return success({ message: "Brukeren er en dust" })
+        }
+      },
+      {
+        id: "azure_hahah",
+        title: 'Finner vi noe snusk?',
+        description: 'Sjekker om bruker har gjort noe sykt',
+        waitForAllData: true, // Trenger ikke mer enn systemdataene
+        /**
+         * 
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          //return success({ message: "ahaahaha" })
+          // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
+          return success({ message: "Brukeren har ikke gjort noe gærnt" })
+        }
+      }
+    ]
+  },
+  {
     id: 'azure',
     name: 'Azure (Microsoft 365)',
     description: 'Azure',
