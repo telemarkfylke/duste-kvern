@@ -23,7 +23,7 @@
       const newReports = await collection.find({ ready: true }).toArray() // Consider sorting on oldest
       
       // Save reports to file-cache-queue - if it already exists, just overwrite - updateMany probably failed...
-      const updateProps = { ready: false, queued: true, started: new Date().toISOString() } // To make sure we set the same values both in cache, and in mongodb when running updateMany
+      const updateProps = { ready: false, queued: true, startedTimestamp: new Date().toISOString() } // To make sure we set the same values both in cache, and in mongodb when running updateMany
       await fileCacheQueue.save(newReports.map(report => {
         return { key: report._id.toString(), value: { ...report, ...updateProps } } // request._id.toString() because mongoDb returns ObjectId(_id) intead of _id directly
       }))

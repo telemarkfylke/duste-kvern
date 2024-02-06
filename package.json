@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vestfoldfylke/msal-token": "^1.0.1",
     "@vtfk/logger": "^6.0.1",
+    "axios": "^1.6.7",
     "dotenv": "^16.4.0",
     "file-system-cache": "^2.4.4",
     "mongodb": "^6.3.0"
