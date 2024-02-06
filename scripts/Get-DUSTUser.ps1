@@ -16,11 +16,19 @@ param(
     [string]$Domain,
 
     [Parameter()]
+    [ValidateSet("VTFK", "VFYLKE", "TFYLKE")]
+    [string]$countyOU,
+
+    [Parameter()]
     [string[]]$Properties = @('')
 )
 
 if (!$Domain) {
     Write-Error -Message "Missing required parameter: 'Domain'" -ErrorAction Stop
+}
+
+if (!$countyOU) {
+    Write-Error -Message "Missing required parameter: 'countyOU'" -ErrorAction Stop
 }
 
 if ($SamAccountName) {
@@ -40,7 +48,7 @@ else {
 }
 
 # default properties that must be present!
-@('distinguishedName', 'enabled', 'givenName', 'name', 'samAccountName', 'sn', 'userPrincipalName', 'displayName', 'employeeNumber', 'extensionAttribute6', 'extensionAttribute4', 'company', 'department', 'pwdLastSet', 'whenChanged', 'whenCreated', 'lockedOut', 'mail', 'proxyAddresses', 'state', 'title', 'memberOf') | ForEach-Object {
+@('distinguishedName', 'enabled', 'givenName', 'name', 'samAccountName', 'sn', 'userPrincipalName', 'displayName', 'employeeNumber', 'extensionAttribute6', 'extensionAttribute4', 'extensionAttribute14', 'extensionAttribute9', 'company', 'department', 'pwdLastSet', 'whenChanged', 'whenCreated', 'lockedOut', 'mail', 'proxyAddresses', 'state', 'title', 'memberOf') | ForEach-Object {
     if (!$Properties.ToLower().Contains($_.ToLower())) {
         $Properties += $_
     }
@@ -54,6 +62,7 @@ $envPath = Join-Path -Path $PSScriptRoot -ChildPath "envs.ps1"
 . $envPath
 
 $searchBase = $ad.baseUnit.Replace("%domain%", $Domain)
+$searchBase = $searchBase.Replace("%countyOU%", $countyOU)
 
 $users = Get-ADUser -SearchBase $searchBase -Server $domain -Filter $filter -Properties $Properties | Select-Object ($Properties | Sort-Object)
 
