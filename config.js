@@ -29,6 +29,6 @@ module.exports = {
     SCOPE: process.env.FINTFOLK_SCOPE,
     URL: process.env.FINTFOLK_URL
   },
-  PS1_SCRIPTS_PATH: process.env.PS1_SCRIPTS_PATH || 'D:/blabalabal',
+  PS1_SCRIPTS_PATH: process.env.PS1_SCRIPTS_PATH || 'D:/DUST-TEST/duste-kvern/scripts',
   MAX_BUFFER: process.env.MAX_BUFFER || 1024 * 10000
 }
