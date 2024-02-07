@@ -2,13 +2,14 @@ const { getMsalToken } = require('../../lib/get-msal-token')
 const { APPREG, GRAPH } = require('../../config')
 const axios = require('axios').default
 const { entraIdDate } = require('../../lib/date-time-helper')
+const { logger } = require('@vtfk/logger')
 
 const callGraph = async (resource, accessToken) => {
   const { data } = await axios.get(`${GRAPH.URL}/${resource}`, { headers: { Authorization: `Bearer ${accessToken}` } })
   return data
 }
 
-module.exports = async (user) => {
+const getData = async (user) => {
   // Hent et token
   const clientConfig = {
     clientId: APPREG.CLIENT_ID,
@@ -46,19 +47,21 @@ module.exports = async (user) => {
     "userPrincipalName"
   ].join(",")
 
-  console.log("kjører graph user")
+  logger('info', ['azure-get-data', 'fetching user data from graph'])
   const userData = await callGraph(`v1.0/users/${user.userPrincipalName}?$select=${userProperties}`, accessToken)
 
-  console.log("kjører graph groups")
+  logger('info', ['azure-get-data', 'fetching groups for user'])
   const graphUserGroups = await callGraph(`v1.0/users/${user.userPrincipalName}/transitiveMemberOf?$top=999`, accessToken)
   const graphUserGroupsDisplayName = (graphUserGroups?.value && graphUserGroups.value.map(group => group.displayName).sort()) || []
 
-  console.log("kjører graph auth")
+  logger('info', ['azure-get-data', 'fetching authentication methods for user'])
   const graphUserAuth = await callGraph(`v1.0/users/${user.userPrincipalName}/authentication/methods`, accessToken)
   const graphUserAuthMethods = graphUserAuth?.value && graphUserAuth.value.length && graphUserAuth.value.filter(method => !method['@odata.type'].includes('passwordAuthenticationMethod'))
 
+  logger('info', ['azure-get-data', 'fetching failed signins for user'])
   const graphUserSignIns = await callGraph(`v1.0/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and createdDateTime gt ${entraIdDate()} and status/errorCode eq 50126`, accessToken) // HMMMM fungerer denne da mon tro??
 
+  logger('info', ['azure-get-data', 'fetching riskyuser data for user'])
   const graphRiskyUser = await callGraph(`v1.0//identityProtection/riskyUsers?$filter=userPrincipalName eq '${user.userPrincipalName}' and riskState ne 'dismissed'`, accessToken)
   /*
 {
@@ -82,3 +85,5 @@ module.exports = async (user) => {
     graphRiskyUser: graphRiskyUser.value
   }
 }
+
+module.exports = { getData, callGraph }

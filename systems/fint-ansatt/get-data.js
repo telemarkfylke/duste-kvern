@@ -7,7 +7,7 @@ const callFintFolk = async (resource, accessToken) => {
   return data
 }
 
-module.exports = async (user) => {
+const getData = async (user) => {
   // Hent et token
   const clientConfig = {
     clientId: APPREG.CLIENT_ID,
@@ -24,3 +24,5 @@ module.exports = async (user) => {
     fintEmployee
   }
 }
+
+module.exports = { getData, callFintFolk }

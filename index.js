@@ -20,7 +20,7 @@
       const client = await getMongoClient()
       const db = client.db(MONGODB.DB_NAME)
       const collection = db.collection(MONGODB.REPORT_COLLECTION)
-      const newReports = await collection.find({ ready: true }).toArray() // Consider sorting on oldest
+      const newReports = await collection.find({ ready: true }).toArray() // Consider sorting on oldest - hmmm can we find and update at the same time check out findAndModify
       
       // Save reports to file-cache-queue - if it already exists, just overwrite - updateMany probably failed...
       const updateProps = { ready: false, queued: true, startedTimestamp: new Date().toISOString() } // To make sure we set the same values both in cache, and in mongodb when running updateMany
