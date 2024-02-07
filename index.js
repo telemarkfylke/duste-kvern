@@ -6,9 +6,9 @@
   const { handleDustReport } = require('./lib/handle-dust-report')
 
   const fileCacheQueue = Cache({ basePath: './.queue-file-cache', hash: 'sha1' })
-  
+
   let readyForNewReports = true
-  
+
   const getNewReports = async () => {
     if (!readyForNewReports) {
       console.log('not ready for run - skipping')
@@ -21,7 +21,7 @@
       const db = client.db(MONGODB.DB_NAME)
       const collection = db.collection(MONGODB.REPORT_COLLECTION)
       const newReports = await collection.find({ ready: true }).toArray() // Consider sorting on oldest - hmmm can we find and update at the same time check out findAndModify
-      
+
       // Save reports to file-cache-queue - if it already exists, just overwrite - updateMany probably failed...
       const updateProps = { ready: false, queued: true, startedTimestamp: new Date().toISOString() } // To make sure we set the same values both in cache, and in mongodb when running updateMany
       await fileCacheQueue.save(newReports.map(report => {
@@ -29,9 +29,9 @@
       }))
 
       // Set requests in mongodb to running
-      await collection.updateMany( { _id: { $in: newReports.map(doc => doc._id) } }, { $set: updateProps } )
+      await collection.updateMany({ _id: { $in: newReports.map(doc => doc._id) } }, { $set: updateProps })
       readyForNewReports = true
-      
+
       if (newReports.length > 0) logger('info', ['getNewReports', `Got ${newReports.length} new reports`])
       return newReports.length
     } catch (error) {
@@ -51,7 +51,7 @@
         return { key: report._id, value: { ...report, running: true } }
       }))
       if (readyForRun.length > 0) logger('info', ['runReadyReports', `Got ${readyForRun.length} new reports`])
-      
+
       // Set up promises
       const runPromises = readyForRun.map(async (report) => {
         return handleDustReport(report)
@@ -67,5 +67,4 @@
   setInterval(getNewReports, GET_NEW_REPORTS_INTERVAL)
   // Run runReadyRequest every RUN_READY_REPORTS_INTERVAL seconds
   setInterval(runReadyReports, RUN_READY_REPORTS_INTERVAL)
-
 })()

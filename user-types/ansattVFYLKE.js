@@ -1,47 +1,7 @@
-const { success, warn, error } = require("../lib/test-result")
+const { success, warn, error } = require('../lib/test-result')
 
 const systemsAndTests = [
   // System
-  {
-    id: 'tulball',
-    name: 'FINensikke',
-    description: 'ahahaha',
-    // Tester
-    tests: [
-      {
-        id: "ad_dust",
-        title: 'Er bruker en dust?',
-        description: 'Sjekker om bruker er dust',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
-        /**
-         * 
-         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
-         */
-        test: (user, systemData) => {
-          //return success({ message: "ahaahaha" })
-          // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
-          return success({ message: "Brukeren er en dust" })
-        }
-      },
-      {
-        id: "azure_hahah",
-        title: 'Finner vi noe snusk?',
-        description: 'Sjekker om bruker har gjort noe sykt',
-        waitForAllData: true, // Trenger ikke mer enn systemdataene
-        /**
-         * 
-         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
-         */
-        test: (user, systemData) => {
-          //return success({ message: "ahaahaha" })
-          // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
-          return success({ message: "Brukeren har ikke gjort noe gærnt" })
-        }
-      }
-    ]
-  },
   {
     id: 'ad',
     name: 'AD',
@@ -49,35 +9,35 @@ const systemsAndTests = [
     // Tester
     tests: [
       {
-        id: "ad_dust",
+        id: 'ad_dust',
         title: 'Er bruker en dust?',
         description: 'Sjekker om bruker er dust',
         waitForAllData: false, // Trenger ikke mer enn systemdataene
         /**
-         * 
+         *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          //return success({ message: "ahaahaha" })
+          // return success({ message: "ahaahaha" })
           // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
-          return success({ message: "Brukeren er en dust" })
+          return success({ message: 'Brukeren er en dust' })
         }
       },
       {
-        id: "azure_hahah",
+        id: 'azure_hahah',
         title: 'Finner vi noe snusk?',
         description: 'Sjekker om bruker har gjort noe sykt',
         waitForAllData: true, // Trenger ikke mer enn systemdataene
         /**
-         * 
+         *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          //return success({ message: "ahaahaha" })
+          // return success({ message: "ahaahaha" })
           // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
-          return success({ message: "Brukeren har ikke gjort noe gærnt" })
+          return success({ message: 'Brukeren har ikke gjort noe gærnt' })
         }
       }
     ]
@@ -89,35 +49,35 @@ const systemsAndTests = [
     // Tester
     tests: [
       {
-        id: "azure_risky_user",
+        id: 'azure_risky_user',
         title: 'Har bruker havna i risky user?',
         description: 'Sjekker om bruker finnes i risky users i Entra ID',
         waitForAllData: false, // Trenger ikke mer enn systemdataene
         /**
-         * 
+         *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          //return success({ message: "ahaahaha" })
+          // return success({ message: "ahaahaha" })
           // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
-          return success({ message: "Brukeren er ikke risky" })
+          return success({ message: 'Brukeren er ikke risky' })
         }
       },
       {
-        id: "azure_hahah",
+        id: 'azure_hahah',
         title: 'Finner vi noe snusk?',
         description: 'Sjekker om bruker har gjort noe sykt',
         waitForAllData: true, // Trenger ikke mer enn systemdataene
         /**
-         * 
+         *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          //return success({ message: "ahaahaha" })
+          // return success({ message: "ahaahaha" })
           // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
-          return success({ message: "Brukeren har ikke gjort noe gærnt" })
+          return success({ message: 'Brukeren har ikke gjort noe gærnt' })
         }
       }
     ]
@@ -129,31 +89,175 @@ const systemsAndTests = [
     // Tester
     tests: [
       {
-        id: "fint_tullball",
+        id: 'fint_tullball',
         title: 'Er det noen bruker her da?',
         description: 'Sjekker om brukeren er dum',
         waitForAllData: false, // Trenger ikke mer enn systemdataene
         /**
-         * 
+         *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          return warn({ message: "Brukeren er dum", solution: "FIks det", raw: { heisann: "Noe data" } })
+          return warn({ message: 'Brukeren er dum', solution: 'FIks det', raw: { heisann: 'Noe data' } })
         }
       },
       {
-        id: "fint_tullball_2",
+        id: 'fint_tullball_2',
         title: 'En annen test',
         description: 'Sjekker om brukeren er smart',
         waitForAllData: false, // Trenger ikke mer enn systemdataene
         /**
-         * 
+         *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          return error({ message: "Brukeren er ikke smart", solution: "SEnd på kurs", raw: { heisann: "Noe data igjen" } })
+          return error({ message: 'Brukeren er ikke smart', solution: 'SEnd på kurs', raw: { heisann: 'Noe data igjen' } })
+        }
+      }
+    ]
+  },
+  {
+    id: 'visma',
+    name: 'Visma HRM',
+    description: 'Visma bøbaaja',
+    // Tester
+    tests: [
+      {
+        id: 'visma_tullball',
+        title: 'Er det noen bruker her da?',
+        description: 'Sjekker om brukeren er dum',
+        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          return success({ message: 'Brukeren er dum', solution: 'FIks det', raw: { heisann: 'Noe data' } })
+        }
+      },
+      {
+        id: 'visma_tullball_2',
+        title: 'En annen test',
+        description: 'Sjekker om brukeren er smart',
+        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          return error({ message: 'Brukeren er ikke smart', solution: 'SEnd på kurs', raw: { heisann: 'Noe data igjen' } })
+        }
+      }
+    ]
+  },
+  {
+    id: 'equitrac',
+    name: 'Equitrac (printløsning)',
+    description: 'Eeieie bøbaaja',
+    // Tester
+    tests: [
+      {
+        id: 'equitrac_tullball',
+        title: 'Er det noen bruker her da?',
+        description: 'Sjekker om brukeren er dum',
+        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          return success({ message: 'Brukeren er dum', solution: 'FIks det', raw: { heisann: 'Noe data' } })
+        }
+      },
+      {
+        id: 'equitrac_tullball_2',
+        title: 'En annen test',
+        description: 'Sjekker om brukeren er smart',
+        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          return error({ message: 'Brukeren er ikke smart', solution: 'SEnd på kurs', raw: { heisann: 'Noe data igjen' } })
+        }
+      }
+    ]
+  },
+  {
+    id: 'sync',
+    name: 'Synkronisertingskfjdkjfdfj',
+    description: 'Eeieie bøbaaja',
+    // Tester
+    tests: [
+      {
+        id: 'sync_tullball',
+        title: 'Er det noen bruker her da?',
+        description: 'Sjekker om brukeren er dum',
+        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          return success({ message: 'Brukeren er dum', solution: 'FIks det', raw: { heisann: 'Noe data' } })
+        }
+      },
+      {
+        id: 'sync_tullball_2',
+        title: 'En annen test',
+        description: 'Sjekker om brukeren er smart',
+        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          return error({ message: 'Brukeren er ikke smart', solution: 'SEnd på kurs', raw: { heisann: 'Noe data igjen' } })
+        }
+      }
+    ]
+  },
+  {
+    id: 'feide',
+    name: 'Feide',
+    description: 'Eeieie bøbaaja',
+    // Tester
+    tests: [
+      {
+        id: 'feide_tullball',
+        title: 'Er det noen bruker her da?',
+        description: 'Sjekker om brukeren er dum',
+        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          return success({ message: 'Brukeren er dum', solution: 'FIks det', raw: { heisann: 'Noe data' } })
+        }
+      },
+      {
+        id: 'feide_tullball_2',
+        title: 'En annen test',
+        description: 'Sjekker om brukeren er smart',
+        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          return error({ message: 'Brukeren er ikke smart', solution: 'SEnd på kurs', raw: { heisann: 'Noe data igjen' } })
         }
       }
     ]

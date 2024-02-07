@@ -21,31 +21,31 @@ const getData = async (user) => {
   const accessToken = await getMsalToken(clientConfig)
 
   const userProperties = [
-    "accountEnabled",
-    "assignedLicenses",
-    "birthday",
-    "businessPhones",
-    "companyName",
-    "createdDateTime",
-    "deletedDateTime",
-    "department",
-    "displayName",
-    "givenName",
-    "jobTitle",
-    "lastPasswordChangeDateTime",
-    "mail",
-    "mobilePhone",
-    "onPremisesDistinguishedName",
-    "onPremisesExtensionAttributes",
-    "onPremisesLastSyncDateTime",
-    "onPremisesProvisioningErrors",
-    "onPremisesSamAccountName",
-    "onPremisesSyncEnabled",
-    "proxyAddresses",
-    "signInSessionsValidFromDateTime",
-    "surname",
-    "userPrincipalName"
-  ].join(",")
+    'accountEnabled',
+    'assignedLicenses',
+    'birthday',
+    'businessPhones',
+    'companyName',
+    'createdDateTime',
+    'deletedDateTime',
+    'department',
+    'displayName',
+    'givenName',
+    'jobTitle',
+    'lastPasswordChangeDateTime',
+    'mail',
+    'mobilePhone',
+    'onPremisesDistinguishedName',
+    'onPremisesExtensionAttributes',
+    'onPremisesLastSyncDateTime',
+    'onPremisesProvisioningErrors',
+    'onPremisesSamAccountName',
+    'onPremisesSyncEnabled',
+    'proxyAddresses',
+    'signInSessionsValidFromDateTime',
+    'surname',
+    'userPrincipalName'
+  ].join(',')
 
   logger('info', ['azure-get-data', 'fetching user data from graph'])
   const userData = await callGraph(`v1.0/users/${user.userPrincipalName}?$select=${userProperties}`, accessToken)
