@@ -439,7 +439,7 @@ const systemsAndTests = [
           }
           if (data.riskyUser.length > 0) return error({ message: `Brukeren har havna i risky users, på nivå ${riskLevel} 😱`, solution: 'Send sak til sikkerhetsfolket', raw: data })
           if (user.displayName === 'Bjørn Kaarstein') return warn({ message: `Brukeren er ikke i risky users, men ansees likevel som en risiko 🐻`, solution: 'Send sak til viltnemnda' })
-          return success({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.azure} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}`, raw: systemData.memberOf })
+          return success({ message: 'Brukeren er ikke i risky users' })
         }
       }
     ]
