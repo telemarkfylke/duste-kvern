@@ -375,24 +375,6 @@ const systemsAndTests = [
         }
       },
       {
-        id: 'azure_pwd_kluss',
-        title: 'Har skrevet feil passord',
-        description: `Sjekker om bruker har skrevet feil passord idag`,
-        waitForAllData: false,
-        /**
-         *
-         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
-         */
-        test: (user, systemData) => {
-          const data = {
-            userSignInErrors: systemData.userSignInErrors
-          }
-          if (systemData.userSignInErrors.length > 0) return error({ message: `Har skrevet feil passord ${systemData.userSignInErrors.length} gang${systemData.userSignInErrors.length > 1 ? 'er' : ''} idag 🤦‍♂️`, raw: data, solution: 'Bruker må ta av boksehanskene 🥊' })
-          return success({ message: 'Ingen klumsing med passord idag', raw: data })
-        }
-      },
-      {
         id: 'azure_ad_in_sync',
         title: 'AD-bruker og Entra ID-bruker er i sync',
         description: `Sjekker at AD-bruker og Entra ID-bruker er i sync`,
