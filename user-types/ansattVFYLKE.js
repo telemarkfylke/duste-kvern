@@ -422,6 +422,25 @@ const systemsAndTests = [
           if (systemData.memberOf.length > groupWarningLimit) return warn({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.azure} grupper 😵`, solution: 'Det kan hende brukeren trenger å være medlem av alle disse gruppene, men om du tror det er et problem, meld en sak til arbeidsgruppe identitet', raw: systemData.memberOf })
           return success({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.azure} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}`, raw: systemData.memberOf })
         }
+      },
+      {
+        id: 'azure_risky_user',
+        title: 'Er bruker risky',
+        description: `Sjekker om bruker finnes i risky users`,
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            riskyUser: systemData.graphRiskyUser
+          }
+          if (data.riskyUser.length > 0) return error({ message: `Brukeren har havna i risky users, på nivå ${riskLevel} 😱`, solution: 'Send sak til sikkerhetsfolket', raw: data })
+          if (user.displayName === 'Bjørn Kaarstein') return warn({ message: `Brukeren er ikke i risky users, men ansees likevel som en risiko 🐻`, solution: 'Send sak til viltnemnda' })
+          return success({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.azure} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}`, raw: systemData.memberOf })
+        }
       }
     ]
   },
