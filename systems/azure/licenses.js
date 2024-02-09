@@ -10,6 +10,11 @@ module.exports = [
     name: 'Microsoft 365 A3 student use benefits'
   },
   {
+    skuId: '31d57bc7-3a05-4867-ab53-97a17835a411',
+    skuPartNumber: 'M365EDU_A5_STUUSEBNFT',
+    name: 'Microsoft 365 A5 student use benefits'
+  },
+  {
     skuId: '26124093-3d78-432b-b5dc-48bf992543d5',
     skuPartNumber: 'IDENTITY_THREAT_PROTECTION',
     name: 'Microsoft 365 E5 Security'
@@ -18,6 +23,21 @@ module.exports = [
     skuId: '05e9a617-0261-4cee-bb44-138d3ef5d965',
     skuPartNumber: 'SPE_E3',
     name: 'MICROSOFT 365 E3'
+  },
+  {
+    skuId: '06ebc4ee-1bb5-47dd-8120-11324bc54e06',
+    skuPartNumber: 'SPE_E5',
+    name: 'MICROSOFT 365 E5'
+  },
+  {
+    skuId: '66b55226-6b4f-492c-910c-a3b7a3c9d993',
+    skuPartNumber: 'SPE_F1',
+    name: 'MICROSOFT 365 F3'
+  },
+  {
+    skuId: '44575883-256e-4a79-9da4-ebe9acabe2b2',
+    skuPartNumber: 'M365_F1',
+    name: 'MICROSOFT 365 F1'
   },
   {
     skuId: 'e97c048c-37a4-45fb-ab50-922fbf07a370',
