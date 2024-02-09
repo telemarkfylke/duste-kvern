@@ -1,5 +1,6 @@
 const { success, warn, error } = require('../lib/test-result')
 const systemNames = require('../systems/system-names')
+const { repackVismaData } = require('../systems/visma/repack-data')
 
 const systemsAndTests = [
   // System
@@ -20,16 +21,17 @@ const systemsAndTests = [
          */
         test: (user, systemData, allData) => {
           if (!allData.visma) return error({ message: `Mangler data i ${systemNames.visma}`, raw: { user }, solution: `Rettes i ${systemNames.visma}` })
+          const vismaData = repackVismaData(allData.visma)
           const data = {
             enabled: systemData.enabled,
             visma: {
-              person: allData.visma.person.message,
-              activePosition: allData.visma.activePosition.message,
+              person: vismaData.person.message,
+              activePosition: vismaData.activePosition.message,
               activePositionCategory: {
-                message: allData.visma.activePositionCategory.message,
-                description: allData.visma.activePositionCategory.raw.description
+                message: vismaData.activePositionCategory.message,
+                description: vismaData.activePositionCategory.raw.description
               },
-              active: allData.visma.activePosition.raw.employment.active
+              active: vismaData.activePosition.raw.employment.active
             }
           }
           if (systemData.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })

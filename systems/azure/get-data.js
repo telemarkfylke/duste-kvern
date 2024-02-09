@@ -1,7 +1,7 @@
 const { getMsalToken } = require('../../lib/get-msal-token')
 const { APPREG, GRAPH } = require('../../config')
 const axios = require('axios').default
-const { entraIdDate } = require('../../lib/date-time-helper')
+const { entraIdDate } = require('../../lib/helpers/date-time-output')
 const { logger } = require('@vtfk/logger')
 
 const callGraph = async (resource, accessToken) => {
