@@ -2,6 +2,10 @@ const { success, warn, error } = require('../lib/test-result')
 const systemNames = require('../systems/system-names')
 const { repackVismaData } = require('../systems/visma/repack-data')
 const { isValidFnr } = require('../lib/helpers/is-valid-fnr')
+const { isWithinTimeRange } = require('../lib/helpers/is-within-timerange')
+
+const aadSyncInMinutes = 30
+const aadSyncInSeconds = aadSyncInMinutes * 60
 
 const systemsAndTests = [
   // System
@@ -21,7 +25,7 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData, allData) => {
-          if (!allData.visma) return error({ message: `Mangler data i ${systemNames.visma}`, raw: { user }, solution: `Rettes i ${systemNames.visma}` })
+          if (!allData.visma || allData.visma.getDataFailed) return error({ message: `Mangler data i ${systemNames.visma}`, raw: { user }, solution: `Rettes i ${systemNames.visma}` })
           const vismaData = repackVismaData(allData.visma)
           const data = {
             enabled: systemData.enabled,
@@ -126,8 +130,8 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          if (systemData.state && systemData.state.length > 0) return success({ message: 'Felt for lisens er fylt ut', raw: { state: systemData.state } })
-          return error({ message: 'Felt for lisens mangler 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
+          if (systemData.state && systemData.state.length > 0) return success({ message: 'Felt for kortkode som styrer lisens er fylt ut', raw: { state: systemData.state } })
+          return error({ message: 'Felt for kortkode som styrer lisens mangler 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
         }
       },
       {
@@ -198,40 +202,242 @@ const systemsAndTests = [
   },
   {
     id: 'azure',
-    name: 'Azure (Microsoft 365)',
-    description: 'Azure',
+    name: systemNames.azure,
     // Tester
     tests: [
       {
-        id: 'azure_risky_user',
-        title: 'Har bruker havna i risky user?',
-        description: 'Sjekker om bruker finnes i risky users i Entra ID',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        id: 'azure_aktivering',
+        title: 'Kontoen er aktivert',
+        description: `Sjekker at kontoen er aktivert i ${systemNames.aad}`,
+        waitForAllData: true,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
-        test: (user, systemData) => {
-          // return success({ message: "ahaahaha" })
-          // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
-          return success({ message: 'Brukeren er ikke risky' })
+        test: (user, systemData, allData) => {
+          if (!allData.visma || allData.visma.getDataFailed) return error({ message: `Mangler data i ${systemNames.visma}`, raw: { user }, solution: `Rettes i ${systemNames.visma}` })
+          const vismaData = repackVismaData(allData.visma)
+          const data = {
+            enabled: systemData.accountEnabled,
+            visma: {
+              person: vismaData.person.message,
+              activePosition: vismaData.activePosition.message,
+              activePositionCategory: {
+                message: vismaData.activePositionCategory.message,
+                description: vismaData.activePositionCategory.raw.description
+              },
+              active: vismaData.activePosition.raw.employment.active
+            }
+          }
+          if (systemData.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
+          if (systemData.enabled && !data.visma.active) return error({ message: 'Kontoen er aktivert selvom ansatt har sluttet', raw: data, solution: `Rettes i ${systemNames.visma}` })
+          if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+          if (!systemData.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: `Rettes i ${systemNames.visma}` })
         }
       },
       {
-        id: 'azure_hahah',
-        title: 'Finner vi noe snusk?',
-        description: 'Sjekker om bruker har gjort noe sykt',
-        waitForAllData: true, // Trenger ikke mer enn systemdataene
+        id: 'azure_equal_mail',
+        title: 'UPN er lik e-postadressen',
+        description: `Sjekker at UPN-et er lik e-postadressen i AD`,
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          // return success({ message: "ahaahaha" })
-          // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
-          return success({ message: 'Brukeren har ikke gjort noe gærnt' })
+          const data = {
+            accountEnabled: systemData.accountEnabled,
+            mail: systemData.mail || null,
+            userPrincipalName: systemData.userPrincipalName || null
+          }
+          if (!systemData.userPrincipalName) return error({ message: 'UPN (brukernavn til Microsoft 365) mangler 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+          if (!systemData.mail) {
+            if (systemData.accountEnabled) return error({ message: 'E-postadresse mangler 😬', raw: data })
+            else {
+              return warn({ message: 'E-postadresse blir satt når konto er blitt aktivert', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Entra ID Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+            }
+          }
+          return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success({ message: 'UPN (brukernavn til Microsoft 365) er lik e-postadressen', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke lik e-postadressen', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+        }
+      },
+      {
+        id: 'azure_upn',
+        title: 'UPN er korrekt',
+        description: `Sjekker at UPN er korrekt for ansatt`,
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            userPrincipalName: systemData.userPrincipalName
+          }
+          if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+          if (!data.userPrincipalName.endsWith('@vestfoldfylke.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+          return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data })
+        }
+      },
+      {
+        id: 'azure_pwd_sync',
+        title: 'Passord synkronisert til Azure AD',
+        description: `Sjekker at passordet er synkronisert til Azure AD innenfor 40 minutter`,
+        waitForAllData: true,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData, allData) => {
+          if (!allData.ad || allData.ad.getDataFailed) return error({ message: `Mangler ${systemNames.ad}-data`, raw: allData.ad })
+          const pwdCheck = isWithinTimeRange(new Date(allData.ad.pwdLastSet), new Date(systemData.lastPasswordChangeDateTime), aadSyncInSeconds)
+          const data = {
+            azure: {
+              lastPasswordChangeDateTime: systemData.lastPasswordChangeDateTime
+            },
+            ad: {
+              pwdLastSet: allData.ad.pwdLastSet
+            },
+            seconds: pwdCheck.seconds
+          }
+          if (allData.ad.pwdLastSet === 0) return warn({ message: 'Passord vil synkroniseres når konto er blitt aktivert', raw: data })
+          if (pwdCheck.result) return success({ message: `Passord synkronisert til ${systemNames.azure}`, raw: data })
+          return error({ message: 'Passord ikke synkronisert', raw: data })
+        }
+      },
+      {
+        id: 'azure_license',
+        title: 'Passord synkronisert til Azure AD',
+        description: `Sjekker at passordet er synkronisert til Azure AD innenfor 40 minutter`,
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          if (systemData.accountEnabled && systemData.assignedLicenses.length === 0) return error({ message: 'Har ingen Microsoft 365-lisenser 😬', solution: 'Meld sak til arbeidsgruppe identitet' })
+          if (!systemData.accountEnabled && systemData.assignedLicenses.length === 0) return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+          const data = {
+            licenses: [],
+            hasNecessaryLicenses: false
+          }
+          // ??? Bare legge inn riktig skuId for ansatt her??? Og test det i stedet  -ref at vi kanskje Bumper ned lisens på noen
+          data.licenses = systemData.assignedLicenses.map(license => {
+            const lic = licenses.find(lic => lic.skuId === license.skuId)
+            if (lic) {
+              data.hasNecessaryLicenses = true
+              return lic
+            } else return license
+          })
+          if (data.hasNecessaryLicenses) return success({ message: 'Har Microsoft 365-lisenser', raw: data })
+          if (systemData.accountEnabled) return warn({ message: `Har ${data.licenses.length} ${data.licenses.length > 1 ? 'lisenser' : 'lisens'} men mangler nødvendige lisenser`, raw: data, solution: 'Sjekk at bruker har aktive lisenser på brukerobjektet i Azure AD under Licenses. Hvis noen av lisensene tildelt til bruker ikke er aktive, sjekk at det er lisenser tilgjengelig og deretter kjør en Reprocess i License vinduet. Hvis bruker ikke har noen lisenser tildelt, meld sak til arbeidsgruppe identitet' })
+          return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+        }
+      },
+      {
+        id: 'azure_mfa',
+        title: 'Har satt opp MFA',
+        description: `Sjekker at MFA er satt opp`,
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            authenticationMethods: systemData.authenticationMethods
+          }
+          if (systemData.authenticationMethods.length === 0) return error({ message: 'MFA (tofaktor) er ikke satt opp 😬', raw: data, solution: 'Bruker må selv sette opp MFA (tofaktor) via aka.ms/mfasetup' })
+          return success({ message: `${systemData.authenticationMethods.length} MFA-metode${systemData.authenticationMethods.length > 1 ? 'r' : ''} (tofaktor) er satt opp`, raw: data })
+        }
+      },
+      {
+        id: 'azure_pwd_kluss',
+        title: 'Har skrevet feil passord',
+        description: `Sjekker om bruker har skrevet feil passord idag`,
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            userSignInErrors: systemData.userSignInErrors
+          }
+          if (systemData.userSignInErrors.length > 0) return error({ message: `Har skrevet feil passord ${systemData.userSignInErrors.length} gang${systemData.userSignInErrors.length > 1 ? 'er' : ''} idag 🤦‍♂️`, raw: data, solution: 'Bruker må ta av boksehanskene 🥊' })
+          return success({ message: 'Ingen klumsing med passord idag', raw: data })
+        }
+      },
+      {
+        id: 'azure_pwd_kluss',
+        title: 'Har skrevet feil passord',
+        description: `Sjekker om bruker har skrevet feil passord idag`,
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            userSignInErrors: systemData.userSignInErrors
+          }
+          if (systemData.userSignInErrors.length > 0) return error({ message: `Har skrevet feil passord ${systemData.userSignInErrors.length} gang${systemData.userSignInErrors.length > 1 ? 'er' : ''} idag 🤦‍♂️`, raw: data, solution: 'Bruker må ta av boksehanskene 🥊' })
+          return success({ message: 'Ingen klumsing med passord idag', raw: data })
+        }
+      },
+      {
+        id: 'azure_ad_in_sync',
+        title: 'AD-bruker og Entra ID-bruker er i sync',
+        description: `Sjekker at AD-bruker og Entra ID-bruker er i sync`,
+        waitForAllData: true,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData, allData) => {
+          if (!allData.ad || allData.ad.getDataFailed) return error({ message: `Mangler data i ${systemNames.ad}`, raw: { user } })
+          const data = {
+            azure: {
+              accountEnabled: systemData.accountEnabled,
+              onPremisesLastSyncDateTime: systemData.onPremisesLastSyncDateTime
+            },
+            ad: {
+              enabled: allData.ad.enabled,
+              whenChanged: allData.ad.whenChanged
+            }
+          }
+      
+          if (systemData.accountEnabled !== allData.ad.enabled) {
+            data.isInsideSyncWindow = isWithinTimeRange(new Date(), new Date(data.ad.whenChanged), aadSyncInSeconds)
+            if (!data.isInsideSyncWindow.result) return error({ message: `Entra ID-kontoen er fremdeles ${systemData.accountEnabled ? '' : 'in'}aktiv`, raw: data, solution: 'Synkronisering utføres snart' })
+            return warn({ message: `Entra ID-kontoen vil bli ${allData.ad.enabled ? '' : 'de'}aktivert ved neste synkronisering (innenfor ${aadSyncInMinutes} minutter)`, raw: data, solution: 'Synkronisering utføres snart' })
+          }
+          return success({ message: "AD-bruker og Entra ID-bruker er i sync", raw: data })
+        }
+      },
+      {
+        id: 'azure_groups',
+        title: 'Sjekker direktemedlemskap',
+        description: `Brukers direkte gruppemedlemskap`,
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const groupWarningLimit = 200
+          if (systemData.memberOf.length === 0) return error({ message: `Er ikke medlem av noen ${systemNames.azure} grupper 🤔` })
+          if (systemData.memberOf.length > groupWarningLimit) return warn({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.azure} grupper 😵`, solution: 'Det kan hende brukeren trenger å være medlem av alle disse gruppene, men om du tror det er et problem, meld en sak til arbeidsgruppe identitet', raw: systemData.memberOf })
+          return success({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.azure} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}`, raw: systemData.memberOf })
         }
       }
     ]
@@ -246,7 +452,7 @@ const systemsAndTests = [
         id: 'fint_tullball',
         title: 'Er det noen bruker her da?',
         description: 'Sjekker om brukeren er dum',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
@@ -260,7 +466,7 @@ const systemsAndTests = [
         id: 'fint_tullball_2',
         title: 'En annen test',
         description: 'Sjekker om brukeren er smart',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
@@ -282,7 +488,7 @@ const systemsAndTests = [
         id: 'visma_tullball',
         title: 'Er det noen bruker her da?',
         description: 'Sjekker om brukeren er dum',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
@@ -296,7 +502,7 @@ const systemsAndTests = [
         id: 'visma_tullball_2',
         title: 'En annen test',
         description: 'Sjekker om brukeren er smart',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
@@ -318,7 +524,7 @@ const systemsAndTests = [
         id: 'equitrac_tullball',
         title: 'Er det noen bruker her da?',
         description: 'Sjekker om brukeren er dum',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
@@ -332,7 +538,7 @@ const systemsAndTests = [
         id: 'equitrac_tullball_2',
         title: 'En annen test',
         description: 'Sjekker om brukeren er smart',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
@@ -354,7 +560,7 @@ const systemsAndTests = [
         id: 'sync_tullball',
         title: 'Er det noen bruker her da?',
         description: 'Sjekker om brukeren er dum',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
@@ -368,7 +574,7 @@ const systemsAndTests = [
         id: 'sync_tullball_2',
         title: 'En annen test',
         description: 'Sjekker om brukeren er smart',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
@@ -390,7 +596,7 @@ const systemsAndTests = [
         id: 'feide_tullball',
         title: 'Er det noen bruker her da?',
         description: 'Sjekker om brukeren er dum',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
@@ -404,7 +610,7 @@ const systemsAndTests = [
         id: 'feide_tullball_2',
         title: 'En annen test',
         description: 'Sjekker om brukeren er smart',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        waitForAllData: false,
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb

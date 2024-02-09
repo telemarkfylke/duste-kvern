@@ -1,6 +1,6 @@
 module.exports = {
   ad: 'AD',
-  aad: 'Azure AD (Microsoft 365)',
+  azure: 'Azure (Microsoft 365)',
   equitrac: 'Equitrac (utskrift)',
   feide: 'FEIDE',
   sds: 'SDS Teams LMS',
