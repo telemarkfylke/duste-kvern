@@ -3,7 +3,6 @@ const systemNames = require('../systems/system-names')
 const { repackVismaData } = require('../systems/visma/repack-data')
 const { isValidFnr } = require('../lib/helpers/is-valid-fnr')
 
-
 const systemsAndTests = [
   // System
   {
@@ -56,8 +55,8 @@ const systemsAndTests = [
           const data = {
             distinguishedName: systemData.distinguishedName
           }
-          if (data.distinguishedName.toUpperCase().includes('OU=AUTO DISABLED USERS')) return warn({ message: `Bruker ligger i OU'en AUTO DISABLED USERS`, raw: data, solution: `Rettes i ${systemNames.visma}` })
-          return success({ message: `Bruker ligger ikke i OU'en AUTO DISABLED USERS`, raw: data })
+          if (data.distinguishedName.toUpperCase().includes('OU=AUTO DISABLED USERS')) return warn({ message: 'Bruker ligger i OU\'en AUTO DISABLED USERS', raw: data, solution: `Rettes i ${systemNames.visma}` })
+          return success({ message: 'Bruker ligger ikke i OU\'en AUTO DISABLED USERS', raw: data })
         }
       },
       {
