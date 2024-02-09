@@ -1,27 +1,41 @@
 const { success, warn, error } = require('../lib/test-result')
+const systemNames = require('../systems/system-names')
 
 const systemsAndTests = [
   // System
   {
     id: 'ad',
-    name: 'AD',
-    description: 'AD',
+    name: systemNames.ad,
     // Tester
     tests: [
       {
-        id: 'ad_dust',
-        title: 'Er bruker en dust?',
-        description: 'Sjekker om bruker er dust',
-        waitForAllData: false, // Trenger ikke mer enn systemdataene
+        id: 'ad-aktivering',
+        title: 'Kontoen er aktivert',
+        description: 'Sjekker at kontoen er aktivert i AD',
+        waitForAllData: true, // Trenger ikke mer enn systemdataene
         /**
          *
          * @param {*} user kan slenge inn jsDocs for en user fra mongodb
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
-        test: (user, systemData) => {
-          // return success({ message: "ahaahaha" })
-          // if (systemData.riskyUser.length > 0) return error({ message: "Ånei den er risky", solution: "Be dem være litt mer forsiktig" })
-          return success({ message: 'Brukeren er en dust' })
+        test: (user, systemData, allData) => {
+          if (!allData.visma) return error({ message: `Mangler data i ${systemNames.visma}`, raw: { user }, solution: `Rettes i ${systemNames.visma}` })
+          const data = {
+            enabled: systemData.enabled,
+            visma: {
+              person: allData.visma.person.message,
+              activePosition: allData.visma.activePosition.message,
+              activePositionCategory: {
+                message: allData.visma.activePositionCategory.message,
+                description: allData.visma.activePositionCategory.raw.description
+              },
+              active: allData.visma.activePosition.raw.employment.active
+            }
+          }
+          if (systemData.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
+          if (systemData.enabled && !data.visma.active) return error({ message: 'Kontoen er aktivert selvom ansatt har sluttet', raw: data, solution: `Rettes i ${systemNames.visma}` })
+          if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+          if (!systemData.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: `Rettes i ${systemNames.visma}` })
         }
       },
       {
