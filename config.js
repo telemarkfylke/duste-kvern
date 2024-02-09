@@ -29,6 +29,10 @@ module.exports = {
     SCOPE: process.env.FINTFOLK_SCOPE,
     URL: process.env.FINTFOLK_URL
   },
+  VISMA: {
+    COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
+    CATEGORIES: process.env.VISMA_CATEGORIES || 'O,SE,TK,X,XA,XB,FW'
+  },
   PS1_SCRIPTS_PATH: process.env.PS1_SCRIPTS_PATH || 'D:/DUST-TEST/duste-kvern/scripts',
   MAX_BUFFER: process.env.MAX_BUFFER || 1024 * 10000
 }
