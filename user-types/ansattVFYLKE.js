@@ -3,6 +3,7 @@ const systemNames = require('../systems/system-names')
 const { repackVismaData } = require('../systems/visma/repack-data')
 const { isValidFnr } = require('../lib/helpers/is-valid-fnr')
 const { isWithinTimeRange } = require('../lib/helpers/is-within-timerange')
+const licenses = require('../systems/azure/licenses')
 
 const aadSyncInMinutes = 30
 const aadSyncInSeconds = aadSyncInMinutes * 60
@@ -230,10 +231,10 @@ const systemsAndTests = [
               active: vismaData.activePosition.raw.employment.active
             }
           }
-          if (systemData.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
-          if (systemData.enabled && !data.visma.active) return error({ message: 'Kontoen er aktivert selvom ansatt har sluttet', raw: data, solution: `Rettes i ${systemNames.visma}` })
-          if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
-          if (!systemData.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: `Rettes i ${systemNames.visma}` })
+          if (data.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
+          if (data.enabled && !data.visma.active) return error({ message: 'Kontoen er aktivert selvom ansatt har sluttet', raw: data, solution: `Rettes i ${systemNames.visma}` })
+          if (!data.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+          if (!data.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: `Rettes i ${systemNames.visma}` })
         }
       },
       {
