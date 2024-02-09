@@ -53,6 +53,7 @@ const getData = async (user) => {
   logger('info', ['azure-get-data', 'fetching groups for user'])
   const graphUserGroups = await callGraph(`v1.0/users/${user.userPrincipalName}/transitiveMemberOf?$top=999`, accessToken)
   const graphUserGroupsDisplayName = (graphUserGroups?.value && graphUserGroups.value.map(group => group.displayName).sort()) || []
+  const graphSDSGroups = (graphUserGroups && graphUserGroups.value && Array.isArray(graphUserGroups.value) && graphUserGroups.value.filter(group => group.mailNickname && group.mailNickname.startsWith('Section_'))) || []
 
   logger('info', ['azure-get-data', 'fetching authentication methods for user'])
   const graphUserAuth = await callGraph(`v1.0/users/${user.userPrincipalName}/authentication/methods`, accessToken)
@@ -78,8 +79,9 @@ const getData = async (user) => {
   */
   return {
     ...userData,
-    graphUserGroups,
-    graphUserGroupsDisplayName,
+    //graphUserGroups,
+    sdsGroups: graphSDSGroups,
+    memberOf: graphUserGroupsDisplayName,
     authenticationMethods: graphUserAuthMethods,
     userSignInErrors: graphUserSignIns.value,
     graphRiskyUser: graphRiskyUser.value
