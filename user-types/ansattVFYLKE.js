@@ -577,7 +577,7 @@ const systemsAndTests = [
          */
         test: (user, systemData) => {
           if (!systemData.contactInfo?.mobilePhone) return warn({ message: 'Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS', solution: `Bruker må selv sette telefonnummer på MinSide i ${systemNames.visma}` })
-          return success('Bruker har fylt ut ☎️ på MinSide')
+          return success({ message: 'Bruker har fylt ut ☎️ på MinSide' })
         }
       },
       {
