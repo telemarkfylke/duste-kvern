@@ -48,5 +48,10 @@ module.exports = [
     skuId: '94763226-9b3c-4e75-a931-5c89701abe66',
     skuPartNumber: 'STANDARDWOFFPACK_FACULTY',
     name: 'Office 365 A1 for faculty'
+  },
+  {
+    skuId: 'f30db892-07e9-47e9-837c-80727f46fd3d',
+    skuPartNumber: 'FLOW_FREE',
+    name: 'MICROSOFT FLOW FREE 🩸'
   }
 ]
