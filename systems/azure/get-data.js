@@ -44,7 +44,8 @@ const getData = async (user) => {
     'proxyAddresses',
     'signInSessionsValidFromDateTime',
     'surname',
-    'userPrincipalName'
+    'userPrincipalName',
+    'signInActivity'
   ].join(',')
 
   logger('info', ['azure-get-data', 'fetching user data from graph'])
