@@ -126,4 +126,4 @@ const repackVismaData = (data) => {
   }
 }
 
-module.exports = { repackVismaData }
+module.exports = { repackVismaData, getPerson, getActivePosition, getActivePositionCategory, getEmployment, getPositions }
