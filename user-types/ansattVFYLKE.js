@@ -443,6 +443,27 @@ const systemsAndTests = [
           if (user.displayName === 'Bjørn Kaarstein') return warn({ message: `Brukeren er ikke i risky users, men ansees likevel som en risiko 🐻`, solution: 'Send sak til viltnemnda' })
           return success({ message: 'Brukeren er ikke i risky users' })
         }
+      },
+      {
+        id: 'azure_last_signin',
+        title: 'Har bruker logget inn i det siste',
+        description: `Sjekker når brukeren logget på sist`,
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            signInActivity: systemData.signInActivity.signInActivity
+          }
+          if (!signInActivity) return error({ message: 'Bruker har tydeligvis aldri logga på....', solution: 'Be bruker om å logge på', raw: data })
+          const thirtyDaysAsSeconds = 2592000
+          const timeSinceLastSignin = isWithinTimeRange(new Date(signInActivity.lastSignInDateTime), new Date(), thirtyDaysAsSeconds)
+          if (!timeSinceLastSignin.result) return warn({ message: 'Det er over 30 dager siden brukeren logget på... Er det ferie mon tro?', raw: { ...data, timeSinceLastSignin } })
+          return success({ message: `Brukeren logget på for ${timeSinceLastSignin.seconds / 60} minutter siden`, raw: { ...data, timeSinceLastSignin } })
+        }
       }
     ]
   },
