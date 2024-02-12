@@ -446,8 +446,8 @@ const systemsAndTests = [
       },
       {
         id: 'azure_last_signin',
-        title: 'Har bruker logget inn i det siste',
-        description: `Sjekker når brukeren logget på sist`,
+        title: 'Har bruker klart å logge inn i det siste',
+        description: `Sjekker når brukeren klarte å logge på sist`,
         waitForAllData: false,
         /**
          *
@@ -455,14 +455,19 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
+          if (systemData.userSignInSuccess.length === 0) return error({ message: 'Bruker har tydeligvis aldri logga på....', solution: 'Be bruker om å logge på', raw: data })
           const data = {
-            signInActivity: systemData.signInActivity.signInActivity
+            lastSuccessfulSignin: systemData.userSignInSuccess[0]
           }
-          if (!signInActivity) return error({ message: 'Bruker har tydeligvis aldri logga på....', solution: 'Be bruker om å logge på', raw: data })
           const thirtyDaysAsSeconds = 2592000
-          const timeSinceLastSignin = isWithinTimeRange(new Date(signInActivity.lastSignInDateTime), new Date(), thirtyDaysAsSeconds)
+          const timeSinceLastSignin = isWithinTimeRange(new Date(data.lastSuccessfulSignin.createdDateTime), new Date(), thirtyDaysAsSeconds)
           if (!timeSinceLastSignin.result) return warn({ message: 'Det er over 30 dager siden brukeren logget på... Er det ferie mon tro?', raw: { ...data, timeSinceLastSignin } })
-          return success({ message: `Brukeren logget på for ${timeSinceLastSignin.seconds / 60} minutter siden`, raw: { ...data, timeSinceLastSignin } })
+          const minutesSinceLogin = timeSinceLastSignin.seconds / 60
+          if (minutesSinceLogin < 61) return success({ message: `Brukeren logget på for ${Math.floor(minutesSinceLogin)} minutte${Math.floor(minutesSinceLogin) > 1 ? 'r' : ''} siden`, raw: { ...data, timeSinceLastSignin } })
+          const hoursSinceLogin = minutesSinceLogin / 60
+          if (hoursSinceLogin < 25) return success({ message: `Brukeren logget på for ${Math.floor(hoursSinceLogin)} time${Math.floor(hoursSinceLogin) > 1 ? 'r' : ''} siden`, raw: { ...data, timeSinceLastSignin } })
+          const daysSinceLogin = hoursSinceLogin / 24
+          return success({ message: `Brukeren logget på for ${Math.floor(daysSinceLogin)} dage${Math.floor(daysSinceLogin) > 1 ? 'r' : ''} siden`, raw: { ...data, timeSinceLastSignin } })
         }
       }
     ]

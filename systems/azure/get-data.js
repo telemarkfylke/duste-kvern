@@ -21,6 +21,7 @@ const getData = async (user) => {
   const accessToken = await getMsalToken(clientConfig)
 
   const userProperties = [
+    'id',
     'accountEnabled',
     'assignedLicenses',
     'birthday',
@@ -44,12 +45,14 @@ const getData = async (user) => {
     'proxyAddresses',
     'signInSessionsValidFromDateTime',
     'surname',
-    'userPrincipalName',
-    'signInActivity'
+    'userPrincipalName'
   ].join(',')
 
   logger('info', ['azure-get-data', 'fetching user data from graph'])
   const userData = await callGraph(`v1.0/users/${user.userPrincipalName}?$select=${userProperties}`, accessToken)
+
+  logger('info', ['azure-get-data', 'fetching signIns for user'])
+  const signIns = await callGraph(`v1.0/`, accessToken)
 
   logger('info', ['azure-get-data', 'fetching groups for user'])
   const graphUserGroups = await callGraph(`v1.0/users/${user.userPrincipalName}/transitiveMemberOf?$top=999`, accessToken)
@@ -60,31 +63,22 @@ const getData = async (user) => {
   const graphUserAuth = await callGraph(`v1.0/users/${user.userPrincipalName}/authentication/methods`, accessToken)
   const graphUserAuthMethods = graphUserAuth?.value && graphUserAuth.value.length && graphUserAuth.value.filter(method => !method['@odata.type'].includes('passwordAuthenticationMethod'))
 
-  logger('info', ['azure-get-data', 'fetching failed signins for user'])
-  const graphUserSignIns = await callGraph(`v1.0/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and createdDateTime gt ${entraIdDate()} and status/errorCode eq 50126`, accessToken) // HMMMM fungerer denne da mon tro??
+  logger('info', ['azure-get-data', 'fetching signins for user'])
+  const graphUserSignIns = await callGraph(`v1.0/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and createdDateTime gt ${entraIdDate()}&$top=100`, accessToken)
+
+  const userSignInErrors = graphUserSignIns.value.filter(signIn => signIn.status.errorCode === 50126)
+  const userSignInSuccess = graphUserSignIns.value.filter(signIn => signIn.status.errorCode === 0) // LEgg til sort om den en eller annen gang ikke kommer sortert på dato
 
   logger('info', ['azure-get-data', 'fetching riskyuser data for user'])
   const graphRiskyUser = await callGraph(`v1.0//identityProtection/riskyUsers?$filter=userPrincipalName eq '${user.userPrincipalName}' and riskState ne 'dismissed'`, accessToken)
-  /*
-{
-        "id": "33a0333e-6f4b-4181-8f2a-6c3466205431",
-        "isDeleted": false,
-        "isProcessing": false,
-        "riskLevel": "none",
-        "riskState": "dismissed",
-        "riskDetail": "none",
-        "riskLastUpdatedDateTime": "2023-12-30T19:12:23.0867621Z",
-        "userDisplayName": "MIMIMI hfhf",
-        "userPrincipalName": "husss@nuss.no"
-      },
-  */
+
   return {
     ...userData,
-    //graphUserGroups,
     sdsGroups: graphSDSGroups,
     memberOf: graphUserGroupsDisplayName,
     authenticationMethods: graphUserAuthMethods,
-    userSignInErrors: graphUserSignIns.value,
+    userSignInErrors,
+    userSignInSuccess,
     graphRiskyUser: graphRiskyUser.value
   }
 }
