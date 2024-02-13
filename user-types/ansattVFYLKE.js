@@ -730,7 +730,7 @@ const systemsAndTests = [
               userPrincipalName: user.userPrincipalName
             }
           }
-          if (systemData.UserEmail !== ad.userPrincipalName) return error({ message: 'UserEmail er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe blekkulf' })
+          if (systemData.UserEmail !== user.userPrincipalName) return error({ message: 'UserEmail er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe blekkulf' })
           return success({ message: 'UserEmail er korrekt', raw: data })
         }
       }
@@ -819,7 +819,7 @@ const systemsAndTests = [
             }
             if (!feideFnr) return error({ message: 'Fødselsnummer mangler 😬', raw: data })
             const validFnr = isValidFnr(feideFnr)
-            if (validSsn.valid) return success({ message: 'Ansatt har FEIDE-konto og gyldig FNR', raw: { feideFnr, validFnr } })
+            if (validFnr.valid) return success({ message: 'Ansatt har FEIDE-konto og gyldig FNR', raw: { feideFnr, validFnr } })
             return error({ message: 'Ansatt har FEIDE-konto, men ikke gyldig fnr i FEIDE',  })
           }
           return error({ message: 'Ansatt har FEIDE-konto, men itj no displayName??', raw: systemData, solution: 'Rettes vel i FEIDE ellerno da' })
