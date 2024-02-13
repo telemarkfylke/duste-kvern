@@ -783,7 +783,7 @@ const systemsAndTests = [
             check: lastRunTimeCheck
           }
           if (!lastRunTimeCheck.result) return warn({ message: 'Det er mer enn 40 minutter siden siste synkronisering av Entra ID', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-          return success({ message: `Azure AD : ${prettifyDateToLocaleString(new Date(systemData.aadSync.lastAzureADSyncTime))}`, raw: data })
+          return success({ message: `Entra ID : ${prettifyDateToLocaleString(new Date(systemData.azureSync.lastEntraIDSyncTime))}`, raw: data })
         }
       }
     ]
