@@ -730,7 +730,7 @@ const systemsAndTests = [
               userPrincipalName: user.userPrincipalName
             }
           }
-          if (systemData.UserEmail !== user.userPrincipalName) return error({ message: 'UserEmail er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe blekkulf' })
+          if (systemData.UserEmail !== data.ad.userPrincipalName) return error({ message: 'UserEmail er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe blekkulf' })
           return success({ message: 'UserEmail er korrekt', raw: data })
         }
       }
