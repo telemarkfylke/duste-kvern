@@ -3,6 +3,7 @@ require('dotenv').config()
 module.exports = {
   GET_NEW_REPORTS_INTERVAL: process.env.GET_READY_REQUESTS_INTERVAL || 1000,
   RUN_READY_REPORTS_INTERVAL: process.env.RUN_READY_REQUESTS_INTERVAL || 1000,
+  COUNTY_OU: process.env.COUNTY_OU,
   MONGODB: {
     CONNECTION_STRING: process.env.MONGODB_CONNECTION_STRING,
     DB_NAME: process.env.MONGODB_DB_NAME,
@@ -32,6 +33,9 @@ module.exports = {
   VISMA: {
     COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
     CATEGORIES: process.env.VISMA_CATEGORIES || 'O,SE,TK,X,XA,XB,FW'
+  },
+  FEIDE: {
+    PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME || '@vtfk.no'
   },
   PS1_SCRIPTS_PATH: process.env.PS1_SCRIPTS_PATH || 'D:/DUST-TEST/duste-kvern/scripts',
   MAX_BUFFER: process.env.MAX_BUFFER || 1024 * 10000

@@ -6,6 +6,7 @@ const { isWithinTimeRange } = require('../lib/helpers/is-within-timerange')
 const licenses = require('../systems/azure/licenses')
 const repackVisma = require('../systems/visma/repack-data')
 const { getArrayData } = require('../lib/helpers/system-data')
+const { FEIDE } = require('../config')
 
 const aadSyncInMinutes = 30
 const aadSyncInSeconds = aadSyncInMinutes * 60
@@ -687,14 +688,14 @@ const systemsAndTests = [
   },
   {
     id: 'equitrac',
-    name: 'Equitrac (printløsning)',
+    name: systemNames.equitrac,
     description: 'Eeieie bøbaaja',
     // Tester
     tests: [
       {
-        id: 'equitrac_tullball',
-        title: 'Er det noen bruker her da?',
-        description: 'Sjekker om brukeren er dum',
+        id: 'equitrac_locked',
+        title: 'Kontoen er ulåst',
+        description: 'Sjekker at kontoen er ulåst',
         waitForAllData: false,
         /**
          *
@@ -702,13 +703,18 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          return success({ message: 'Brukeren er dum', solution: 'FIks det', raw: { heisann: 'Noe data' } })
+          const data = {
+            accountStatus: systemData.AccountStatus,
+            previousAccountStatus: systemData.PreviousAccountStatus || undefined
+          }
+          if (data.previousAccountStatus) return warn({ message: `Bruker var låst i ${systemNames.equitrac} men er nå låst opp! 👌`, raw: data })
+          return success({ message: `Bruker er ikke låst i ${systemNames.equitrac}`, raw: data })
         }
       },
       {
-        id: 'equitrac_tullball_2',
-        title: 'En annen test',
-        description: 'Sjekker om brukeren er smart',
+        id: 'equitrac_email_upn',
+        title: 'UserEmail er lik UPN',
+        description: 'Sjekker at UserEmail er lik UserPrincipalName',
         waitForAllData: false,
         /**
          *
@@ -716,21 +722,29 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          return error({ message: 'Brukeren er ikke smart', solution: 'SEnd på kurs', raw: { heisann: 'Noe data igjen' } })
+          const data = {
+            equitrac: {
+              userEmail: systemData.UserEmail
+            },
+            ad: {
+              userPrincipalName: user.userPrincipalName
+            }
+          }
+          if (systemData.UserEmail !== ad.userPrincipalName) return error({ message: 'UserEmail er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe blekkulf' })
+          return success({ message: 'UserEmail er korrekt', raw: data })
         }
       }
     ]
   },
   {
     id: 'sync',
-    name: 'Synkronisertingskfjdkjfdfj',
-    description: 'Eeieie bøbaaja',
+    name: systemNames.sync,
     // Tester
     tests: [
       {
-        id: 'sync_tullball',
-        title: 'Er det noen bruker her da?',
-        description: 'Sjekker om brukeren er dum',
+        id: 'sync_idm',
+        title: 'Har IDM lastRunTime',
+        description: 'Sjekker siste kjøringstidspunkt for Brukersynkronisering',
         waitForAllData: false,
         /**
          *
@@ -738,13 +752,21 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          return success({ message: 'Brukeren er dum', solution: 'FIks det', raw: { heisann: 'Noe data' } })
+          if (!systemData.lastIdmRun?.lastRunTime) return warn('Mangler kjøretidspunkt for brukersynkronisering 😬')
+
+          const lastRunTimeCheck = isWithinTimeRange(new Date(systemData.lastIdmRun.lastRunTime), new Date(), (24 * 60 * 60)) // is last run performed less than 24 hours ago?
+          const data = {
+            lastRunTime: systemData.lastIdmRun.lastRunTime,
+            check: lastRunTimeCheck
+          }
+          if (!lastRunTimeCheck.result) return warn({ message: 'Det er mer enn 24 timer siden siste brukersynkronisering', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+          return success({ message: `Brukersynkronisering : ${prettifyDateToLocaleString(new Date(systemData.vigobas.lastRunTime))}`, raw: data })
         }
       },
       {
-        id: 'sync_tullball_2',
-        title: 'En annen test',
-        description: 'Sjekker om brukeren er smart',
+        id: 'sync_azure',
+        title: 'Har azure lastEntraIDSyncTime',
+        description: 'Sjekker siste synkroniseringstidspunkt for Entra ID',
         waitForAllData: false,
         /**
          *
@@ -752,21 +774,28 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          return error({ message: 'Brukeren er ikke smart', solution: 'SEnd på kurs', raw: { heisann: 'Noe data igjen' } })
+          if (!systemData.azureSync || !systemData.azureSync.lastEntraIDSyncTime) return warn(`Mangler synkroniseringstidspunkt for ${systemNames.azure} 😬`)
+
+          const lastRunTimeCheck = isWithinTimeRange(new Date(systemData.azureSync.lastEntraIDSyncTime), new Date(), (40 * 60)) // is last run performed less than 40 minutes ago?
+          const data = {
+            lastEntraIDSyncTime: systemData.azureSync.lastEntraIDSyncTime,
+            check: lastRunTimeCheck
+          }
+          if (!lastRunTimeCheck.result) return warn({ message: 'Det er mer enn 40 minutter siden siste synkronisering av Entra ID', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+          return success({ message: `Azure AD : ${prettifyDateToLocaleString(new Date(systemData.aadSync.lastAzureADSyncTime))}`, raw: data })
         }
       }
     ]
   },
   {
     id: 'feide',
-    name: 'Feide',
-    description: 'Eeieie bøbaaja',
+    name: systemNames.feide,
     // Tester
     tests: [
       {
-        id: 'feide_tullball',
-        title: 'Er det noen bruker her da?',
-        description: 'Sjekker om brukeren er dum',
+        id: 'feide_ansatt',
+        title: 'Har ansatt FEIDE-bruker',
+        description: 'Sjekker om vanlig ansatt har FEIDE-bruker',
         waitForAllData: false,
         /**
          *
@@ -774,21 +803,26 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          return success({ message: 'Brukeren er dum', solution: 'FIks det', raw: { heisann: 'Noe data' } })
-        }
-      },
-      {
-        id: 'feide_tullball_2',
-        title: 'En annen test',
-        description: 'Sjekker om brukeren er smart',
-        waitForAllData: false,
-        /**
-         *
-         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
-         */
-        test: (user, systemData) => {
-          return error({ message: 'Brukeren er ikke smart', solution: 'SEnd på kurs', raw: { heisann: 'Noe data igjen' } })
+          if (!systemData || (Array.isArray(systemData) && systemData.length === 0)) return success({ message: 'Ingen FEIDE-bruker her', raw: systemData })
+          if (systemData?.displayName) {
+            let feideFnr = typeof systemData.norEduPersonNIN === 'string' ? systemData.norEduPersonNIN : null
+            if (!feideFnr) {
+              /*
+                https://docs.feide.no/reference/schema/info_go/go_attributter_ch05.html#noredupersonlin
+                ID-number issued by the county municipalities described in fellesrutinene can be expressed as:
+                  norEduPersonLIN: <organization's feide-realm>:fin:<eleven-digit number>
+              */
+              if (Array.isArray(systemData.norEduPersonLIN) && systemData.norEduPersonLIN.length === 1) {
+                const feidePrincipalName = FEIDE.PRINCIPAL_NAME.replace('@', '')
+                feideFnr = systemData.norEduPersonLIN[0].replace(`${feidePrincipalName}:fin:`, '')
+              }
+            }
+            if (!feideFnr) return error({ message: 'Fødselsnummer mangler 😬', raw: data })
+            const validFnr = isValidFnr(feideFnr)
+            if (validSsn.valid) return success({ message: 'Ansatt har FEIDE-konto og gyldig FNR', raw: { feideFnr, validFnr } })
+            return error({ message: 'Ansatt har FEIDE-konto, men ikke gyldig fnr i FEIDE',  })
+          }
+          return error({ message: 'Ansatt har FEIDE-konto, men itj no displayName??', raw: systemData, solution: 'Rettes vel i FEIDE ellerno da' })
         }
       }
     ]

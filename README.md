@@ -1,6 +1,9 @@
 # duste-kvern
 Henter jobber fra db, kverner data, og oppdaterer i db
 
+##
+VT-alle-lærere i update-db-users (ps1 scriptet) må fikses for å sjekke om det er en lærer ???
+
 ## update-db-users
 Henter brukere fra lokalt ad - kverner dem sammen og laster opp i mongodb (det er brukerne man får opp når man søker i DUST) - kjøres som egen scheduled task et par ganger om dan
 
@@ -20,6 +23,10 @@ Henter brukere fra lokalt ad - kverner dem sammen og laster opp i mongodb (det e
 - Resultatet av tester dunkes opp til mongodb når de er ferdige for live updates
 - Rapporten settes til ferdig i mongodb, og slettes fra cache på server
 - Oppretter et element i statistikk-databasen for å kunne skryte
+
+
+## IDEER TIL TESTER
+- Sjekk om eleven er i sperremodus
 
 
 
