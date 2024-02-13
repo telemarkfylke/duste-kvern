@@ -1,3 +1,4 @@
+const { logger } = require('@vtfk/logger')
 const { COUNTY_OU, APPREG, APPREG_VTFK, GRAPH } = require('../../config')
 const { getMsalToken } = require('../../lib/get-msal-token')
 const invokePS = require('../../lib/invoke-ps-script')
