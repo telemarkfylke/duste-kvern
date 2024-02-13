@@ -1,4 +1,4 @@
-const { COUNTY_OU, APPREG, APPREG_VTFK } = require('../../config')
+const { COUNTY_OU, APPREG, APPREG_VTFK, GRAPH } = require('../../config')
 const { getMsalToken } = require('../../lib/get-msal-token')
 const invokePS = require('../../lib/invoke-ps-script')
 const { callGraph } = require('../azure/get-data')
