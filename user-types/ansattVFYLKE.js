@@ -457,13 +457,13 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          if (systemData.userSignInSuccess.length === 0) return error({ message: 'Bruker har tydeligvis aldri logga på....', solution: 'Be bruker om å logge på' })
+          if (systemData.userSignInSuccess.length === 0) return warn({ message: 'Bruker har ikke logget på de siste 3 dagene...', solution: 'Be bruker om å logge på' })
           const data = {
             lastSuccessfulSignin: systemData.userSignInSuccess[0]
           }
-          const thirtyDaysAsSeconds = 2592000
-          const timeSinceLastSignin = isWithinTimeRange(new Date(data.lastSuccessfulSignin.createdDateTime), new Date(), thirtyDaysAsSeconds)
-          if (!timeSinceLastSignin.result) return warn({ message: 'Det er over 30 dager siden brukeren logget på... Er det ferie mon tro?', raw: { ...data, timeSinceLastSignin } })
+          const fourteenDaysAsSeconds = 1209600
+          const timeSinceLastSignin = isWithinTimeRange(new Date(data.lastSuccessfulSignin.createdDateTime), new Date(), fourteenDaysAsSeconds)
+          if (!timeSinceLastSignin.result) return warn({ message: 'Det er over 14 dager siden brukeren logget på... Er det ferie mon tro?', raw: { ...data, timeSinceLastSignin } })
           const minutesSinceLogin = timeSinceLastSignin.seconds / 60
           if (minutesSinceLogin < 61) return success({ message: `Brukeren logget på for ${Math.floor(minutesSinceLogin)} minutte${Math.floor(minutesSinceLogin) > 1 ? 'r' : ''} siden`, raw: { ...data, timeSinceLastSignin } })
           const hoursSinceLogin = minutesSinceLogin / 60
