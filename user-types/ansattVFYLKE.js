@@ -457,7 +457,7 @@ const systemsAndTests = [
          * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
          */
         test: (user, systemData) => {
-          if (systemData.userSignInSuccess.length === 0) return error({ message: 'Bruker har tydeligvis aldri logga på....', solution: 'Be bruker om å logge på', raw: data })
+          if (systemData.userSignInSuccess.length === 0) return error({ message: 'Bruker har tydeligvis aldri logga på....', solution: 'Be bruker om å logge på' })
           const data = {
             lastSuccessfulSignin: systemData.userSignInSuccess[0]
           }
