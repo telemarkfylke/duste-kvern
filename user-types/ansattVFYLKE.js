@@ -7,6 +7,7 @@ const licenses = require('../systems/azure/licenses')
 const repackVisma = require('../systems/visma/repack-data')
 const { getArrayData } = require('../lib/helpers/system-data')
 const { FEIDE } = require('../config')
+const { prettifyDateToLocaleString } = require('../lib/helpers/date-time-output')
 
 const aadSyncInMinutes = 30
 const aadSyncInSeconds = aadSyncInMinutes * 60
@@ -760,7 +761,7 @@ const systemsAndTests = [
             check: lastRunTimeCheck
           }
           if (!lastRunTimeCheck.result) return warn({ message: 'Det er mer enn 24 timer siden siste brukersynkronisering', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-          return success({ message: `Brukersynkronisering : ${prettifyDateToLocaleString(new Date(systemData.vigobas.lastRunTime))}`, raw: data })
+          return success({ message: `Brukersynkronisering : ${prettifyDateToLocaleString(new Date(systemData.lastIdmRun.lastRunTime))}`, raw: data })
         }
       },
       {
