@@ -1,5 +1,5 @@
 const { getMsalToken } = require('../../lib/get-msal-token')
-const { APPREG, FINTFOLK } = require('../../config')
+const { APPREG, FINTFOLK, FEIDE } = require('../../config')
 const axios = require('axios').default
 
 const callFintFolk = async (resource, accessToken) => {
@@ -18,9 +18,9 @@ const getData = async (user) => {
   }
   const accessToken = await getMsalToken(clientConfig)
 
-  const fintEmployee = await callFintFolk(`employee/ansattnummer/${user.extensionAttribute9}`, accessToken)
+  const fintTeacher = await callFintFolk(`teacher/feidenavn/${user.samAccountName}${FEIDE.PRINCIPAL_NAME}`, accessToken)
 
-  return fintEmployee
+  return fintTeacher
 }
 
 module.exports = { getData, callFintFolk }

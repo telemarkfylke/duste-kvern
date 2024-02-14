@@ -6,7 +6,7 @@ const { callGraph } = require('../azure/get-data')
 
 const getData = async (user) => {
   const lastIdmRun = await invokePS('Get-DUSTIDMRun.ps1')
-  
+
   // Hvis OU er VFYLKE/TFYLKE - hent fra ny tenant, hvis ikke hent fra vtfk
   let clientConfig
   if (user.countyOU === COUNTY_OU) {
@@ -28,9 +28,9 @@ const getData = async (user) => {
   }
 
   const accessToken = await getMsalToken(clientConfig)
-  
+
   logger('info', ['sync-get-data', `fetching lastSyncTime for tenant ${clientConfig.tenantName}`])
-  const onPremisesLastSyncDateTime = await callGraph(`v1.0/organization?$select=onPremisesLastSyncDateTime`, accessToken)
+  const onPremisesLastSyncDateTime = await callGraph('v1.0/organization?$select=onPremisesLastSyncDateTime', accessToken)
 
   return {
     lastIdmRun,

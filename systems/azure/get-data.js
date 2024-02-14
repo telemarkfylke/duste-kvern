@@ -1,5 +1,5 @@
 const { getMsalToken } = require('../../lib/get-msal-token')
-const { APPREG, GRAPH } = require('../../config')
+const { APPREG, APPREG_VTFK, GRAPH, COUNTY_OU } = require('../../config')
 const axios = require('axios').default
 const { entraIdDate } = require('../../lib/helpers/date-time-output')
 const { logger } = require('@vtfk/logger')
@@ -10,13 +10,24 @@ const callGraph = async (resource, accessToken) => {
 }
 
 const getData = async (user) => {
-  // Hent et token
-  const clientConfig = {
-    clientId: APPREG.CLIENT_ID,
-    tenantId: APPREG.TENANT_ID,
-    tenantName: APPREG.TENANT_NAME,
-    clientSecret: APPREG.CLIENT_SECRET,
-    scope: GRAPH.SCOPE
+  // Hvis OU er VFYLKE/TFYLKE - hent fra ny tenant, hvis ikke hent fra vtfk
+  let clientConfig
+  if (user.countyOU === COUNTY_OU) {
+    clientConfig = {
+      clientId: APPREG.CLIENT_ID,
+      tenantId: APPREG.TENANT_ID,
+      tenantName: APPREG.TENANT_NAME,
+      clientSecret: APPREG.CLIENT_SECRET,
+      scope: GRAPH.SCOPE
+    }
+  } else {
+    clientConfig = {
+      clientId: APPREG_VTFK.CLIENT_ID,
+      tenantId: APPREG_VTFK.TENANT_ID,
+      tenantName: APPREG_VTFK.TENANT_NAME,
+      clientSecret: APPREG_VTFK.CLIENT_SECRET,
+      scope: GRAPH.SCOPE
+    }
   }
   const accessToken = await getMsalToken(clientConfig)
 

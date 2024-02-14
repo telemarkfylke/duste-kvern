@@ -3,6 +3,7 @@ module.exports = {
   azure: 'Azure (Microsoft 365)',
   equitrac: 'Equitrac (utskrift)',
   feide: 'FEIDE',
+  fintLarer: 'Visma InSchool',
   sds: 'SDS Teams LMS',
   sync: 'Forrige synkroniseringstidpunkt',
   vigoot: 'VIGO OT',
