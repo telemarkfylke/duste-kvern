@@ -1,6 +1,6 @@
 const { getMsalToken } = require('../../lib/get-msal-token')
 const { APPREG, FINTFOLK, FEIDE } = require('../../config')
-const { callFintFolk } = require('../fint-ansatt/get-data')
+const { callFintFolk } = require('../fint-larer/get-data')
 
 const getData = async (user) => {
   // Hent et token
@@ -13,9 +13,9 @@ const getData = async (user) => {
   }
   const accessToken = await getMsalToken(clientConfig)
 
-  const fintTeacher = await callFintFolk(`teacher/feidenavn/${user.samAccountName}${FEIDE.PRINCIPAL_NAME}`, accessToken)
+  const fintStudent = await callFintFolk(`student/feidenavn/${user.samAccountName}${FEIDE.PRINCIPAL_NAME}`, accessToken)
 
-  return fintTeacher
+  return fintStudent
 }
 
 module.exports = { getData, callFintFolk }
