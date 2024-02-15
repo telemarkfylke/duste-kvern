@@ -70,8 +70,6 @@ const systemsAndTests = [
       },
       azureTests.azureAktiveringElev,
       azureTests.azureUpnEqualsMail,
-      azureTests.azurePwdSync,
-      azureTests.azureLicense,
       azureTests.azureLicense,
       azureTests.azurePwdSync,
       azureTests.azureAdInSync,
