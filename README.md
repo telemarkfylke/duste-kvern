@@ -27,6 +27,9 @@ Henter brukere fra lokalt ad - kverner dem sammen og laster opp i mongodb (det e
 
 ## IDEER TIL TESTER
 - Sjekk om eleven er i sperremodus
+- Sjekke om elev / lærer har skoleforhold i begge fylker! FEIDE-test  "eduPersonOrgUnitDN": [
+    "OU=Thor Heyerdahl videregående skole,OU=Units,OU=Feide,DC=vtfk,DC=no"
+  ], - sof03051 elev har skole i begge fylker, ver1809 - lærer skoler i begge fylker
 
 
 
