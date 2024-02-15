@@ -39,7 +39,6 @@ const systemsAndTests = [
       adTests.adFnr,
       adTests.adStateLicense,
       adTests.adExt4,
-      adTests.adExt9,
       adTests.adExt14,
       adTests.adGroupMembership
     ]
