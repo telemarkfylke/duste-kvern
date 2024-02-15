@@ -29,7 +29,7 @@ const systemsAndTests = [
           const data = {
             userPrincipalName: systemData.userPrincipalName
           }
-          if (!data.userPrincipalName.endsWith('@vtfk.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+          if (!data.userPrincipalName.endsWith('@skole.vtfk.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
           return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data })
         }
       },
@@ -65,7 +65,7 @@ const systemsAndTests = [
           }
           if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
           if (!data.userPrincipalName.endsWith('@skole.vtfk.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
-          return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data })
+          return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data })
         }
       },
       azureTests.azureAktiveringElev,
