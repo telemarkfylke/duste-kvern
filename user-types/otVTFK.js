@@ -14,6 +14,24 @@ const systemsAndTests = [
     // Tester
     tests: [
       {
+        id: 'ad-enabled',
+        title: 'Er kontoen aktiv',
+        description: 'Sjekker at ad-konto er enabled',
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            enabled: systemData.enabled
+          }
+          if (!data.enabled) return error({ message: 'Konto er ikke aktivert 😬', raw: data, solution: 'Bruker må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}`' })
+          return success({ message: 'Kontoen er aktivert', raw: data })
+        }
+      },
+      {
         id: 'ad-upn',
         title: 'UPN er korrekt',
         description: 'Sjekker at UPN er korrekt',
@@ -28,7 +46,7 @@ const systemsAndTests = [
           const data = {
             userPrincipalName: systemData.userPrincipalName
           }
-          if (!data.userPrincipalName.endsWith('@skole.vtfk.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+          if (!data.userPrincipalName.endsWith('@ot.vtfk.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
           return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data })
         }
       },
@@ -47,6 +65,24 @@ const systemsAndTests = [
     // Tester
     tests: [
       {
+        id: 'azure-enabled',
+        title: 'Er kontoen aktiv',
+        description: 'Sjekker at azure-konto (entra ID) er enabled',
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            enabled: systemData.accountEnabled
+          }
+          if (!data.enabled) return error({ message: 'Konto er ikke aktivert 😬', raw: data, solution: `Bruker må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+          return success({ message: 'Kontoen er aktivert', raw: data })
+        }
+      },
+      {
         id: 'azure_upn',
         title: 'UPN er korrekt',
         description: 'Sjekker at UPN er korrekt for ansatt',
@@ -61,7 +97,7 @@ const systemsAndTests = [
             userPrincipalName: systemData.userPrincipalName
           }
           if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-          if (!data.userPrincipalName.endsWith('@skole.vtfk.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+          if (!data.userPrincipalName.endsWith('@ot.vtfk.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
           return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data })
         }
       },
@@ -77,7 +113,6 @@ const systemsAndTests = [
   {
     id: 'equitrac',
     name: systemNames.equitrac,
-    description: 'Eeieie bøbaaja',
     // Tester
     tests: [
       equitracTests.equitracLocked,

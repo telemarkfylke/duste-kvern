@@ -14,6 +14,24 @@ const systemsAndTests = [
     // Tester
     tests: [
       {
+        id: 'ad-enabled',
+        title: 'Er kontoen aktiv',
+        description: 'Sjekker at ad-konto er enabled',
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            enabled: systemData.enabled
+          }
+          if (!data.enabled) return error({ message: 'Konto er ikke aktivert 😬', raw: data, solution: `Bruker må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+          return success({ message: 'Kontoen er aktivert', raw: data })
+        }
+      },
+      {
         id: 'ad-upn',
         title: 'UPN er korrekt',
         description: 'Sjekker at UPN er korrekt',
@@ -46,6 +64,24 @@ const systemsAndTests = [
     name: systemNames.azure,
     // Tester
     tests: [
+      {
+        id: 'azure-enabled',
+        title: 'Er kontoen aktiv',
+        description: 'Sjekker at azure-konto (entra ID) er enabled',
+        waitForAllData: false,
+        /**
+         *
+         * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+         * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+         */
+        test: (user, systemData) => {
+          const data = {
+            enabled: systemData.accountEnabled
+          }
+          if (!data.enabled) return error({ message: 'Konto er ikke aktivert 😬', raw: data, solution: `Bruker må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+          return success({ message: 'Kontoen er aktivert', raw: data })
+        }
+      },
       {
         id: 'azure_upn',
         title: 'UPN er korrekt',
