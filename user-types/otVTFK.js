@@ -27,7 +27,7 @@ const systemsAndTests = [
           const data = {
             enabled: systemData.enabled
           }
-          if (!data.enabled) return error({ message: 'Konto er ikke aktivert 😬', raw: data, solution: `Bruker må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+          if (!data.enabled) return error({ message: 'Konto er ikke aktivert 😬', raw: data, solution: `Bruker må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
           return success({ message: 'Kontoen er aktivert', raw: data })
         }
       },
@@ -53,7 +53,6 @@ const systemsAndTests = [
       adTests.adHvilkenOU,
       adTests.adLocked,
       adTests.adFnr,
-      adTests.adStateLicense,
       adTests.adExt4,
       adTests.adExt14,
       adTests.adGroupMembership
