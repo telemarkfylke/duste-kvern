@@ -110,15 +110,6 @@ const systemsAndTests = [
     ]
   },
   {
-    id: 'equitrac',
-    name: systemNames.equitrac,
-    // Tester
-    tests: [
-      equitracTests.equitracLocked,
-      equitracTests.equitracEmailEqualUpn
-    ]
-  },
-  {
     id: 'sync',
     name: systemNames.sync,
     // Tester
