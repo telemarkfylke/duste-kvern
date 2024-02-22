@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 module.exports = {
+  NODE_ENV: process.env.NODE_ENV || 'production',
   GET_NEW_REPORTS_INTERVAL: process.env.GET_READY_REQUESTS_INTERVAL || 1000,
   RUN_READY_REPORTS_INTERVAL: process.env.RUN_READY_REQUESTS_INTERVAL || 1000,
   COUNTY_OU: process.env.COUNTY_OU,
