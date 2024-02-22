@@ -5,7 +5,7 @@ module.exports = {
   feide: 'FEIDE',
   fintLarer: 'Visma InSchool',
   sds: 'SDS Teams LMS',
-  sync: 'Forrige synkroniseringstidpunkt',
+  sync: 'Forrige synkroniseringstidspunkt',
   vigoot: 'VIGO OT',
   vigolaerling: 'VIGO Opplæring (Lærling)',
   visma: 'Visma HRM',

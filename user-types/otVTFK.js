@@ -2,7 +2,6 @@ const { success, error } = require('../lib/test-result')
 const systemNames = require('../systems/system-names')
 const adTests = require('../systems/ad/common-tests')
 const azureTests = require('../systems/azure/common-tests')
-const equitracTests = require('../systems/equitrac/common-tests')
 const syncTests = require('../systems/sync/common-tests')
 const feideTests = require('../systems/feide/common-tests')
 
@@ -47,7 +46,7 @@ const systemsAndTests = [
             userPrincipalName: systemData.userPrincipalName
           }
           if (!data.userPrincipalName.endsWith('@ot.vtfk.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
-          return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data })
+          return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for bruker', raw: data })
         }
       },
       adTests.adHvilkenOU,
@@ -84,7 +83,7 @@ const systemsAndTests = [
       {
         id: 'azure_upn',
         title: 'UPN er korrekt',
-        description: 'Sjekker at UPN er korrekt for ansatt',
+        description: 'Sjekker at UPN er korrekt for bruker',
         waitForAllData: false,
         /**
          *

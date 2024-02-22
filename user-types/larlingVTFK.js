@@ -47,7 +47,7 @@ const systemsAndTests = [
             userPrincipalName: systemData.userPrincipalName
           }
           if (!data.userPrincipalName.endsWith('@skole.vtfk.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
-          return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data })
+          return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for bruker', raw: data })
         }
       },
       adTests.adHvilkenOU,
@@ -84,7 +84,7 @@ const systemsAndTests = [
       {
         id: 'azure_upn',
         title: 'UPN er korrekt',
-        description: 'Sjekker at UPN er korrekt for ansatt',
+        description: 'Sjekker at UPN er korrekt for bruker',
         waitForAllData: false,
         /**
          *
