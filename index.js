@@ -15,7 +15,7 @@
     },
     localLogger: createLocalLogger('duste-kvern')
   })
-  
+
   let readyForNewReports = true
 
   const getNewReports = async () => {
