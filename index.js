@@ -1,11 +1,22 @@
 (async () => {
   const { MONGODB, GET_NEW_REPORTS_INTERVAL, RUN_READY_REPORTS_INTERVAL } = require('./config')
   const { getMongoClient } = require('./lib/mongo-client')
-  const { logger } = require('@vtfk/logger')
+  const { logger, logConfig } = require('@vtfk/logger')
   const Cache = require('file-system-cache').default
   const { handleDustReport } = require('./lib/handle-dust-report')
+  const { createLocalLogger } = require('./lib/local-logger')
 
   const fileCacheQueue = Cache({ basePath: './.queue-file-cache', hash: 'sha1' })
+
+  // Set up logging
+  logConfig({
+    prefix: 'queueAndHandleReadyDocuments',
+    teams: {
+      onlyInProd: false
+    },
+    localLogger: createLocalLogger('duste-kvern')
+  })
+  
 
   let readyForNewReports = true
 
