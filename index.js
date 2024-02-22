@@ -10,14 +10,12 @@
 
   // Set up logging
   logConfig({
-    prefix: 'queueAndHandleReadyDocuments',
     teams: {
       onlyInProd: false
     },
     localLogger: createLocalLogger('duste-kvern')
   })
   
-
   let readyForNewReports = true
 
   const getNewReports = async () => {
