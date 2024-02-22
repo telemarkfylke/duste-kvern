@@ -1,11 +1,24 @@
 # duste-kvern
 Henter jobber fra db, kverner data, og oppdaterer i db
 
-##
-VT-alle-lærere i update-db-users (ps1 scriptet) må fikses for å sjekke om det er en lærer ???
+## Server og servicebruker
+### Moduler og åpninger på server
+- Get-AdUser
+- NewtonsoftJSON.dll (spør en bjørn)
+- Nodejs
+- Powershell
+- Nettverksåpning mot mongodb-cluster
+- Nettverksåpning mot BAS-server (når kjørte IDM-et siste-filer)
+- Nettverksåpning mot equitrac
+- Nettverksåpning mot FEIDE-server (ad)
+### Tilganger for servicebruker som trengs
+- Equitrac (spør blekkulf-banden om bruker kan legges til i equitrac for å lese data / hente brukere)
+- Lese filer på nettverksshare (hvis noen filer ligger der)
+- Lese employeeNumber
 
 ## update-db-users
 Henter brukere fra lokalt ad - kverner dem sammen og laster opp i mongodb (det er brukerne man får opp når man søker i DUST) - kjøres som egen scheduled task et par ganger om dan
+Sorteres på ulike brukertyper (ansattVFYLKE, ansattVTFK, elev osv...)
 
 ## duste-kverna
 ### index.js
