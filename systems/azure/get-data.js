@@ -11,6 +11,11 @@ const callGraph = async (resource, accessToken) => {
   return data
 }
 
+const batchGraph = async (batchRequest, accessToken) => {
+  const { data, headers } = await axios.post(`${GRAPH.URL}/v1.0/$batch`, batchRequest, { headers: { Authorization: `Bearer ${accessToken}` } })
+  return data
+}
+
 const getData = async (user) => {
   // Hvis OU er VFYLKE/TFYLKE - hent fra ny tenant, hvis ikke hent fra vtfk
   let clientConfig
@@ -61,28 +66,74 @@ const getData = async (user) => {
     'userPrincipalName'
   ].join(',')
 
-  logger('info', ['azure-get-data', 'fetching user data from graph'])
-  const userData = await callGraph(`v1.0/users/${user.userPrincipalName}?$select=${userProperties}`, accessToken)
+  const today = new Date()
+  const threeDaysBack = new Date(new Date().setDate(today.getDate() - 3))
 
-  logger('info', ['azure-get-data', 'fetching groups for user'])
-  const graphUserGroups = await callGraph(`v1.0/users/${user.userPrincipalName}/transitiveMemberOf?$top=999`, accessToken)
+  const batchRequest = {
+    requests: [
+      {
+        id: '1',
+        method: 'GET',
+        url: `/users/${user.userPrincipalName}?$select=${userProperties}` // Brukerens data
+      },
+      {
+        id: '2',
+        method: 'GET',
+        url: `/users/${user.userPrincipalName}/transitiveMemberOf?$top=999` // Brukerens grupper
+      },
+      {
+        id: '3',
+        method: 'GET',
+        url: `/users/${user.userPrincipalName}/authentication/methods` // Auth metoder
+      },
+      {
+        id: '4',
+        method: 'GET',
+        url: `/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode eq 0 and createdDateTime gt ${entraIdDate(threeDaysBack)}&$top=1` // last succesful signins
+      },
+      {
+        id: '5',
+        method: 'GET',
+        url: `/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode eq 50126 and createdDateTime gt ${entraIdDate()}&$top=30` // error signins (pwd kluss)
+      },
+      {
+        id: '6',
+        method: 'GET',
+        url: `/identityProtection/riskyUsers?$filter=userPrincipalName eq '${user.userPrincipalName}' and riskState ne 'dismissed'` // risky user check
+      }
+    ]
+  }
+
+  logger('info', ['azure-get-data', 'fetching data from ms graph'])
+  const { responses } = await batchGraph(batchRequest, accessToken)
+  const failedRequest = responses.find(response => response.status !== 200 && response.status !== 429)
+  if (failedRequest) {
+    throw new Error(`Batch request feilet.. id: ${failedRequest.id}, Message: ${failedRequest.body?.error?.message}, Code: ${failedRequest.body?.error?.code}, status: ${failedRequest.status}`)
+  }
+  const retryRequests = responses.filter(response => response.status === 429)
+  if (retryRequests.length > 0) {
+    /*
+    retryAfters = retryRequests.map(req => req.headers['Retry-after'])
+    ids = retryRequests.map(req => req.id)
+    */
+    //throw new Error(`Batch request fikk retry-after.. ider: ${ids.join(', ')}, retryAfters: ${retryAfters.join(', ')} json: ${JSON.stringify(retryRequests)}`)
+    throw new Error(`Aiaai, for mange spørringer mot MS Graph på en gang - her må vi bare vente altså, ta en kaffe...`)
+  }
+
+  const userData = responses.find(res => res.id === '1').body
+
+  const graphUserGroups = responses.find(res => res.id === '2').body
   const graphUserGroupsDisplayName = (graphUserGroups?.value && graphUserGroups.value.map(group => group.displayName).sort()) || []
   const graphSDSGroups = (graphUserGroups && graphUserGroups.value && Array.isArray(graphUserGroups.value) && graphUserGroups.value.filter(group => group.mailNickname && group.mailNickname.startsWith('Section_'))) || []
 
-  logger('info', ['azure-get-data', 'fetching authentication methods for user'])
-  const graphUserAuth = await callGraph(`v1.0/users/${user.userPrincipalName}/authentication/methods`, accessToken)
+  const graphUserAuth = responses.find(res => res.id === '3').body
   const graphUserAuthMethods = graphUserAuth?.value && graphUserAuth.value.length && graphUserAuth.value.filter(method => !method['@odata.type'].includes('passwordAuthenticationMethod'))
 
-  const today = new Date()
-  const threeDaysBack = new Date(new Date().setDate(today.getDate() - 3))
-  logger('info', ['azure-get-data', 'fetching succesful signins for user'])
-  const userSignInSuccess = await callGraph(`v1.0/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode eq 0 and createdDateTime gt ${entraIdDate(threeDaysBack)}&$top=1`, accessToken)
+  const userSignInSuccess = responses.find(res => res.id === '4').body
 
-  logger('info', ['azure-get-data', 'fetching error signins for user'])
-  const userSignInErrors = await callGraph(`v1.0/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode eq 50126 and createdDateTime gt ${entraIdDate()}&$top=30`, accessToken)
+  const userSignInErrors = responses.find(res => res.id === '5').body
 
-  logger('info', ['azure-get-data', 'fetching riskyuser data for user'])
-  const graphRiskyUser = await callGraph(`v1.0/identityProtection/riskyUsers?$filter=userPrincipalName eq '${user.userPrincipalName}' and riskState ne 'dismissed'`, accessToken)
+  const graphRiskyUser = responses.find(res => res.id === '6').body
 
   return {
     ...userData,
