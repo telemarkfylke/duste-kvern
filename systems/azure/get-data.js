@@ -4,6 +4,8 @@ const axios = require('axios').default
 const { entraIdDate } = require('../../lib/helpers/date-time-output')
 const { logger } = require('@vtfk/logger')
 
+// Skriv om til en batch request!
+
 const callGraph = async (resource, accessToken) => {
   const { data } = await axios.get(`${GRAPH.URL}/${resource}`, { headers: { Authorization: `Bearer ${accessToken}` } })
   return data
