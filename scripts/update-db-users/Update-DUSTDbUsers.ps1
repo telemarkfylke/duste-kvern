@@ -1,4 +1,7 @@
-﻿Function GetADUser {
+﻿$envPath = Join-Path -Path $PSScriptRoot -ChildPath ".\envs.ps1"
+. $envPath
+
+Function GetADUser {
     param(
         [ValidateSet("login.top.no","skole.top.no")]
         [Parameter(Mandatory = $true)]
@@ -35,9 +38,6 @@
 
 
 Function Update-DUSTADUsers {
-    $filterVekkExt14 = "TFK"
-    $countyOU = "VFYLKE"
-
     $adUsers = @()
     Write-Host "Starting AD Users : $(Get-Date -Format 'HH:mm:ss')" -Verbose
 
