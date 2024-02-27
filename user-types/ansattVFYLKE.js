@@ -6,6 +6,7 @@ const vismaTests = require('../systems/visma/common-tests')
 const equitracTests = require('../systems/equitrac/common-tests')
 const syncTests = require('../systems/sync/common-tests')
 const feideTests = require('../systems/feide/common-tests')
+const { APPREG: { TENANT_NAME } } = require('../config')
 
 const systemsAndTests = [
   // System
@@ -29,7 +30,7 @@ const systemsAndTests = [
           const data = {
             userPrincipalName: systemData.userPrincipalName
           }
-          if (!data.userPrincipalName.endsWith('@vestfoldfylke.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+          if (!data.userPrincipalName.endsWith(`@${TENANT_NAME}.no`)) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
           return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data })
         }
       },
@@ -64,7 +65,7 @@ const systemsAndTests = [
             userPrincipalName: systemData.userPrincipalName
           }
           if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-          if (!data.userPrincipalName.endsWith('@vestfoldfylke.no')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+          if (!data.userPrincipalName.endsWith(`@${TENANT_NAME}.no`)) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
           return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data })
         }
       },
