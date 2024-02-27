@@ -194,12 +194,12 @@ const adExt9 = {
 }
 
 /**
- * Sjekker om bruker har extensionAttribute14, og at den har verdien VFK
+ * Sjekker om bruker har extensionAttribute14, og at den har verdien TFK
  */
 const adExt14 = {
   id: 'ad-ext14',
-  title: 'Har extensionAttribute14 lik VFK',
-  description: 'Sjekker om bruker har extensionAttribute14, og at den har verdien VFK',
+  title: 'Har extensionAttribute14 lik TFK',
+  description: 'Sjekker om bruker har extensionAttribute14, og at den har verdien TFK',
   waitForAllData: false,
   /**
    *
@@ -207,8 +207,8 @@ const adExt14 = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData.extensionAttribute14 || systemData.extensionAttribute14 !== 'VFK') return error({ message: 'VFK mangler i extensionAttribute14 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
-    return success({ message: 'Har VFK i extensionAttribute14' })
+    if (!systemData.extensionAttribute14 || systemData.extensionAttribute14 !== 'TFK') return error({ message: 'TFK mangler i extensionAttribute14 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
+    return success({ message: 'Har TFK i extensionAttribute14' })
   }
 }
 
