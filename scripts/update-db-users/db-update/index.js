@@ -37,6 +37,11 @@
     process.exit(2)
   }
 
+  // Create index on searchfields for fun
+  if (updateType === 'users') {
+    await db.createIndex({ displayNameLowerCase: 1, samAccountName: 1, userPrincipalName: 1 }, {background:true} )
+  }
+
   console.log('lib', 'update-database', updateType, 'finished')
   process.exit(0)
 })()
