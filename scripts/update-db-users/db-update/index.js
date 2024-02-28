@@ -40,9 +40,9 @@
 
   // Create index on searchfields for fun
   if (updateType === 'users') {
-    await db.createIndex({ displayNameLowerCase }, { background: true })
-    await db.createIndex({ samAccountName }, { background: true })
-    await db.createIndex({ userPrincipalName }, { background: true })
+    await db.createIndex({ displayNameLowerCase: 1 }, { background: true })
+    await db.createIndex({ samAccountName: 1 }, { background: true })
+    await db.createIndex({ userPrincipalName: 1 }, { background: true })
   }
 
   console.log('lib', 'update-database', updateType, 'finished')
