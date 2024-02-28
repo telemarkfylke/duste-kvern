@@ -6,7 +6,7 @@
   }
   const updateType = args[0].toLowerCase()
   const mongo = require('./lib/mongo')
-  const data = require(`./data/${updateType}.json`)
+  let data = require(`./data/${updateType}.json`)
   const db = await mongo(updateType)
 
   try {
@@ -15,6 +15,17 @@
   } catch (error) {
     console.warn('lib', 'update-database', updateType, 'unable to clear collection', error)
     process.exit(1)
+  }
+
+  // Add lowercase displayName for indexed search in mongodb on users
+  if (updateType === 'users') {
+    data = data.map(user => {
+      if (!user.displayName) return user
+      return {
+        ...user,
+        displayNameLowerCase: user.displayName.toLowerCase()
+      }
+    })
   }
 
   console.log('lib', 'update-database', updateType, 'insert data', data.length, 'start')
