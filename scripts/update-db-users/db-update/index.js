@@ -11,7 +11,8 @@
 
   try {
     console.log('lib', 'update-database', updateType, 'clear collection')
-    await db.deleteMany({})
+    // await db.deleteMany({})
+    await db.drop()
   } catch (error) {
     console.warn('lib', 'update-database', updateType, 'unable to clear collection', error)
     process.exit(1)
