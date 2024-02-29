@@ -4,15 +4,13 @@ const axios = require('axios').default
 const { entraIdDate } = require('../../lib/helpers/date-time-output')
 const { logger } = require('@vtfk/logger')
 
-// Skriv om til en batch request!
-
 const callGraph = async (resource, accessToken) => {
   const { data } = await axios.get(`${GRAPH.URL}/${resource}`, { headers: { Authorization: `Bearer ${accessToken}` } })
   return data
 }
 
 const batchGraph = async (batchRequest, accessToken) => {
-  const { data, headers } = await axios.post(`${GRAPH.URL}/v1.0/$batch`, batchRequest, { headers: { Authorization: `Bearer ${accessToken}` } })
+  const { data } = await axios.post(`${GRAPH.URL}/v1.0/$batch`, batchRequest, { headers: { Authorization: `Bearer ${accessToken}` } })
   return data
 }
 
@@ -99,7 +97,7 @@ const getData = async (user) => {
       {
         id: '6',
         method: 'GET',
-        url: `/identityProtection/riskyUsers?$filter=userPrincipalName eq '${user.userPrincipalName}' and riskState ne 'dismissed'` // risky user check
+        url: `/identityProtection/riskyUsers?$filter=userPrincipalName eq '${user.userPrincipalName}' and riskState ne 'dismissed' and riskState ne 'remediated'` // risky user check
       }
     ]
   }
@@ -116,8 +114,8 @@ const getData = async (user) => {
     retryAfters = retryRequests.map(req => req.headers['Retry-after'])
     ids = retryRequests.map(req => req.id)
     */
-    //throw new Error(`Batch request fikk retry-after.. ider: ${ids.join(', ')}, retryAfters: ${retryAfters.join(', ')} json: ${JSON.stringify(retryRequests)}`)
-    throw new Error(`Aiaai, for mange spørringer mot MS Graph på en gang - her må vi bare vente altså, ta en kaffe...`)
+    // throw new Error(`Batch request fikk retry-after.. ider: ${ids.join(', ')}, retryAfters: ${retryAfters.join(', ')} json: ${JSON.stringify(retryRequests)}`)
+    throw new Error('Aiaai, for mange spørringer mot MS Graph på en gang - her må vi bare vente altså, ta en kaffe...')
   }
 
   const userData = responses.find(res => res.id === '1').body

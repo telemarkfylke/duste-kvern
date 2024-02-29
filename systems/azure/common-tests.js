@@ -282,7 +282,7 @@ const azureRiskyUser = {
     const data = {
       riskyUser: systemData.graphRiskyUser
     }
-    if (data.riskyUser.length > 0) return error({ message: `Brukeren har havna i risky users, på nivå ${data.riskyUser.riskLevel} 😱`, solution: 'Send sak til sikkerhetsfolket', raw: data })
+    if (data.riskyUser.length > 0) return error({ message: `Brukeren har havna i risky users, på nivå ${data.riskyUser.map(risk => risk.riskLevel).join('og ')} 😱`, solution: 'Send sak til sikkerhetsfolket', raw: data })
     if (user.displayName === 'Bjørn Kaarstein') return warn({ message: 'Brukeren er ikke i risky users, men ansees likevel som en risiko 🐻', solution: 'Send sak til viltnemnda' })
     return success({ message: 'Brukeren er ikke i risky users' })
   }
