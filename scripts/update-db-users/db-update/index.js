@@ -22,9 +22,11 @@
   if (updateType === 'users') {
     data = data.map(user => {
       if (!user.displayName) return user
+      if (!user.surName) return user
       return {
         ...user,
-        displayNameLowerCase: user.displayName.toLowerCase()
+        displayNameLowerCase: user.displayName.toLowerCase(),
+        surNameLowerCase: user.surName.toLowerCase()
       }
     })
   }
@@ -41,6 +43,7 @@
   // Create index on searchfields for fun
   if (updateType === 'users') {
     await db.createIndex({ displayNameLowerCase: 1 }, { background: true })
+    await db.createIndex({ surNameLowerCase: 1 }, { background: true })
     await db.createIndex({ samAccountName: 1 }, { background: true })
     await db.createIndex({ userPrincipalName: 1 }, { background: true })
   }
