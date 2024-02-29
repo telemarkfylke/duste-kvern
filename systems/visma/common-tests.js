@@ -231,10 +231,20 @@ const vismaPermisjon = {
     const { positions } = raw
     if (positions.length === 0) return warn({ message: 'Ikke så mange stillinger å sjekke her gitt..', raw })
 
-    const leavePositions = positions.filter(position => position.leave)
+    const leavePositions = positions.filter(position => position.leave).map(position => {
+      return {
+        primaryPosition: position['@isPrimaryPosition'] && position['@isPrimaryPosition'].toLowerCase() === 'true',
+        leave: position.leave,
+        name: position.chart.unit['@name'],
+        title: position.positionInfo.positionCode['@name'],
+        positionPercentage: position.positionPercentage,
+        startDate: position.positionStartDate,
+        endDate: position.positionEndDate
+      }
+    })
 
-    if (leavePositions.length > 0) return warn({ message: `Bruker har permisjon fra ${leavePositions.length} stilling${leavePositions.length > 1 ? 'er' : ''}`, solution: 'Dette er ikke nødvendigvis en feil, men kan være nyttig info - se data for mer info', raw: leavePositions.map(pos => pos.leave) })
-    return success({ message: 'Bruker har ikke permisjon, og jobber nok flittig på 💪' })
+    if (leavePositions.length > 0) return warn({ message: `Bruker har permisjon fra ${leavePositions.length} stilling${leavePositions.length > 1 ? 'er' : ''}`, solution: 'Dette er ikke nødvendigvis en feil, men kan være nyttig info - se data for mer info', raw: leavePositions })
+    return success({ message: 'Bruker har ikke permisjon, og jobber på uten pause 💪' })
   }
 }
 
