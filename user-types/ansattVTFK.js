@@ -106,7 +106,8 @@ const systemsAndTests = [
       vismaTests.vismaMobile,
       vismaTests.vismaRopebokstaver,
       vismaTests.vismaStillinger,
-      vismaTests.vismaSlutterBruker
+      vismaTests.vismaSlutterBruker,
+      vismaTests.vismaPermisjon
     ]
   },
   {

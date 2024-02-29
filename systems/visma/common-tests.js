@@ -212,4 +212,30 @@ const vismaSlutterBruker = {
   }
 }
 
-module.exports = { vismaPersonFinnes, vismaAktivStilling, vismaKategori, vismaFnr, vismaOrgTilknytning, vismaMobile, vismaRopebokstaver, vismaStillinger, vismaSlutterBruker }
+/**
+ * Er bruker i permisjon?
+ */
+const vismaPermisjon = {
+  id: 'visma_permisjon',
+  title: 'Har bruker permisjon',
+  description: 'Har brukeren permisjon?',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    const { status, raw } = repackVisma.getActivePosition(systemData)
+    if (!['ok', 'warning'].includes(status)) return warn({ message: 'Ikke så mange stillinger å sjekke her gitt..', raw })
+    const { positions } = raw
+    if (positions.length === 0) return warn({ message: 'Ikke så mange stillinger å sjekke her gitt..', raw })
+
+    const leavePositions = positions.filter(position => position.leave)
+
+    if (leavePositions.length > 0) return warn({ message: `Bruker har permisjon fra ${leavePositions.length} stilling${leavePositions.length > 1 ? 'er' : ''}`, solution: 'Dette er ikke nødvendigvis en feil, men kan være nyttig info - se data for mer info', raw: leavePositions.map(pos => pos.leave) })
+    return success({ message: 'Bruker har ikke permisjon, og jobber nok flittig på 💪' })
+  }
+}
+
+module.exports = { vismaPersonFinnes, vismaAktivStilling, vismaKategori, vismaFnr, vismaOrgTilknytning, vismaMobile, vismaRopebokstaver, vismaStillinger, vismaSlutterBruker, vismaPermisjon }
