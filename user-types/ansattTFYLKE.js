@@ -73,6 +73,7 @@ const systemsAndTests = [
       azureTests.azureUpnEqualsMail,
       azureTests.azureLicense,
       azureTests.azurePwdSync,
+      azureTests.azureMfa,
       azureTests.azureAdInSync,
       azureTests.azureGroups,
       azureTests.azureRiskyUser,
@@ -92,7 +93,8 @@ const systemsAndTests = [
       vismaTests.vismaMobile,
       vismaTests.vismaRopebokstaver,
       vismaTests.vismaStillinger,
-      vismaTests.vismaSlutterBruker
+      vismaTests.vismaSlutterBruker,
+      vismaTests.vismaPermisjon
     ]
   },
   {
