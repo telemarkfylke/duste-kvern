@@ -119,7 +119,7 @@ const vismaMobile = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData.contactInfo?.mobilePhone) return warn({ message: 'Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS', solution: `Bruker må selv sette telefonnummer på MinSide i ${systemNames.visma}` })
+    if (!systemData.contactInfo?.mobilePhone && !systemData.contactInfo?.privateMobilePhone) return warn({ message: 'Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS', solution: `Bruker må selv sette telefonnummer på MinSide i ${systemNames.visma}` })
     return success({ message: 'Bruker har fylt ut ☎️ på MinSide' })
   }
 }
