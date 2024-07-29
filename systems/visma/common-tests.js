@@ -119,7 +119,7 @@ const vismaMobile = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData.contactInfo?.mobilePhone) return warn({ message: 'Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS', solution: `Bruker må selv sette telefonnummer på MinSide i ${systemNames.visma}` })
+    if (!systemData.contactInfo?.mobilePhone && !systemData.contactInfo?.privateMobilePhone) return warn({ message: 'Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS', solution: `Bruker må selv sette telefonnummer på MinSide i ${systemNames.visma}` })
     return success({ message: 'Bruker har fylt ut ☎️ på MinSide' })
   }
 }
@@ -164,7 +164,7 @@ const vismaStillinger = {
     const { status, raw } = repackVisma.getActivePosition(systemData)
     if (!['ok', 'warning'].includes(status)) return warn({ message: 'Ikke så mange stillinger å sjekke her gitt..', raw })
     const { positions } = raw
-    if (positions.length === 0) return warn({ message: 'Ikke så mange stillinger å sjekke her gitt..', raw })
+    if (!positions || positions.length === 0) return warn({ message: 'Ikke så mange stillinger å sjekke her gitt..', raw })
 
     const primaryPositions = positions.filter(position => position['@isPrimaryPosition'] && position['@isPrimaryPosition'].toLowerCase() === 'true')
     const secondaryPositions = positions.filter(position => !position['@isPrimaryPosition'] || position['@isPrimaryPosition'].toLowerCase() === 'false')
@@ -229,7 +229,7 @@ const vismaPermisjon = {
     const { status, raw } = repackVisma.getActivePosition(systemData)
     if (!['ok', 'warning'].includes(status)) return warn({ message: 'Ikke så mange stillinger å sjekke her gitt..', raw })
     const { positions } = raw
-    if (positions.length === 0) return warn({ message: 'Ikke så mange stillinger å sjekke her gitt..', raw })
+    if (!positions || positions.length === 0) return warn({ message: 'Ikke så mange stillinger å sjekke her gitt..', raw })
 
     const leavePositions = positions.filter(position => position.leave).map(position => {
       return {
