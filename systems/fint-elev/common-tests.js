@@ -135,6 +135,9 @@ const fintStudentProgramomrader = {
   }
 }
 
+/**
+ * Sjekker at fødselsnummeret er likt i AD og ViS
+ */
 const fintFodselsnummer = {
   id: 'fint_fodselsnummer',
   title: 'Fødselsnummer er likt i AD',

@@ -35,9 +35,7 @@ const systemsAndTests = [
       azureTests.azureAktiveringElev,
       azureTests.azureUpnEqualsMail,
       azureTests.azureLicense,
-      azureTests.azurePwdSync,
       azureTests.azureMfa,
-      azureTests.azureAdInSync,
       azureTests.azureGroups,
       azureTests.azureRiskyUser,
       azureTests.azureLastSignin
@@ -49,7 +47,6 @@ const systemsAndTests = [
     // Tester
     tests: [
       visTests.fintStudentFeidenavn,
-      visTests.fintFodselsnummer,
       visTests.fintGyldigFodselsnummer,
       visTests.fintStudentSkoleforhold,
       visTests.fintStudentProgramomrader,
