@@ -15,8 +15,16 @@ const batchGraph = async (batchRequest, accessToken) => {
 }
 
 const getData = async (user) => {
-  // Hvis OU er VFYLKE/TFYLKE - hent fra ny tenant, hvis ikke hent fra vtfk
-  let clientConfig
+  const clientConfig = {
+    clientId: APPREG.CLIENT_ID,
+    tenantId: APPREG.TENANT_ID,
+    tenantName: APPREG.TENANT_NAME,
+    clientSecret: APPREG.CLIENT_SECRET,
+    scope: GRAPH.SCOPE
+  }
+  /*
+  // Hvis OU er VFYLKE/TFYLKE - hent fra ny tenant, hvis ikke hent fra vtfk. Inte nu lengre - alle fra VFYLKE/TFYLKE
+
   if (user.countyOU === COUNTY_OU) {
     clientConfig = {
       clientId: APPREG.CLIENT_ID,
@@ -34,6 +42,7 @@ const getData = async (user) => {
       scope: GRAPH.SCOPE
     }
   }
+    */
   const accessToken = await getMsalToken(clientConfig)
 
   const userProperties = [

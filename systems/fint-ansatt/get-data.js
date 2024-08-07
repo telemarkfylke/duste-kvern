@@ -18,7 +18,7 @@ const getData = async (user) => {
   }
   const accessToken = await getMsalToken(clientConfig)
 
-  const fintEmployee = await callFintFolk(`employee/ansattnummer/${user.extensionAttribute9}`, accessToken)
+  const fintEmployee = await callFintFolk(`employee/ansattnummer/${user.onPremisesExtensionAttributes.extensionAttribute9}`, accessToken)
 
   return fintEmployee
 }

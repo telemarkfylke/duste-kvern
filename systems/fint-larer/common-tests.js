@@ -1,8 +1,28 @@
-const { error, warn, success } = require('../../lib/test-result')
+const { error, warn, success, ignore } = require('../../lib/test-result')
 const systemNames = require('../system-names')
+const { APPREG: { TENANT_NAME } } = require('../../config')
 
-const isTeacher = (user) => {
-  return user.feide
+const teacherGroupName = `${TENANT_NAME === 'vestfoldfylke' ? '*V-VFK-ALLE-LÆRERE*' : '*T-TFK-ALLE-LÆRERE*'}`
+
+/**
+ * Sjekker om brukeren har VIS-data
+ */
+const fintData = {
+  id: 'fint_data',
+  title: `Har bruker i ${systemNames.fintLarer}`,
+  description: `Sjekker om brukeren har bruker i ${systemNames.fintLarer}`,
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    if (!systemData && !user.isTeacher) return success({ message: `Er ikke lærer og har ikke ${systemNames.fintLarer} bruker` })
+    if (!systemData && user.isTeacher) return error({ message: `Har ikke bruker i ${systemNames.fintLarer}, men er medlem av ${teacherGroupName}`, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (systemData && !user.isTeacher) return success({ message: `Har bruker i ${systemNames.fintLarer} (men er ikke lærer, sikkert en rådgiver ellerno)` })
+    return success({ message: `Har bruker i ${systemNames.fintLarer}` })
+  }
 }
 
 /**
@@ -19,6 +39,8 @@ const fintKontaktlarer = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     let kontaktlarergrupper = []
     systemData.undervisningsforhold.forEach(forhold => {
       const kGrupper = forhold.kontaktlarergrupper.filter(kGruppe => kGruppe.aktiv).map(kGruppe => { return { systemId: kGruppe.systemId, navn: kGruppe.navn, skole: kGruppe.skole.navn } })
@@ -43,6 +65,8 @@ const fintDuplicateKontaktlarergrupper = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     let kontaktlarergrupper = []
     systemData.undervisningsforhold.forEach(forhold => {
       const kGrupper = forhold.kontaktlarergrupper.filter(kGruppe => kGruppe.aktiv).map(kGruppe => { return { systemId: kGruppe.systemId, navn: kGruppe.navn, skole: kGruppe.skole.navn } })
@@ -77,8 +101,9 @@ const fintSkoleforhold = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     const skoleforhold = systemData.undervisningsforhold.filter(forhold => forhold.aktiv).map(forhold => forhold.skole)
-    if (!isTeacher(user) && skoleforhold.length === 0) warn({ message: 'Har ingen skoleforhold, men lever i VTFK', solution: `Dette kan være korrekt, men om ansatt skal ha skoleforhold rettes det i ${systemNames.fintLarer}` })
     if (skoleforhold.length === 0) return error({ message: 'Har ingen skoleforhold 😬', solution: `Rettes i ${systemNames.fintLarer}` })
     return success({ message: `Har ${skoleforhold.length} skoleforhold`, raw: skoleforhold })
   }
@@ -98,13 +123,15 @@ const fintUndervisningsgrupper = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     let undervisningsgrupper = []
     systemData.undervisningsforhold.forEach(forhold => {
       const uGrupper = forhold.undervisningsgrupper.filter(uGruppe => uGruppe.aktiv).map(uGruppe => { return { systemId: uGruppe.systemId, navn: uGruppe.navn, skole: uGruppe.skole.navn } })
       undervisningsgrupper = [...undervisningsgrupper, ...uGrupper]
     })
-    if (!isTeacher(user) && undervisningsgrupper.length > 0) return error({ message: 'Bruker har ikke medlemskap i *VT-ALLE-LÆRERE*, men har undervisningsgrupper', solution: 'Meld sak til arbeidsgruppe identitet', raw: undervisningsgrupper })
-    if (!isTeacher(user) && undervisningsgrupper.length === 0) return success({ message: 'Er ikke lærer og har ingen undervisningsgrupper' })
+    if (!user.isTeacher && undervisningsgrupper.length > 0) return error({ message: `Bruker har ikke medlemskap i ${teacherGroupName}, men har undervisningsgrupper`, solution: 'Meld sak til arbeidsgruppe identitet', raw: undervisningsgrupper })
+    if (!user.isTeacher && undervisningsgrupper.length === 0) return success({ message: 'Er ikke lærer og har ingen undervisningsgrupper' })
     if (undervisningsgrupper.length === 0) return warn({ message: 'Mangler medlemskap i undervisningsgruppe(r)', raw: undervisningsgrupper, solution: `Rettes i ${systemNames.fintLarer}, dersom det savnes noe medlemskap. Hvis det allerede er korrekt i ${systemNames.fintLarer}, meld sak til arbeidsgruppe identitet` })
     return success({ message: `Underviser i ${undervisningsgrupper.length} ${undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: undervisningsgrupper })
   }
@@ -124,6 +151,8 @@ const fintFodselsnummer = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
+    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     if (!allData.ad || allData.ad.getDataFailed) return error({ message: 'Mangler data fra AD' })
     const data = {
       adFnr: allData.ad.employeeNumber,
@@ -132,7 +161,7 @@ const fintFodselsnummer = {
     if (!data.adFnr) return error({ message: `Mangler fødselsnummer i ${systemNames.ad}`, solution: 'Meld sak til arbeidsgruppe identitet', raw: data })
     if (!data.visFnr) return error({ message: `Mangler fødselsnummer i ${systemNames.fintLarer}`, solution: `Rettes i ${systemNames.fintLarer}`, raw: data })
     if (data.adFnr.toString() !== data.visFnr.toString()) return error({ message: `Fødselsnummer er forskjellig i ${systemNames.ad} og ${systemNames.fintLarer}`, raw: data })
-    return success({ message: `Fødselsnummer er likt i ${systemNames.ad} og ${systemNames.vis}`, raw: data })
+    return success({ message: `Fødselsnummer er likt i ${systemNames.ad} og ${systemNames.fintLarer}`, raw: data })
   }
 }
 
@@ -150,6 +179,8 @@ const fintMobilnummer = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     const data = {
       larerMobiltelefonnummer: systemData.larerMobiltelefonnummer,
       kontaktMobiltelefonnummer: systemData.kontaktMobiltelefonnummer
@@ -173,16 +204,18 @@ const fintFeideVis = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
+    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     if (!allData.feide || allData.feide.getDataFailed) return error({ message: 'Mangler data fra FEIDE' })
-    if (!isTeacher(user) && Array.isArray(allData.feide) && allData.feide.length === 0) return success({ message: 'Er ikke lærer, og har ikke Feide-bruker' })
+    if (!user.isTeacher && Array.isArray(allData.feide) && allData.feide.length === 0) return success({ message: 'Er ikke lærer, og har ikke Feide-bruker' })
     const data = {
       feide: allData.feide.eduPersonPrincipalName,
       vis: systemData.feidenavn
     }
     if ((data.feide && data.vis) && data.feide === data.vis) return success({ message: `${systemNames.feide}-navn er skrevet tilbake til ${systemNames.fintLarer}`, raw: data })
     if ((data.feide && data.vis) && data.feide !== data.vis) return error({ message: `${systemNames.feide}-id skrevet tilbake er ikke riktig 😱`, raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    return error({ message: `${systemNames.feide}-id er ikke skrevet tilbake 😬`, raw: data, solution: `${systemNames.vis} systemansvarlig må kontakte leverandør da dette må fikses i bakkant!` })
+    return error({ message: `${systemNames.feide}-id er ikke skrevet tilbake 😬`, raw: data, solution: `${systemNames.fintLarer} systemansvarlig må kontakte leverandør da dette må fikses i bakkant!` })
   }
 }
 
-module.exports = { fintKontaktlarer, fintDuplicateKontaktlarergrupper, fintSkoleforhold, fintUndervisningsgrupper, fintFodselsnummer, fintMobilnummer, fintFeideVis }
+module.exports = { fintData, fintKontaktlarer, fintDuplicateKontaktlarergrupper, fintSkoleforhold, fintUndervisningsgrupper, fintFodselsnummer, fintMobilnummer, fintFeideVis }

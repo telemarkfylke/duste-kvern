@@ -13,6 +13,7 @@ const fintStudentKontaktlarer = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const kontaktlarere = systemData.kontaktlarere
     if (kontaktlarere.length === 0) return error({ message: 'Har ikke kontaktlærer(e) 😬', solution: `Rettes i ${systemNames.vis}` })
     else return success({ message: `Har ${kontaktlarere.length} ${kontaktlarere.length > 1 ? 'kontaktlærere' : 'kontaktlærer'}`, raw: kontaktlarere })
@@ -30,6 +31,7 @@ const fintStudentSkoleforhold = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const skoleforhold = systemData.elevforhold.filter(forhold => forhold.aktiv).map(forhold => forhold.skole)
     if (skoleforhold.length === 0) return error({ message: 'Har ingen skoleforhold 😬', solution: `Rettes i ${systemNames.vis}` })
     const primarySchool = skoleforhold.find(school => school.hovedskole)
@@ -52,6 +54,7 @@ const fintStudentBasisgrupper = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     let basisgrupper = []
     systemData.elevforhold.forEach(forhold => {
       const bGrupper = forhold.basisgruppemedlemskap.filter(bGruppe => bGruppe.aktiv).map(bGruppe => { return { systemId: bGruppe.systemId, navn: bGruppe.navn, skole: bGruppe.skole.navn } })
@@ -74,6 +77,7 @@ const fintStudentUndervisningsgrupper = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     let undervisningsgrupper = []
     systemData.elevforhold.forEach(forhold => {
       const uGrupper = forhold.undervisningsgruppemedlemskap.filter(uGruppe => uGruppe.aktiv).map(uGruppe => { return { systemId: uGruppe.systemId, navn: uGruppe.navn, skole: uGruppe.skole.navn } })
@@ -96,6 +100,7 @@ const fintStudentFaggrupper = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     let faggrupper = []
     systemData.elevforhold.forEach(forhold => {
       const fGrupper = forhold.faggruppemedlemskap.filter(fGruppe => fGruppe.aktiv).map(fGruppe => { return { systemId: fGruppe.systemId, navn: fGruppe.navn, fag: fGruppe.fag } })
@@ -118,6 +123,7 @@ const fintStudentProgramomrader = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     let programomrader = []
     systemData.elevforhold.forEach(forhold => {
       const pOmrader = forhold.programomrademedlemskap.filter(pOmrade => pOmrade.aktiv).map(pOmrade => { return { systemId: pOmrade.systemId, navn: pOmrade.navn, utdanningsprogram: pOmrade.utdanningsprogram } })
@@ -141,6 +147,7 @@ const fintFodselsnummer = {
    */
   test: (user, systemData, allData) => {
     if (!allData.ad || allData.ad.getDataFailed) return error({ message: 'Mangler data fra AD' })
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const data = {
       adFnr: allData.ad.employeeNumber,
       visFnr: systemData.fodselsnummer
@@ -163,6 +170,7 @@ const fintGyldigFodselsnummer = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const data = {
       id: systemData.fodselsnummer,
       fnr: isValidFnr(systemData.fodselsnummer)
@@ -182,6 +190,7 @@ const fintStudentFeidenavn = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     if (!allData.feide || allData.feide.getDataFailed) return error({ message: 'Mangler data fra FEIDE' })
 
     const data = {
@@ -205,6 +214,7 @@ const fintStudentUtgattElevforhold = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const utgatteElevforhold = systemData.elevforhold.filter(forhold => !forhold.aktiv)
     if (utgatteElevforhold.length > 0) return warn({ message: `Har utgått skoleforhold ved skole${utgatteElevforhold.length > 1 ? 'r' : ''}: ${utgatteElevforhold.map(forhold => forhold.skole.navn).join(', ')}.`, raw: utgatteElevforhold, solution: `Dette er i de fleste tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
     return success({ message: 'Har ingen utgåtte elevfohold' })
