@@ -6,37 +6,61 @@
   }
   const updateType = args[0].toLowerCase()
   const mongo = require('./lib/mongo')
-  let data = require(`./data/${updateType}.json`)
-  const db = await mongo(updateType)
+  const { join } = require('path')
+  const { writeFileSync } = require('fs')
+  const { logger, logConfig } = require('@vtfk/logger')
+  const { getDusteUsers } = require('./lib/get-duste-users')
+  const { createLocalLogger } = require('../../../lib/local-logger')
 
-  try {
-    console.log('lib', 'update-database', updateType, 'clear collection')
-    // await db.deleteMany({})
-    await db.drop()
-  } catch (error) {
-    console.warn('lib', 'update-database', updateType, 'unable to clear collection', error)
-    process.exit(1)
+  logConfig({
+    localLogger: createLocalLogger('db-update')
+  })
+
+  let data
+  if (updateType === 'users') {
+    try {
+      data = await getDusteUsers()
+    } catch (error) {
+      logger('error', ['Error when fetching duste-users from graph', error.response?.data || error.stack || error.toString()])
+      process.exit(1)
+    }
+  } else {
+    data = require(`./data/${updateType}.json`)
   }
 
-  // Add lowercase displayName for indexed search in mongodb on users
+  const db = await mongo(updateType)
+
   if (updateType === 'users') {
+    const now = new Date().toISOString()
     data = data.map(user => {
       if (!user.displayName) return user
-      if (!user.surName) return user
+      if (!user.surname) return user
       return {
         ...user,
         displayNameLowerCase: user.displayName.toLowerCase(),
-        surNameLowerCase: user.surName.toLowerCase()
+        surNameLowerCase: user.surname.toLowerCase(),
+        updatedAt: now
       }
     })
+    const usersPath = join(__dirname, './data/users.json')
+    writeFileSync(usersPath, JSON.stringify(data, null, 2))
+  }
+
+  try {
+    logger('info', ['lib', 'update-database', updateType, 'clear collection'])
+    // await db.deleteMany({})
+    await db.drop()
+  } catch (error) {
+    logger('error', ['lib', 'update-database', updateType, 'unable to clear collection', error])
+    process.exit(1)
   }
 
   console.log('lib', 'update-database', updateType, 'insert data', data.length, 'start')
   try {
     const result = await db.insertMany(data)
-    console.log('lib', 'update-database', updateType, 'insert data', 'inserted', result.insertedCount)
+    logger('info', ['lib', 'update-database', updateType, 'insert data', 'inserted', result.insertedCount])
   } catch (error) {
-    console.error('lib', 'update-database', updateType, 'update data', 'failed to insert data', error)
+    logger('error', ['lib', 'update-database', updateType, 'update data', 'failed to insert data', error])
     process.exit(2)
   }
 
@@ -45,9 +69,10 @@
     await db.createIndex({ displayNameLowerCase: 1 }, { background: true })
     await db.createIndex({ surNameLowerCase: 1 }, { background: true })
     await db.createIndex({ samAccountName: 1 }, { background: true })
+    await db.createIndex({ feidenavn: 1 }, { background: true })
     await db.createIndex({ userPrincipalName: 1 }, { background: true })
   }
 
-  console.log('lib', 'update-database', updateType, 'finished')
+  await logger('info', ['lib', 'update-database', updateType, 'finished'])
   process.exit(0)
 })()

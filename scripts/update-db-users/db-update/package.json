@@ -18,6 +18,8 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@vtfk/logger": "^6.1.0",
+    "axios": "^1.7.3",
     "dotenv": "^16.0.0",
     "mongodb": "^6.3.0"
   },
