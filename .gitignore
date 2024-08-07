@@ -132,3 +132,7 @@ dist
 
 # file-system-cache
 .*cache
+
+# datafiles
+users.json
+users.txt
