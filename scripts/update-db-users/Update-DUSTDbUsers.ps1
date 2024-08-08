@@ -38,6 +38,9 @@ Function GetADUser {
 
 
 Function Update-DUSTADUsers {
+    # The below stuff is commented out. After students move to cloud, we get all users from graph - see ./db-update/lib/get-duste-users
+
+    <# 
     $adUsers = @()
     Write-Host "Starting AD Users : $(Get-Date -Format 'HH:mm:ss')" -Verbose
 
@@ -72,9 +75,9 @@ Function Update-DUSTADUsers {
     # Elev VTFK disabled
     $adUsers += GetADUser -Domain "skole.top.no" -Filter "Title -eq 'Elev' -and (extensionAttribute14 -ne '$filterVekkExt14' -or extensionAttribute14 -notlike '*')" -Properties givenName,sn,displayName,employeeNumber,department,company,mail,proxyAddresses,title -OnlyDisabledAutoUsers | Select-Object userPrincipalName, samAccountName, givenName, mail, proxyAddresses, @{N="userType"; E={"elevVTFK"}}, @{N="surName"; E={$_.sn}}, displayName, @{N="domain"; E={"skole"}}, employeeNumber, @{N="timestamp"; E={Get-Date -Format o}}, enabled, @{N="countyOU"; E={"VTFK"}}, @{N="ou"; E={"AUTO DISABLED USERS"}}, @{N="departmentShort"; E={$_.department}}, @{N="office"; E={$_.company}}, @{N="company"; E={$_.company}}, title
 
-    # get ad VFYLKE users from AUTO DISABLED USERS
+    # get ad XFYLKE users from AUTO DISABLED USERS
     Write-Host "Finding 'AUTO DISABLED USERS' from login.top.no : $(Get-Date -Format 'HH:mm:ss')" -Verbose
-    # Ansatt VFYLKE disabled
+    # Ansatt XFYLKE disabled
     $adUsers += GetADUser -Domain "login.top.no" -OU $countyOU -Filter "*" -Properties memberOf,givenName,sn,displayName,employeeNumber,extensionAttribute4,extensionAttribute6,extensionAttribute7,extensionAttribute9,extensionAttribute14,company,physicalDeliveryOfficeName,mail,proxyAddresses,title,state -OnlyDisabledAutoUsers | Select-Object userPrincipalName, samAccountName, givenName, mail, proxyAddresses, @{N="userType"; E={"ansatt$countyOU"}}, @{N="surName"; E={$_.sn}}, displayName, @{N="domain"; E={"login"}}, employeeNumber, @{N="timestamp"; E={Get-Date -Format o}}, enabled, @{N="countyOU"; E={$countyOU}},  @{N="ou"; E={"AUTO DISABLED USERS"}}, extensionAttribute7, extensionAttribute9, extensionAttribute14, @{N="departmentShort"; E={$_.extensionAttribute6}}, @{N="departmentAdditional"; E={$_.extensionAttribute4}}, @{N="office"; E={$_.physicalDeliveryOfficeName}}, @{N="company"; E={$_.company}}, title, state, @{N="feide"; E={if ($_.memberOf -like "*VT-ALLE-LÆRERE*") {$True} else {$False}}}
 
     # get ad apprentice users from AUTO DISABLED USERS
@@ -92,6 +95,8 @@ Function Update-DUSTADUsers {
     Write-Host "Exporting data to '$($exportFile)'" -Verbose
     $adUsers | ConvertTo-Json -Depth 20 | Out-File -FilePath $exportFile -Encoding utf8 -Force -NoNewline
     
+    #>
+
     # update db
     $currentLocation = Get-Location | Select-Object -ExpandProperty Path
     try {

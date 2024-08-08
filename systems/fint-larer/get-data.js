@@ -12,10 +12,16 @@ const getData = async (user) => {
     scope: FINTFOLK.SCOPE
   }
   const accessToken = await getMsalToken(clientConfig)
-
-  const fintTeacher = await callFintFolk(`teacher/feidenavn/${user.samAccountName}${FEIDE.PRINCIPAL_NAME}`, accessToken)
-
-  return fintTeacher
+  try {
+    const feidenavn = user.feidenavn || `${user.samAccountName}${FEIDE.PRINCIPAL_NAME}`
+    const fintTeacher = await callFintFolk(`teacher/feidenavn/${feidenavn}`, accessToken)
+    return fintTeacher
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return null
+    }
+    throw error
+  }
 }
 
 module.exports = { getData, callFintFolk }
