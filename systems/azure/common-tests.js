@@ -60,7 +60,7 @@ const azureAktiveringElev = {
     const data = {
       enabled: systemData.accountEnabled,
       vis: {
-        active: allData['fint-elev'].elevforhold.find(forhold => forhold.aktiv)
+        active: allData['fint-elev'].elevforhold.find(forhold => forhold.aktiv || new Date() < new Date(forhold.gyldighetsperiode.start))
       }
     }
     if (data.enabled && data.vis.active) return success({ message: 'Kontoen er aktivert', raw: data })
