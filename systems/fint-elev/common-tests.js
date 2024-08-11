@@ -2,6 +2,28 @@ const { isValidFnr } = require('../../lib/helpers/is-valid-fnr')
 const { error, warn, success } = require('../../lib/test-result')
 const systemNames = require('../system-names')
 
+const fintElevforhold = {
+  id: 'fint_student_elevforhold',
+  title: 'Har aktiv(e) elevforhold',
+  description: 'Sjekker om bruker har aktiv(e) elevforhold',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
+    const aktiveElevforhold = systemData.elevforhold.filter(forhold => forhold.aktiv)
+    if (aktiveElevforhold.length > 0) return success({ message: `Har ${aktiveElevforhold.length} aktiv${aktiveElevforhold.length === 1 ? 't' : 'e'} elevforhold` })
+    const inaktiveElevforhold = systemData.elevforhold.filter(forhold => !forhold.aktiv)
+    if (inaktiveElevforhold.length === 0) return warn({ message: 'Har ingen elevforhold i det hele tatt', solution: `Rettes i ${systemNames.vis} dersom eleven skal ha elevforhold` })
+    const elevfoholdInTheFuture = inaktiveElevforhold.find(forhold => new Date() < new Date(forhold.gyldighetsperiode.start))
+    if (elevfoholdInTheFuture) return warn({ message: `Elevens elevforhold begynner ikke før ${elevfoholdInTheFuture.gyldighetsperiode.start.substring(0,10)}`, solution: `Sannsynligvis ikke noe problem, hvertfall ikke hvis det er like før skolestart. Men om det er midt i skoleåret kan det rettes i ${systemNames.vis}` })
+    return warn({ message: 'Utvikler har driti seg ut og mangler en case her....' })
+  }
+}
+
 const fintStudentKontaktlarer = {
   id: 'fint_student_kontaktlarer',
   title: 'Har kontaktlærer',
@@ -32,7 +54,7 @@ const fintStudentSkoleforhold = {
    */
   test: (user, systemData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
-    const skoleforhold = systemData.elevforhold.filter(forhold => forhold.aktiv).map(forhold => forhold.skole)
+    const skoleforhold = systemData.elevforhold.map(forhold => forhold.skole)
     if (skoleforhold.length === 0) return error({ message: 'Har ingen skoleforhold 😬', solution: `Rettes i ${systemNames.vis}` })
     const primarySchool = skoleforhold.find(school => school.hovedskole)
     if (skoleforhold.length > 1) {
@@ -80,7 +102,7 @@ const fintStudentUndervisningsgrupper = {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     let undervisningsgrupper = []
     systemData.elevforhold.forEach(forhold => {
-      const uGrupper = forhold.undervisningsgruppemedlemskap.filter(uGruppe => uGruppe.aktiv).map(uGruppe => { return { systemId: uGruppe.systemId, navn: uGruppe.navn, skole: uGruppe.skole.navn } })
+      const uGrupper = forhold.undervisningsgruppemedlemskap.filter(uGruppe => uGruppe.aktiv || new Date() < new Date(uGruppe.medlemskapgyldighetsperiode.start)).map(uGruppe => { return { systemId: uGruppe.systemId, navn: uGruppe.navn, skole: uGruppe.skole.navn } })
       undervisningsgrupper = [...undervisningsgrupper, ...uGrupper]
     })
 
@@ -103,7 +125,7 @@ const fintStudentFaggrupper = {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     let faggrupper = []
     systemData.elevforhold.forEach(forhold => {
-      const fGrupper = forhold.faggruppemedlemskap.filter(fGruppe => fGruppe.aktiv).map(fGruppe => { return { systemId: fGruppe.systemId, navn: fGruppe.navn, fag: fGruppe.fag } })
+      const fGrupper = forhold.faggruppemedlemskap.filter(fGruppe => fGruppe.aktiv || new Date() < new Date(fGruppe.medlemskapgyldighetsperiode.start)).map(fGruppe => { return { systemId: fGruppe.systemId, navn: fGruppe.navn, fag: fGruppe.fag } })
       faggrupper = [...faggrupper, ...fGrupper]
     })
 
@@ -126,7 +148,7 @@ const fintStudentProgramomrader = {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     let programomrader = []
     systemData.elevforhold.forEach(forhold => {
-      const pOmrader = forhold.programomrademedlemskap.filter(pOmrade => pOmrade.aktiv).map(pOmrade => { return { systemId: pOmrade.systemId, navn: pOmrade.navn, utdanningsprogram: pOmrade.utdanningsprogram } })
+      const pOmrader = forhold.programomrademedlemskap.filter(pOmrade => pOmrade.aktiv || new Date() < new Date(pOmrade.medlemskapgyldighetsperiode.start)).map(pOmrade => { return { systemId: pOmrade.systemId, navn: pOmrade.navn, utdanningsprogram: pOmrade.utdanningsprogram } })
       programomrader = [...programomrader, ...pOmrader]
     })
 
@@ -218,10 +240,10 @@ const fintStudentUtgattElevforhold = {
    */
   test: (user, systemData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
-    const utgatteElevforhold = systemData.elevforhold.filter(forhold => !forhold.aktiv)
+    const utgatteElevforhold = systemData.elevforhold.filter(forhold => forhold.gyldighetsperiode.slutt && (new Date() > new Date(forhold.gyldighetsperiode.slutt)))
     if (utgatteElevforhold.length > 0) return warn({ message: `Har utgått skoleforhold ved skole${utgatteElevforhold.length > 1 ? 'r' : ''}: ${utgatteElevforhold.map(forhold => forhold.skole.navn).join(', ')}.`, raw: utgatteElevforhold, solution: `Dette er i de fleste tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
     return success({ message: 'Har ingen utgåtte elevfohold' })
   }
 }
 
-module.exports = { fintStudentKontaktlarer, fintStudentSkoleforhold, fintStudentBasisgrupper, fintStudentUndervisningsgrupper, fintStudentFaggrupper, fintStudentProgramomrader, fintFodselsnummer, fintGyldigFodselsnummer, fintStudentUtgattElevforhold, fintStudentFeidenavn }
+module.exports = { fintStudentKontaktlarer, fintStudentSkoleforhold, fintStudentBasisgrupper, fintStudentUndervisningsgrupper, fintStudentFaggrupper, fintStudentProgramomrader, fintFodselsnummer, fintGyldigFodselsnummer, fintStudentUtgattElevforhold, fintStudentFeidenavn, fintElevforhold }

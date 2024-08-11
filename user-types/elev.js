@@ -46,6 +46,7 @@ const systemsAndTests = [
     name: systemNames.vis,
     // Tester
     tests: [
+      visTests.fintElevforhold,
       visTests.fintStudentFeidenavn,
       visTests.fintGyldigFodselsnummer,
       visTests.fintStudentSkoleforhold,
