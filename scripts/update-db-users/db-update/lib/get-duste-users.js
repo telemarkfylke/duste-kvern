@@ -18,14 +18,18 @@ const getDusteUsers = async () => {
   const { getAllEmployees, getTeacherGroupMembers, getAllStudents } = require('./graph-requests')
 
   logger('info', 'Fetching members of teacher group')
-  const teacherGroupMembers = await getTeacherGroupMembers()
-  logger('info', `Got ${teacherGroupMembers.count} members of teacher group`)
+  let teacherGroupMembers
+  try {
+    teacherGroupMembers = await getTeacherGroupMembers()
+    logger('info', `Got ${teacherGroupMembers.count} members of teacher group`)
+  } catch (error) {
+    logger('error', [`Failed when getting members of teacher group, will use emtpy array instead`, error.response?.data || error.stack || error.toString()])
+    teacherGroupMembers = []
+  }
 
   logger('info', 'Fetching all employees')
   const employees = await getAllEmployees()
   logger('info', `Got ${employees.count} employees`)
-
-  writeFileSync('./empliyee.json', JSON.stringify(employees, null, 2))
 
   logger('info', 'Fetching all students')
   const students = await getAllStudents()

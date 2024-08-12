@@ -16,12 +16,19 @@
     localLogger: createLocalLogger('db-update')
   })
 
+  const sleep = (ms) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms)
+    })
+  }
+
   let data
   if (updateType === 'users') {
     try {
       data = await getDusteUsers()
     } catch (error) {
       logger('error', ['Error when fetching duste-users from graph', error.response?.data || error.stack || error.toString()])
+      await sleep(1000)
       process.exit(1)
     }
   } else {
