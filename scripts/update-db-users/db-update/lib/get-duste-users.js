@@ -24,7 +24,7 @@ const getDusteUsers = async () => {
     logger('info', `Got ${teacherGroupMembers.count} members of teacher group`)
   } catch (error) {
     logger('error', [`Failed when getting members of teacher group, will use emtpy array instead`, error.response?.data || error.stack || error.toString()])
-    teacherGroupMembers = []
+    teacherGroupMembers = { value: [] }
   }
 
   logger('info', 'Fetching all employees')
