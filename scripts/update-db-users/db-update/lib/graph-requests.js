@@ -123,5 +123,30 @@ const getTeacherGroupMembers = async () => {
   return result
 }
 
-module.exports = { getAllEmployees, getAllStudents, getTeacherGroupMembers }
+/**
+ *
+ * @returns {EntraUsers} employees
+ */
+const getAllDeletedStudents = async () => {
+  const accessToken = await getMsalToken(tokenConfig)
+  let url = `${GRAPH.URL}/v1.0/directory/deletedItems/microsoft.graph.user?$select=${userSelect}&$filter=endsWith(userPrincipalName, '@skole.${GRAPH.TENANT_NAME}.no')&$count=true&$top=999` // må ha med et filter som sier at du er vanlig ansatt, kan bruke onPremisesDistinguishedName contains VFYLKE, om endswith suffix ikke fungerer bra nok
+  let finished = false
+  const result = {
+    count: 0,
+    value: []
+  }
+  let page = 0
+  while (!finished) {
+    const { data } = await axios.get(url, { headers: { Authorization: `Bearer ${accessToken}`, ConsistencyLevel: 'eventual' } })
+    logger('info', ['getAllDeletedUsers', `Got ${data.value.length} elements from page ${page}, will check for more`])
+    finished = data['@odata.nextLink'] === undefined
+    url = data['@odata.nextLink']
+    result.value = result.value.concat(data.value)
+    page++
+  }
+  result.count = result.value.length
+  return result
+}
+
+module.exports = { getAllEmployees, getAllStudents, getTeacherGroupMembers, getAllDeletedStudents }
 

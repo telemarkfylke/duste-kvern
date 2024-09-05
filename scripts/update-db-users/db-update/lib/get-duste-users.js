@@ -15,7 +15,7 @@ const EMPLOYEE_NUMBER_EXTENSION_ATTRIBUTE = process.env.GRAPH_EMPLOYEE_NUMBER_EX
 if (!EMPLOYEE_NUMBER_EXTENSION_ATTRIBUTE) throw new Error('Har du glemt å legge inn GRAPH_EMPLOYEE_NUMBER_EXTENSION_ATTRIBUTE i .env på rot mon tro?')
 
 const getDusteUsers = async () => {
-  const { getAllEmployees, getTeacherGroupMembers, getAllStudents } = require('./graph-requests')
+  const { getAllEmployees, getTeacherGroupMembers, getAllStudents, getAllDeletedStudents } = require('./graph-requests')
 
   logger('info', 'Fetching members of teacher group')
   let teacherGroupMembers
@@ -34,6 +34,10 @@ const getDusteUsers = async () => {
   logger('info', 'Fetching all students')
   const students = await getAllStudents()
   logger('info', `Got ${students.count} students`)
+
+  logger('info', 'Fetching all deleted students')
+  const deletedStudents = await getAllDeletedStudents()
+  logger('info', `Got ${deletedStudents.count} deleted students`)
 
   const allUsers = []
   logger('info', 'Repacking employees')
@@ -66,6 +70,14 @@ const getDusteUsers = async () => {
       student.feidenavn = `${upnPrefix}@${TENANT_NAME}.no`
       allUsers.push(student)
     }
+  }
+  logger('info', 'Repacking deleted students')
+  for (const student of deletedStudents.value) {
+    // All deleted students are of type "slettaElev"
+    const upnPrefix = student.userPrincipalName.substring(0, student.userPrincipalName.indexOf('@'))
+    student.userType = 'slettaElev'
+    student.feidenavn = `${upnPrefix}@${TENANT_NAME}.no`
+    allUsers.push(student)
   }
   logger('info', `Finished repacking users - returning all ${allUsers.length} users`)
   return allUsers
