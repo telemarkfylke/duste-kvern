@@ -74,6 +74,10 @@ const getDusteUsers = async () => {
   logger('info', 'Repacking deleted students')
   for (const student of deletedStudents.value) {
     // All deleted students are of type "slettaElev"
+    // Deleted users have long and funny upn with objectid at the beginning - repack it first
+    const upnSvada = student.id.replaceAll('-', '')
+    student.userPrincipalName = student.userPrincipalName.substring(upnSvada.length)
+
     const upnPrefix = student.userPrincipalName.substring(0, student.userPrincipalName.indexOf('@'))
     student.userType = 'slettaElev'
     student.feidenavn = `${upnPrefix}@${TENANT_NAME}.no`
