@@ -1,6 +1,6 @@
 module.exports = {
   ad: 'AD',
-  azure: 'Azure (Microsoft 365)',
+  azure: 'Entra ID (Microsoft 365)',
   equitrac: 'Equitrac (utskrift)',
   feide: 'FEIDE',
   fintLarer: 'Visma InSchool',
@@ -10,5 +10,6 @@ module.exports = {
   vigolaerling: 'VIGO Opplæring (Lærling)',
   visma: 'Visma HRM',
   vis: 'Visma InSchool',
-  p360: 'Public 360'
+  p360: 'Public 360',
+  info: 'Informasjon'
 }
