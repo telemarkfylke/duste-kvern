@@ -8,9 +8,6 @@ const { writeFileSync } = require('fs')
 const TENANT_NAME = process.env.APPREG_TENANT_NAME
 if (!TENANT_NAME) throw new Error('Mangler tenantName i .env på rot')
 
-const OT_DEPARTMENTS = (process.env.OT_DEPARTMENTS && process.env.OT_DEPARTMENTS.split(',')) || ['Grenland', 'Horten', 'Larvik', 'Sandefjord', 'Tønsberg', 'Vestmar', 'Vest-Telemark', 'Øst-Telemark']
-const OT_DEPARTMENTS_LOWERCASE = OT_DEPARTMENTS.map(department => department.toLowerCase())
-
 const EMPLOYEE_NUMBER_EXTENSION_ATTRIBUTE = process.env.GRAPH_EMPLOYEE_NUMBER_EXTENSION_ATTRIBUTE
 if (!EMPLOYEE_NUMBER_EXTENSION_ATTRIBUTE) throw new Error('Har du glemt å legge inn GRAPH_EMPLOYEE_NUMBER_EXTENSION_ATTRIBUTE i .env på rot mon tro?')
 
@@ -61,7 +58,7 @@ const getDusteUsers = async () => {
       student.userType = 'larling'
       student.feidenavn = `${upnPrefix}@${TENANT_NAME}.no`
       allUsers.push(student)
-    } else if (student.department && OT_DEPARTMENTS_LOWERCASE.includes(student.department.toLowerCase())) {
+    } else if (student.jobTitle === 'Elev-') {
       student.userType = 'otElev'
       student.feidenavn = `${upnPrefix}@${TENANT_NAME}.no`
       allUsers.push(student)
