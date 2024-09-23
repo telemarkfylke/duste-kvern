@@ -149,4 +149,3 @@ const getAllDeletedStudents = async () => {
 }
 
 module.exports = { getAllEmployees, getAllStudents, getTeacherGroupMembers, getAllDeletedStudents }
-

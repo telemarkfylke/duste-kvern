@@ -1,3 +1,4 @@
+const { APPREG } = require('../../config')
 const { prettifyDateToLocaleString } = require('../../lib/helpers/date-time-output')
 const { isValidFnr } = require('../../lib/helpers/is-valid-fnr')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
@@ -119,7 +120,7 @@ const vismaMobile = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData.contactInfo?.mobilePhone && !systemData.contactInfo?.privateMobilePhone) return warn({ message: 'Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS', solution: `Bruker må selv sette telefonnummer på MinSide i ${systemNames.visma}` })
+    if (!systemData.contactInfo?.mobilePhone && !systemData.contactInfo?.privateMobilePhone) return warn({ message: 'Bruker har ikke registrert privat mobilnummer på ☎️ på MinSide og har ikke mottatt oppstartsmelding på SMS', solution: `Send brukeren til minkonto.${APPREG.TENANT_NAME}.no/ansatt, der kan sette opp kontoen sin.` })
     return success({ message: 'Bruker har fylt ut ☎️ på MinSide' })
   }
 }

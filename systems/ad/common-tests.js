@@ -1,3 +1,4 @@
+const { APPREG } = require('../../config')
 const { isValidFnr } = require('../../lib/helpers/is-valid-fnr')
 const { error, warn, success } = require('../../lib/test-result')
 const systemNames = require('../system-names')
@@ -33,7 +34,7 @@ const adAktiveringAnsatt = {
     }
     if (systemData.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
     if (systemData.enabled && !data.visma.active) return error({ message: 'Kontoen er aktivert selvom ansatt har sluttet', raw: data, solution: `Rettes i ${systemNames.visma}` })
-    if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+    if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.${APPREG.TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
     if (!systemData.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: `Rettes i ${systemNames.visma}` })
   }
 }

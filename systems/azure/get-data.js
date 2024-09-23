@@ -1,5 +1,5 @@
 const { getMsalToken } = require('../../lib/get-msal-token')
-const { APPREG, APPREG_VTFK, GRAPH, COUNTY_OU } = require('../../config')
+const { APPREG, GRAPH } = require('../../config')
 const axios = require('axios').default
 const { entraIdDate } = require('../../lib/helpers/date-time-output')
 const { logger } = require('@vtfk/logger')

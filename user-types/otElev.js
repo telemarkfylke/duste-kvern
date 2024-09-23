@@ -3,7 +3,7 @@ const systemNames = require('../systems/system-names')
 const azureTests = require('../systems/azure/common-tests')
 const syncTests = require('../systems/sync/common-tests')
 const feideTests = require('../systems/feide/common-tests')
-const { APPREG: { TENANT_NAME } } = require('../config')
+const { APPREG: { TENANT_NAME }, APPREG } = require('../config')
 
 const systemsAndTests = [
   // System
@@ -26,7 +26,7 @@ const systemsAndTests = [
           const data = {
             enabled: systemData.accountEnabled
           }
-          if (!data.enabled) return error({ message: 'Konto er ikke aktivert 😬', raw: data, solution: `Bruker må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+          if (!data.enabled) return error({ message: 'Konto er ikke aktivert 😬', raw: data, solution: `Bruker må aktivere sin konto via minkonto.${APPREG.TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
           return success({ message: 'Kontoen er aktivert', raw: data })
         }
       },
