@@ -120,7 +120,7 @@ const vismaMobile = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData.contactInfo?.mobilePhone && !systemData.contactInfo?.privateMobilePhone) return warn({ message: 'Bruker har ikke registrert privat mobilnummer på ☎️ på MinSide og har ikke mottatt oppstartsmelding på SMS', solution: `Send brukeren til minkonto.${APPREG.TENANT_NAME}.no/ansatt, der kan sette opp kontoen sin.` })
+    if (!systemData.contactInfo?.mobilePhone && !systemData.contactInfo?.privateMobilePhone) return warn({ message: 'Bruker har ikke registrert "Mobil privat" på MinSide og har ikke mottatt oppstartsmelding på SMS', solution: `Send brukeren til minkonto.${APPREG.TENANT_NAME}.no/ansatt, der kan brukeren sette opp kontoen sin.` })
     return success({ message: 'Bruker har fylt ut ☎️ på MinSide' })
   }
 }
