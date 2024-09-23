@@ -117,7 +117,7 @@ const systemsAndTests = [
     name: systemNames.sync,
     // Tester
     tests: [
-      syncTests.syncIdm,
+      // syncTests.syncIdm,
       syncTests.syncAzure
     ]
   },

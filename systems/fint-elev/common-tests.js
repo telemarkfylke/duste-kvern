@@ -19,7 +19,7 @@ const fintElevforhold = {
     const inaktiveElevforhold = systemData.elevforhold.filter(forhold => !forhold.aktiv)
     if (inaktiveElevforhold.length === 0) return warn({ message: 'Har ingen elevforhold i det hele tatt', solution: `Rettes i ${systemNames.vis} dersom eleven skal ha elevforhold` })
     const elevfoholdInTheFuture = inaktiveElevforhold.find(forhold => new Date() < new Date(forhold.gyldighetsperiode.start))
-    if (elevfoholdInTheFuture) return warn({ message: `Elevens elevforhold begynner ikke før ${elevfoholdInTheFuture.gyldighetsperiode.start.substring(0,10)}`, solution: `Sannsynligvis ikke noe problem, hvertfall ikke hvis det er like før skolestart. Men om det er midt i skoleåret kan det rettes i ${systemNames.vis}` })
+    if (elevfoholdInTheFuture) return warn({ message: `Elevens elevforhold begynner ikke før ${elevfoholdInTheFuture.gyldighetsperiode.start.substring(0, 10)}`, solution: `Sannsynligvis ikke noe problem, hvertfall ikke hvis det er like før skolestart. Men om det er midt i skoleåret kan det rettes i ${systemNames.vis}` })
     return warn({ message: 'Utvikler har driti seg ut og mangler en case her....' })
   }
 }
