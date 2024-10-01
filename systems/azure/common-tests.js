@@ -156,7 +156,7 @@ const azureLicense = {
     data.licenses = systemData.assignedLicenses.map(license => {
       const lic = licenses.find(lic => lic.skuId === license.skuId)
       if (lic) {
-        data.hasNecessaryLicenses = true
+        data.hasNecessaryLicenses = Boolean(lic.skuPartNumber !== 'FLOW_FREE')
         return lic
       } else return license
     })
