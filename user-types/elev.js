@@ -35,6 +35,7 @@ const systemsAndTests = [
       azureTests.azureAktiveringElev,
       azureTests.azureUpnEqualsMail,
       azureTests.azureLicense,
+      azureTests.azurePwdKluss,
       azureTests.azureMfa,
       azureTests.azureGroups,
       azureTests.azureRiskyUser,

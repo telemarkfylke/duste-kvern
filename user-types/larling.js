@@ -52,6 +52,7 @@ const systemsAndTests = [
       azureTests.azureUpnEqualsMail,
       azureTests.azureLicense,
       azureTests.azureMfa,
+      azureTests.azurePwdKluss,
       azureTests.azureGroups,
       azureTests.azureRiskyUser,
       azureTests.azureLastSignin
