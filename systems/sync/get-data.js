@@ -5,7 +5,7 @@ const invokePS = require('../../lib/invoke-ps-script')
 const { callGraph } = require('../azure/get-data')
 
 const getData = async (user) => {
-  const lastIdmRun = await invokePS('Get-DUSTIDMRun.ps1')
+  // const lastIdmRun = await invokePS('Get-DUSTIDMRun.ps1') // Nej, bas01 er skrudd av
 
   const clientConfig = {
     clientId: APPREG.CLIENT_ID,
@@ -42,8 +42,8 @@ const getData = async (user) => {
   const onPremisesLastSyncDateTime = await callGraph('v1.0/organization?$select=onPremisesLastSyncDateTime', accessToken)
 
   return {
-    lastIdmRun,
-    lastSDSSync: lastIdmRun,
+    // lastIdmRun,
+    // lastSDSSync: lastIdmRun,
     azureSync: {
       lastEntraIDSyncTime: (onPremisesLastSyncDateTime?.value && onPremisesLastSyncDateTime.value.length > 0 && onPremisesLastSyncDateTime.value[0].onPremisesLastSyncDateTime) || null
     }

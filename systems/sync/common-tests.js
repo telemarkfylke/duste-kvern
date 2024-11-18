@@ -4,7 +4,7 @@ const { warn, success } = require('../../lib/test-result')
 const systemNames = require('../system-names')
 
 /**
- * Sjekker siste kjøringstidspunkt for Brukersynkronisering
+ * Sjekker siste kjøringstidspunkt for Brukersynkronisering OBS OBS BRUKES ikke lenger, fiks den om du trenger den
  */
 const syncIdm = {
   id: 'sync_idm',
