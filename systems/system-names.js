@@ -11,5 +11,6 @@ module.exports = {
   visma: 'Visma HRM',
   vis: 'Visma InSchool',
   p360: 'Public 360',
-  info: 'Informasjon'
+  info: 'Informasjon',
+  nettsperre: 'Nettsperre'
 }

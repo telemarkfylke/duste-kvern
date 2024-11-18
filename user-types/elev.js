@@ -4,6 +4,7 @@ const visTests = require('../systems/fint-elev/common-tests')
 const azureTests = require('../systems/azure/common-tests')
 const syncTests = require('../systems/sync/common-tests')
 const feideTests = require('../systems/feide/common-tests')
+const nettsperreTests = require('../systems/nettsperre/common-tests')
 const { APPREG: { TENANT_NAME } } = require('../config')
 
 const systemsAndTests = [
@@ -35,6 +36,7 @@ const systemsAndTests = [
       azureTests.azureAktiveringElev,
       azureTests.azureUpnEqualsMail,
       azureTests.azureLicense,
+      azureTests.azurePwdKluss,
       azureTests.azureMfa,
       azureTests.azureGroups,
       azureTests.azureRiskyUser,
@@ -73,6 +75,16 @@ const systemsAndTests = [
     // Tester
     tests: [
       feideTests.feideElev
+    ]
+  },
+  {
+    id: 'nettsperre',
+    name: systemNames.nettsperre,
+    // Tester
+    tests: [
+      nettsperreTests.nettsperreHarNettsperre,
+      nettsperreTests.nettsperrePending,
+      nettsperreTests.nettsperreOverlappende
     ]
   }
 ]
