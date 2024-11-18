@@ -1,7 +1,7 @@
 const { logger } = require('@vtfk/logger')
 const { APPREG, GRAPH } = require('../../config')
 const { getMsalToken } = require('../../lib/get-msal-token')
-const invokePS = require('../../lib/invoke-ps-script')
+// const invokePS = require('../../lib/invoke-ps-script')
 const { callGraph } = require('../azure/get-data')
 
 const getData = async (user) => {

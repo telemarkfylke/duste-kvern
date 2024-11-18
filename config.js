@@ -38,6 +38,10 @@ module.exports = {
   FEIDE: {
     PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME || '@vtfk.no'
   },
+  NETTSPERRE: {
+    DB_NAME: process.env.NETTSPERRE_DB_NAME,
+    COLLECTION_NAME: process.env.NETTSPERRE_COLLECTION_NAME
+  },
   PS1_SCRIPTS_PATH: process.env.PS1_SCRIPTS_PATH || 'D:/DUST-TEST/duste-kvern/scripts',
   MAX_BUFFER: process.env.MAX_BUFFER || 1024 * 10000
 }
