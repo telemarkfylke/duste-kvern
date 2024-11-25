@@ -5,7 +5,7 @@ const { entraIdDate } = require('../../lib/helpers/date-time-output')
 const { logger } = require('@vtfk/logger')
 
 const callGraph = async (resource, accessToken) => {
-  const { data } = await axios.get(`${GRAPH.URL}/${resource}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+  const { data } = await axios.get(`${GRAPH.URL}/v1.0/${resource}`, { headers: { Authorization: `Bearer ${accessToken}` } })
   return data
 }
 
@@ -49,7 +49,6 @@ const getData = async (user) => {
     'id',
     'accountEnabled',
     'assignedLicenses',
-    'birthday',
     'businessPhones',
     'companyName',
     'createdDateTime',
