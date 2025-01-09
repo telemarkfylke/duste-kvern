@@ -14,6 +14,8 @@ const getData = async (user) => {
   const accessToken = await getMsalToken(clientConfig)
   try {
     const fintStudent = await callFintFolk(`student/feidenavn/${user.feidenavn}`, accessToken)
+    delete fintStudent.bostedsadresse // Just in case
+    delete fintStudent.hybeladresse // Just in case
     return fintStudent
   } catch (error) {
     if (error.response?.status === 404) {

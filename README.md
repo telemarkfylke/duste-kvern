@@ -12,12 +12,12 @@ Henter jobber fra db, kverner data, og oppdaterer i db
 - Nettverksåpning mot equitrac
 - Nettverksåpning mot FEIDE-server (ad)
 ### Tilganger for servicebruker som trengs
-- Equitrac (spør blekkulf-banden om bruker kan legges til i equitrac for å lese data / hente brukere)
 - Lese filer på nettverksshare (hvis noen filer ligger der)
 - Lese employeeNumber
 
 ## update-db-users
-Henter brukere fra lokalt ad - kverner dem sammen og laster opp i mongodb (det er brukerne man får opp når man søker i DUST) - kjøres som egen scheduled task et par ganger om dan
+--Henter brukere fra lokalt ad - kverner dem sammen og laster opp i mongodb (det er brukerne man får opp når man søker i DUST) - kjøres som egen scheduled task et par ganger om dan--
+Henter nå brukere fra EntraID, grunnnet elever i sky
 Sorteres på ulike brukertyper (ansattVFYLKE, ansattVTFK, elev osv...)
 
 ## duste-kverna

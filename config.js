@@ -35,6 +35,9 @@ module.exports = {
     COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
     CATEGORIES: process.env.VISMA_CATEGORIES || 'O,SE,TK,X,XA,XB,FW'
   },
+  SDWORX: {
+    EXCLUDED_CATEGORIES: (process.env.SDWORX_EXCLUDED_CATEGORIES && typeof process.env.SDWORX_EXCLUDED_CATEGORIES === 'string' && process.env.SDWORX_EXCLUDED_CATEGORIES.split(',')) || ['O', 'SE', 'TK', 'X', 'XA', 'XB', 'FW']
+  },
   FEIDE: {
     PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME || '@vtfk.no'
   },
