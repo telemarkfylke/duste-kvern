@@ -1,44 +1,44 @@
 module.exports = [
   {
-    instanceId: "jhie",
+    instanceId: 'jhie',
     queued: true,
     running: false,
     startedTimestamp: null,
     ready: false,
     finishedTimestamp: true,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: [
       {
-        name: "ad",
-        startedTimestamp: "2022-08-01T08:46:24.977Z",
-        finishedTimestamp: "2022-08-01T08:47:21.977Z",
+        name: 'ad',
+        startedTimestamp: '2022-08-01T08:46:24.977Z',
+        finishedTimestamp: '2022-08-01T08:47:21.977Z',
         runtime: 4.67,
         tests: [
           {
-            id: "ad-01",
-            title: "Har data",
-            description: "Sjekker noe greier",
+            id: 'ad-01',
+            title: 'Har data',
+            description: 'Sjekker noe greier',
             result: {
-              status: "error",
-              message: "Jauda fungerer sikker bra"
+              status: 'error',
+              message: 'Jauda fungerer sikker bra'
             }
           },
           {
-            id: "ad-02",
-            title: "Ern aktiv a?",
-            description: "Sjekker noe greier med aktivering",
+            id: 'ad-02',
+            title: 'Ern aktiv a?',
+            description: 'Sjekker noe greier med aktivering',
             result: {
-              status: "ok",
-              message: "Jauda fungerer sikker bra",
+              status: 'ok',
+              message: 'Jauda fungerer sikker bra',
               raw: {
                 enabled: true,
                 visma: {
-                  person: "Funet",
-                  activePosition: "jdsijdis",
+                  person: 'Funet',
+                  activePosition: 'jdsijdis',
                   activePositionCategory: {
-                    message: "Jau",
-                    description: "Yes"
+                    message: 'Jau',
+                    description: 'Yes'
                   }
                 }
               }
@@ -46,155 +46,154 @@ module.exports = [
           }
         ],
         data: {
-          noe: "her",
-          og: "noe",
-          der: "!"
+          noe: 'her',
+          og: 'noe',
+          der: '!'
         }
       }
     ]
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   },
   {
-    instanceId: "jhie2",
+    instanceId: 'jhie2',
     startedTimestamp: null,
     running: false,
     queued: null,
     ready: true,
     finishedTimestamp: null,
     runtime: null,
-    caller: "jojojo@jajaj.no",
+    caller: 'jojojo@jajaj.no',
     systems: []
   }
 ]
-

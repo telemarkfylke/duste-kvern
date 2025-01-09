@@ -3,8 +3,6 @@ require('dotenv').config({ path: join(__dirname, '../../../../.env') }) // User 
 
 const { logger } = require('@vtfk/logger')
 
-const { writeFileSync } = require('fs')
-
 const TENANT_NAME = process.env.APPREG_TENANT_NAME
 if (!TENANT_NAME) throw new Error('Mangler tenantName i .env på rot')
 
