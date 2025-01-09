@@ -23,10 +23,10 @@ const adAktiveringAnsatt = {
       enabledInAD: systemData.enabled,
       enabledInSdWorx: allData['fint-ansatt'].aktiv
     }
-    if (systemData.enabledInAD && data.enabledInSdWorx) return success({ message: 'Kontoen er aktivert', raw: data })
-    if (systemData.enabledInAD && !data.enabledInSdWorx) return error({ message: 'Kontoen er aktivert selvom ansatt ikke har aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
-    if (!systemData.enabledInAD && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selvom ansatt har et aktivt ansettelsesforhold. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
-    if (!systemData.enabledInAD && !data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert i AD og ansatt har ikke et aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
+    if (data.enabledInAD && data.enabledInSdWorx) return success({ message: 'Kontoen er aktivert', raw: data })
+    if (data.enabledInAD && !data.enabledInSdWorx) return error({ message: 'Kontoen er aktivert selvom ansatt ikke har aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
+    if (!data.enabledInAD && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selvom ansatt har et aktivt ansettelsesforhold. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+    if (!data.enabledInAD && !data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert i AD og ansatt har ikke et aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
   }
 }
 
