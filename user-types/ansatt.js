@@ -2,7 +2,7 @@ const { success, error } = require('../lib/test-result')
 const systemNames = require('../systems/system-names')
 const adTests = require('../systems/ad/common-tests')
 const azureTests = require('../systems/azure/common-tests')
-const vismaTests = require('../systems/visma/common-tests')
+const fintAnsattTests = require('../systems/fint-ansatt/common-tests')
 const syncTests = require('../systems/sync/common-tests')
 const feideTests = require('../systems/feide/common-tests')
 const fintLarerTests = require('../systems/fint-larer/common-tests')
@@ -82,6 +82,21 @@ const systemsAndTests = [
     ]
   },
   {
+    id: 'fint-ansatt',
+    name: systemNames.fintAnsatt,
+    tests: [
+      fintAnsattTests.fintAnsattData,
+      fintAnsattTests.fintAnsattAktivStilling,
+      fintAnsattTests.fintAnsattKategori,
+      fintAnsattTests.fintAnsattFnr,
+      fintAnsattTests.fintAnsattOrgTilknytning,
+      fintAnsattTests.fintAnsattMobile,
+      fintAnsattTests.fintAnsattRopebokstaver,
+      fintAnsattTests.fintAnsattArbeidsforhold,
+      fintAnsattTests.fintAnsattSlutterBruker
+    ]
+  },
+  {
     id: 'fint-larer',
     name: systemNames.fintLarer,
     // Tester
@@ -94,23 +109,6 @@ const systemsAndTests = [
       fintLarerTests.fintFodselsnummer,
       fintLarerTests.fintMobilnummer,
       fintLarerTests.fintFeideVis
-    ]
-  },
-  {
-    id: 'visma',
-    name: systemNames.visma,
-    // Tester
-    tests: [
-      vismaTests.vismaPersonFinnes,
-      vismaTests.vismaAktivStilling,
-      vismaTests.vismaKategori,
-      vismaTests.vismaFnr,
-      vismaTests.vismaOrgTilknytning,
-      vismaTests.vismaMobile,
-      vismaTests.vismaRopebokstaver,
-      vismaTests.vismaStillinger,
-      vismaTests.vismaSlutterBruker,
-      vismaTests.vismaPermisjon
     ]
   },
   {

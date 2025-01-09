@@ -15,6 +15,7 @@ const getData = async (user) => {
   try {
     const feidenavn = user.feidenavn || `${user.samAccountName}${FEIDE.PRINCIPAL_NAME}`
     const fintTeacher = await callFintFolk(`teacher/feidenavn/${feidenavn}`, accessToken)
+    delete fintTeacher.bostedsadresse // Just in case
     return fintTeacher
   } catch (error) {
     if (error.response?.status === 404) {

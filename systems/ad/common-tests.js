@@ -1,8 +1,7 @@
-const { APPREG } = require('../../config')
+const { APPREG: { TENANT_NAME } } = require('../../config')
 const { isValidFnr } = require('../../lib/helpers/is-valid-fnr')
 const { error, warn, success } = require('../../lib/test-result')
 const systemNames = require('../system-names')
-const { repackVismaData } = require('../visma/repack-data')
 
 /**
  * Sjekker at ansatt-kontoen er aktivert i AD (bruker data fra HR)
@@ -18,24 +17,16 @@ const adAktiveringAnsatt = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
-    if (!allData.visma || allData.visma.getDataFailed) return error({ message: `Mangler data i ${systemNames.visma}`, raw: { user }, solution: `Rettes i ${systemNames.visma}` })
-    const vismaData = repackVismaData(allData.visma)
+    if (!allData['fint-ansatt'] || allData['fint-ansatt'].getDataFailed) return error({ message: `Mangler data i ${systemNames.fintAnsatt}`, raw: { user }, solution: `Rettes i ${systemNames.fintAnsatt}` })
+
     const data = {
-      enabled: systemData.enabled,
-      visma: {
-        person: vismaData.person.message,
-        activePosition: vismaData.activePosition.message,
-        activePositionCategory: {
-          message: vismaData.activePositionCategory.message,
-          description: vismaData.activePositionCategory.raw.description
-        },
-        active: vismaData.activePosition.raw.employment.active
-      }
+      enabledInAD: systemData.enabled,
+      enabledInSdWorx: allData['fint-ansatt'].aktiv
     }
-    if (systemData.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
-    if (systemData.enabled && !data.visma.active) return error({ message: 'Kontoen er aktivert selvom ansatt har sluttet', raw: data, solution: `Rettes i ${systemNames.visma}` })
-    if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.${APPREG.TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
-    if (!systemData.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: `Rettes i ${systemNames.visma}` })
+    if (systemData.enabledInAD && data.enabledInSdWorx) return success({ message: 'Kontoen er aktivert', raw: data })
+    if (systemData.enabledInAD && !data.enabledInSdWorx) return error({ message: 'Kontoen er aktivert selvom ansatt ikke har aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
+    if (!systemData.enabledInAD && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selvom ansatt har et aktivt ansettelsesforhold. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+    if (!systemData.enabledInAD && !data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert i AD og ansatt har ikke et aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
   }
 }
 
@@ -84,7 +75,7 @@ const adHvilkenOU = {
     const data = {
       distinguishedName: systemData.distinguishedName
     }
-    if (data.distinguishedName.toUpperCase().includes('OU=AUTO DISABLED USERS')) return warn({ message: 'Bruker ligger i OU\'en AUTO DISABLED USERS', raw: data, solution: `Rettes i ${systemNames.visma}` })
+    if (data.distinguishedName.toUpperCase().includes('OU=AUTO DISABLED USERS')) return warn({ message: 'Bruker ligger i OU\'en AUTO DISABLED USERS', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
     return success({ message: 'Bruker ligger ikke i OU\'en AUTO DISABLED USERS', raw: data })
   }
 }

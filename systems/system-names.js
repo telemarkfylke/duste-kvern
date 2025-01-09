@@ -4,6 +4,7 @@ module.exports = {
   equitrac: 'Equitrac (utskrift)',
   feide: 'FEIDE',
   fintLarer: 'Visma InSchool',
+  fintAnsatt: 'SD Worx (HR)',
   sds: 'SDS Teams LMS',
   sync: 'Forrige synkroniseringstidspunkt',
   vigoot: 'VIGO OT',
