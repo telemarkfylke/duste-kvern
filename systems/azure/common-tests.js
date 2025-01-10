@@ -251,8 +251,12 @@ const azureGroups = {
   test: (user, systemData) => {
     const groupWarningLimit = 200
     if (systemData.memberOf.length === 0) return error({ message: `Er ikke medlem av noen ${systemNames.azure} grupper 🤔` })
-    if (systemData.memberOf.length > groupWarningLimit) return warn({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.azure} grupper 😵`, solution: 'Det kan hende brukeren trenger å være medlem av alle disse gruppene, men om du tror det er et problem, meld en sak til arbeidsgruppe identitet', raw: systemData.memberOf })
-    return success({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.azure} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}`, raw: systemData.memberOf })
+    const groups = {
+      regular: systemData.memberOf.filter(group => !group.trim().startsWith('MEM-User-')),
+      mem: systemData.memberOf.filter(group => group.trim().startsWith('MEM-User-'))
+    }
+    if (groups.regular.length > groupWarningLimit) return warn({ message: `Er direkte medlem av ${groups.regular.length} ${systemNames.azure} grupper, og ${groups.mem.length} MEM-grupper 😵`, solution: 'Det kan hende brukeren trenger å være medlem av alle disse gruppene, men om du tror det er et problem, meld en sak til arbeidsgruppe identitet', raw: groups })
+    return success({ message: `Er direkte medlem av ${groups.regular.length} ${systemNames.azure} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}, og ${groups.mem.length} MEM-grupper`, raw: groups })
   }
 }
 
