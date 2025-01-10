@@ -21,10 +21,11 @@ const azureAktiveringAnsatt = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
-    if (!allData['fint-ansatt'] || allData['fint-ansatt'].getDataFailed) return error({ message: `Mangler data i ${systemNames.fintAnsatt}`, raw: { user }, solution: `Rettes i ${systemNames.fintAnsatt}` })
+    if (!allData['fint-ansatt']) return error({ message: `Mangler data i ${systemNames.fintAnsatt}`, raw: { user }, solution: `Rettes i ${systemNames.fintAnsatt}` })
+    if (allData['fint-ansatt'].getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.fintAnsatt}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.fintAnsatt}` })
     const data = {
       enabledInAd: systemData.accountEnabled,
-      enabledInSdWorx: allData['fint-ansatt'].aktiv
+      enabledInSdWorx: allData['fint-ansatt'].arbeidsforhold.some(forhold => forhold.aktiv || new Date() < new Date(forhold.gyldighetsperiode.start))
     }
     if (data.enabledInAd && data.enabledInSdWorx) return success({ message: 'Kontoen er aktivert', raw: data })
     if (data.enabledInAd && !data.enabledInSdWorx) return error({ message: 'Kontoen er aktivert selvom ansatt ikke har aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
@@ -47,7 +48,8 @@ const azureAktiveringElev = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
-    if (!allData['fint-elev'] || allData['fint-elev'].getDataFailed) return error({ message: `Mangler data i ${systemNames.vis}`, raw: { user }, solution: `Rettes i ${systemNames.vis}` })
+    if (!allData['fint-elev']) return error({ message: `Mangler data i ${systemNames.vis}`, raw: { user }, solution: `Rettes i ${systemNames.vis}` })
+    if (allData['fint-elev'].getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.vis}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.vis}` })
     const data = {
       enabled: systemData.accountEnabled,
       vis: {
@@ -105,7 +107,8 @@ const azurePwdSync = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
-    if (!allData.ad || allData.ad.getDataFailed) return error({ message: `Mangler ${systemNames.ad}-data`, raw: allData.ad })
+    if (!allData.ad) return error({ message: `Mangler ${systemNames.ad}-data`, raw: allData.ad })
+    if (allData.ad.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.ad}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.ad}` })
     const pwdCheck = isWithinTimeRange(new Date(allData.ad.pwdLastSet), new Date(systemData.lastPasswordChangeDateTime), aadSyncInSeconds)
     const data = {
       azure: {
@@ -214,7 +217,8 @@ const azureAdInSync = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
-    if (!allData.ad || allData.ad.getDataFailed) return error({ message: `Mangler data i ${systemNames.ad}`, raw: { user } })
+    if (!allData.ad) return error({ message: `Mangler data i ${systemNames.ad}`, raw: { user } })
+    if (allData.ad.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.ad}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.ad}` })
     const data = {
       azure: {
         accountEnabled: systemData.accountEnabled,

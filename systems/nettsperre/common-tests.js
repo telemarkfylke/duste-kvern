@@ -15,7 +15,8 @@ const nettsperreHarNettsperre = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
-    if (!allData.azure || allData.azure.getDataFailed) return error({ message: `Mangler data i ${systemNames.azure}`, raw: { user }, solution: `Rettes i ${systemNames.azure}` })
+    if (!allData.azure) return error({ message: `Mangler data i ${systemNames.azure}`, raw: { user }, solution: `Rettes i ${systemNames.azure}` })
+    if (allData.azure.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.azure}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.azure}` })
     const nettsperreGroups = ['NETTSPERRE-EKSAMEN-MAN']
     const memberOfNettsperreGroups = allData.azure.memberOf.filter(group => nettsperreGroups.includes(group))
 

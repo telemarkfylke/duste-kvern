@@ -171,7 +171,8 @@ const fintFodselsnummer = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData, allData) => {
-    if (!allData.ad || allData.ad.getDataFailed) return error({ message: 'Mangler data fra AD' })
+    if (!allData.ad) return error({ message: `Mangler data fra ${systemNames.ad}` })
+    if (allData.ad.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.ad}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.ad}` })
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const data = {
       adFnr: allData.ad.employeeNumber,
@@ -216,7 +217,8 @@ const fintStudentFeidenavn = {
    */
   test: (user, systemData, allData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
-    if (!allData.feide || allData.feide.getDataFailed) return error({ message: 'Mangler data fra FEIDE' })
+    if (!allData.feide) return error({ message: 'Mangler data fra FEIDE' })
+    if (allData.feide.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.feide}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.feide}` })
 
     const data = {
       feide: allData.feide.eduPersonPrincipalName,
