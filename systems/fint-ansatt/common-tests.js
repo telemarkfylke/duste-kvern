@@ -175,7 +175,8 @@ const fintAnsattArbeidsforhold = {
     if (!systemData) return ignore() // Første test tar seg av dette
     if (!systemData.arbeidsforhold || systemData.arbeidsforhold.length === 0) return error({ message: 'Mangler arbeidsforhold', solution: `Dersom brukeren jobber hos oss, rettes i ${systemNames.fintAnsatt}.` })
 
-    const positions = systemData.arbeidsforhold
+    const positions = systemData.arbeidsforhold.filter(forhold => forhold.aktiv)
+    if (positions.length === 0) return error({ message: 'Bruker har ingen aktive arbeidsforhold', raw: systemData.arbeidsforhold, solution: `Dersom brukeren jobber hos oss, rettes i ${systemNames.fintAnsatt}.` })
 
     const primaryPositions = positions.filter(position => position.hovedstilling)
     const secondaryPositions = positions.filter(position => !position.hovedstilling)

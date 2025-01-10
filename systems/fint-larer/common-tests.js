@@ -153,7 +153,8 @@ const fintFodselsnummer = {
   test: (user, systemData, allData) => {
     if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
-    if (!allData.ad || allData.ad.getDataFailed) return error({ message: 'Mangler data fra AD' })
+    if (!allData.ad) return error({ message: 'Mangler data fra AD' })
+    if (allData.ad.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.ad}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.ad}` })
     const data = {
       adFnr: allData.ad.employeeNumber,
       visFnr: systemData.fodselsnummer
@@ -206,7 +207,8 @@ const fintFeideVis = {
   test: (user, systemData, allData) => {
     if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
-    if (!allData.feide || allData.feide.getDataFailed) return error({ message: 'Mangler data fra FEIDE' })
+    if (!allData.feide) return error({ message: 'Mangler data fra FEIDE' })
+    if (allData.feide.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.feide}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.feide}` })
     if (!user.isTeacher && Array.isArray(allData.feide) && allData.feide.length === 0) return success({ message: 'Er ikke lærer, og har ikke Feide-bruker' })
     const data = {
       feide: allData.feide.eduPersonPrincipalName,
