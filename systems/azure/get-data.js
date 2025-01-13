@@ -105,7 +105,7 @@ const getData = async (user) => {
       {
         id: '6',
         method: 'GET',
-        url: `/identityProtection/riskyUsers?$filter=userPrincipalName eq '${user.userPrincipalName}' and riskState ne 'dismissed' and riskState ne 'remediated'` // risky user check
+        url: `/identityProtection/riskyUsers?$filter=userPrincipalName eq '${user.userPrincipalName}' and riskState ne 'dismissed' and riskState ne 'remediated' and riskState ne 'confirmedSafe'` // risky user check
       }
     ]
   }
