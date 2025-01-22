@@ -265,6 +265,27 @@ const azureGroups = {
 }
 
 /**
+ * Sjekker om bruker er medlem av en conditional access persona group
+ */
+const azureConditionalAccessPersonaGroup = {
+  id: 'azure_conditional_access_persona_group',
+  title: 'Sjekker medlemskap i conditional access persona group',
+  description: 'Sjekker om bruker er medlem av en conditional access persona group',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    const conditionalAccessPersonaGroups = systemData.memberOf.filter(group => group.trim().toLowerCase().startsWith('conditional access persona'))
+
+    if (conditionalAccessPersonaGroups.length === 0) return error({ message: `Er ikke medlem av noen Conditional Acccess Persona-grupper i ${systemNames.azure}, og vil ikke kunne logge på 😧`, solution: 'Ta kontakt med sikkerhet' })
+    return success({ message: `Er medlem av ${conditionalAccessPersonaGroups.length} Conditional Acccess Persona-gruppe${conditionalAccessPersonaGroups.length > 1 ? 'r' : ''}`, raw: conditionalAccessPersonaGroups })
+  }
+}
+
+/**
  * Sjekker om bruker finnes i risky users
  */
 const azureRiskyUser = {
@@ -317,4 +338,4 @@ const azureLastSignin = {
   }
 }
 
-module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureMfa, azurePwdKluss, azureAdInSync, azureGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev }
+module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureMfa, azurePwdKluss, azureAdInSync, azureGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup }

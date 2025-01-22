@@ -39,6 +39,7 @@ const systemsAndTests = [
       azureTests.azurePwdKluss,
       azureTests.azureMfa,
       azureTests.azureGroups,
+      azureTests.azureConditionalAccessPersonaGroup,
       azureTests.azureRiskyUser,
       azureTests.azureLastSignin
     ]
