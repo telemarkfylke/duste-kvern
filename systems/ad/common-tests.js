@@ -187,25 +187,6 @@ const adExt9 = {
 }
 
 /**
- * Sjekker om bruker har extensionAttribute14, og at den har verdien VFK
- */
-const adExt14 = {
-  id: 'ad-ext14',
-  title: 'Har extensionAttribute14 lik VFK',
-  description: 'Sjekker om bruker har extensionAttribute14, og at den har verdien VFK',
-  waitForAllData: false,
-  /**
-   *
-   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
-   */
-  test: (user, systemData) => {
-    if (!systemData.extensionAttribute14 || systemData.extensionAttribute14 !== 'VFK') return error({ message: 'VFK mangler i extensionAttribute14 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
-    return success({ message: 'Har VFK i extensionAttribute14' })
-  }
-}
-
-/**
  * Sjekker brukers direkte gruppemedlemskap
  */
 const adGroupMembership = {
@@ -225,4 +206,4 @@ const adGroupMembership = {
   }
 }
 
-module.exports = { adHvilkenOU, adLocked, adFnr, adStateLicense, adExt4, adExt9, adExt14, adGroupMembership, adAktiveringAnsatt, adAktiveringElev }
+module.exports = { adHvilkenOU, adLocked, adFnr, adStateLicense, adExt4, adExt9, adGroupMembership, adAktiveringAnsatt, adAktiveringElev }
