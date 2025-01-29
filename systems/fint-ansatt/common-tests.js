@@ -127,7 +127,7 @@ const fintAnsattMobile = {
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
-    if (!systemData.kontaktMobiltelefonnummer) return warn({ message: `Bruker har ikke mobiltelefonnummer registrert på personalressurs i ${systemNames.fintAnsatt} og har ikke mottatt oppstartsmelding på SMS`, solution: `Dersom brukeren trenger å sette opp konto, send brukeren til minkonto.${TENANT_NAME}.no/ansatt. Dersom brukeren har satt opp kontoen sin, rettes dette i ${systemNames.fintAnsatt}.` })
+    if (!systemData.kontaktMobiltelefonnummer && !systemData.privatMobiltelefonnummer) return warn({ message: `Bruker har ikke mobiltelefonnummer registrert på personalressurs eller person i ${systemNames.fintAnsatt} og har ikke mottatt oppstartsmelding på SMS`, solution: `Dersom brukeren trenger å sette opp konto, send brukeren til minkonto.${TENANT_NAME}.no/ansatt. Dersom brukeren har satt opp kontoen sin, rettes dette i ${systemNames.fintAnsatt}.` })
     return success({ message: `Bruker har ☎️ korrekt satt i ${systemNames.fintAnsatt}` })
   }
 }
