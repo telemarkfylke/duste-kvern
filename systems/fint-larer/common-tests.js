@@ -18,9 +18,7 @@ const fintData = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData && !user.isTeacher) return success({ message: `Er ikke lærer og har ikke ${systemNames.fintLarer} bruker` })
-    if (!systemData && user.isTeacher) return error({ message: `Har ikke bruker i ${systemNames.fintLarer}, men er medlem av ${teacherGroupName}`, solution: 'Meld sak til arbeidsgruppe identitet' })
-    if (systemData && !user.isTeacher) return success({ message: `Har bruker i ${systemNames.fintLarer} (men er ikke lærer, sikkert en rådgiver ellerno)` })
+    if (!systemData) return success({ message: `Har ikke ${systemNames.fintLarer} bruker` })
     return success({ message: `Har bruker i ${systemNames.fintLarer}` })
   }
 }
@@ -130,9 +128,7 @@ const fintUndervisningsgrupper = {
       const uGrupper = forhold.undervisningsgrupper.filter(uGruppe => uGruppe.aktiv).map(uGruppe => { return { systemId: uGruppe.systemId, navn: uGruppe.navn, skole: uGruppe.skole.navn } })
       undervisningsgrupper = [...undervisningsgrupper, ...uGrupper]
     })
-    if (!user.isTeacher && undervisningsgrupper.length > 0) return error({ message: `Bruker har ikke medlemskap i ${teacherGroupName}, men har undervisningsgrupper`, solution: 'Meld sak til arbeidsgruppe identitet', raw: undervisningsgrupper })
-    if (!user.isTeacher && undervisningsgrupper.length === 0) return success({ message: 'Er ikke lærer og har ingen undervisningsgrupper' })
-    if (undervisningsgrupper.length === 0) return warn({ message: 'Mangler medlemskap i undervisningsgruppe(r)', raw: undervisningsgrupper, solution: `Rettes i ${systemNames.fintLarer}, dersom det savnes noe medlemskap. Hvis det allerede er korrekt i ${systemNames.fintLarer}, meld sak til arbeidsgruppe identitet` })
+    if (undervisningsgrupper.length === 0) return success({ message: 'Har ingen undervisningsgruppe(r)', raw: undervisningsgrupper, solution: `Rettes i ${systemNames.fintLarer}, dersom det savnes noe medlemskap. Hvis det allerede er korrekt i ${systemNames.fintLarer}` })
     return success({ message: `Underviser i ${undervisningsgrupper.length} ${undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: undervisningsgrupper })
   }
 }
