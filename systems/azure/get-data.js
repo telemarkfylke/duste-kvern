@@ -106,6 +106,11 @@ const getData = async (user) => {
         id: '6',
         method: 'GET',
         url: `/identityProtection/riskyUsers?$filter=userPrincipalName eq '${user.userPrincipalName}' and riskState ne 'dismissed' and riskState ne 'remediated' and riskState ne 'confirmedSafe'` // risky user check
+      },
+      {
+        id: '7',
+        method: 'GET',
+        url: `/users/${user.userPrincipalName}/ownedDevices` // Brukerens enheter
       }
     ]
   }
@@ -140,6 +145,12 @@ const getData = async (user) => {
   const userSignInErrors = responses.find(res => res.id === '5').body
 
   const graphRiskyUser = responses.find(res => res.id === '6').body
+  
+  const userDevices = responses.find(res => res.id === '7').body
+  const mappedUserDevices = userDevices.value && userDevices.value.map(device => {
+    delete device.alternativeSecurityIds
+    return device
+  })
 
   return {
     ...userData,
@@ -148,7 +159,8 @@ const getData = async (user) => {
     authenticationMethods: graphUserAuthMethods,
     userSignInErrors: userSignInErrors.value,
     userSignInSuccess: userSignInSuccess.value,
-    graphRiskyUser: graphRiskyUser.value
+    graphRiskyUser: graphRiskyUser.value,
+    userDevices: mappedUserDevices
   }
 }
 
