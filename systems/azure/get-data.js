@@ -145,7 +145,7 @@ const getData = async (user) => {
   const userSignInErrors = responses.find(res => res.id === '5').body
 
   const graphRiskyUser = responses.find(res => res.id === '6').body
-  
+
   const userDevices = responses.find(res => res.id === '7').body
   const mappedUserDevices = userDevices.value && userDevices.value.map(device => {
     delete device.alternativeSecurityIds

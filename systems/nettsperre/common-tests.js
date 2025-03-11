@@ -34,9 +34,25 @@ const nettsperreHarNettsperre = {
     }
 
     if (data.hasActiveNettsperre && !data.isInNettsperreGroup) return error({ message: `Brukeren skal ha nettsperre, men ligger ikke i nettsperre-gruppe i ${systemNames.azure} 💀`, raw: data, solution: 'Her har det skjedd noe galt - ta kontakt med nettsperre-ansvarlig' })
-    if (!data.hasActiveNettsperre && data.isInNettsperreGroup) return error({ message: `Brukeren har ingen aktive nettsperrer, men ligger i nettsperre-gruppe i ${systemNames.azure}`, raw: data, solution: `Mulig brukeren har blitt lagt inn manuelt - brukerens må fjernes manuelt fra grupper: ${memberOfNettsperreGroups.join(', ')}` })
+    if (!data.hasActiveNettsperre && data.isInNettsperreGroup) return error({ message: `Brukeren har ingen aktive nettsperrer, men ligger i nettsperre-gruppe i ${systemNames.azure}`, raw: data, solution: `Mulig brukeren har blitt lagt inn manuelt - brukeren må fjernes manuelt fra grupper: ${memberOfNettsperreGroups.join(', ')}` })
     if (!data.hasActiveNettsperre && !data.isInNettsperreGroup) return success({ message: 'Brukeren har ingen aktive nettsperrer' })
-    if (data.hasActiveNettsperre && data.isInNettsperreGroup) return warn({ message: 'Brukeren har aktiv nettsperre', raw: data, solution: 'Dette er nok korrekt - kun ment som info om at brukeren er i nettsperre, og ikke har normal netttilgang' })
+    if (data.hasActiveNettsperre && data.isInNettsperreGroup) {
+      if (data.activeNettsperrer.length === 1) {
+        const blockedGroup = data.activeNettsperrer[0].blockedGroup
+        const blockedByTeacher = data.activeNettsperrer[0].teacher
+        return warn({
+          message: `Brukeren er i nettsperre via gruppen ${blockedGroup} satt av lærer ${blockedByTeacher}`,
+          raw: data,
+          solution: 'Dette er vanligvis korrekt - dersom eleven mener at det ikke skal være nettsperre på kontoen, må læreren kontaktes for å sjekke om dette stemmer.'
+        })
+      }
+
+      return warn({
+        message: `Brukeren har ${data.activeNettsperrer.length} aktive nettsperrer. Klikk Vis data for informasjon om hvilke grupper og lærere som har satt sperringene`,
+        raw: data,
+        solution: 'Dette er vanligvis korrekt - dersom eleven mener at det ikke skal være nettsperre på kontoen, må læreren kontaktes for å sjekke om dette stemmer.'
+      })
+    }
   }
 }
 
@@ -55,7 +71,7 @@ const nettsperrePending = {
    */
   test: (user, systemData) => {
     if (systemData.futureNettsperrer.length === 0) return success({ message: 'Brukeren har ingen planlagte nettsperrer' })
-    if (systemData.futureNettsperrer.length > 0) return success({ message: `Brukeren har ${systemData.futureNettsperrer.length} planlagte nettsperrer`, raw: systemData.futureNettsperrer })
+    if (systemData.futureNettsperrer.length > 0) return success({ message: `Brukeren har ${systemData.futureNettsperrer.length} planlagt${systemData.futureNettsperrer.length > 1 ? 'e' : ''} nettsperre${systemData.futureNettsperrer.length > 1 ? 'r' : ''}`, raw: systemData.futureNettsperrer })
   }
 }
 
