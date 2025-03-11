@@ -100,7 +100,7 @@ const getData = async (user) => {
       {
         id: '5',
         method: 'GET',
-        url: `/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode eq 50126 and createdDateTime gt ${entraIdDate()}&$top=30` // error signins (pwd kluss)
+        url: `/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode ne 0 and createdDateTime gt ${entraIdDate()}&$top=30` // error signins
       },
       {
         id: '6',

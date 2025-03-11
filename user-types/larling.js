@@ -58,6 +58,7 @@ const systemsAndTests = [
       azureTests.azureConditionalAccessPersonaGroup,
       azureTests.azureRiskyUser,
       azureTests.azureLastSignin,
+      azureTests.azureSignInInfo,
       azureTests.azureUserDevices
     ]
   },
