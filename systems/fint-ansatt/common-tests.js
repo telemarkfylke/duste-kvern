@@ -61,7 +61,7 @@ const fintAnsattKategori = {
     if (!systemData) return ignore() // Første test tar seg av dette
     const category = systemData.personalressurskategori
     if (!category.kode) return error({ message: 'Mangler personalressurskategori', raw: category })
-    if (SDWORX.EXCLUDED_CATEGORIES.includes(category.kode.toUpperCase())) return warn({ message: `Kategorien på personalressursen (${category.kode}) er ekskludert, som tilsier at det ikke skal opprettes noen brukerkonto`, raw: category })
+    if (SDWORX.EXCLUDED_CATEGORIES.includes(category.kode.toUpperCase())) return error({ message: `Kategorien på personalressursen (${category.kode}) er ekskludert, som tilsier at det ikke skal opprettes noen brukerkonto`, raw: category })
     return success({ message: `Kategorien på ansettelsesforholdet (${category.kode}) er ikke ekskludert, som tilsier at det skal opprettes brukerkonto`, raw: category })
   }
 }
