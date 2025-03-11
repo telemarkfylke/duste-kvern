@@ -56,7 +56,15 @@ const fintStudentSkoleforhold = {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const skoleforhold = systemData.elevforhold.map(forhold => forhold.skole)
     if (skoleforhold.length === 0) return error({ message: 'Har ingen skoleforhold 😬', solution: `Rettes i ${systemNames.vis}` })
-    const primarySchool = skoleforhold.find(school => school.hovedskole)
+    const primarySchools = skoleforhold.filter(school => school.hovedskole)
+    if (primarySchools.length > 1) {
+      return error({ message: `Har ${primarySchools.length} hovedskoler`, raw: primarySchools, solution: `Dette er fei og må det rettes i ${systemNames.vis}` })
+    }
+    if (primarySchools.length === 0) {
+      return error({ message: 'Har ingen hovedskole', raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
+    }
+
+    const primarySchool = primarySchools[0]
     if (skoleforhold.length > 1) {
       return primarySchool ? warn({ message: `Har ${skoleforhold.length} skoleforhold. ${primarySchool.navn} er hovedskole`, raw: skoleforhold, solution: `Dette er i mange tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` }) : error({ message: `Har ${skoleforhold.length} skoleforhold men ingen hovedskole`, raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
     }
