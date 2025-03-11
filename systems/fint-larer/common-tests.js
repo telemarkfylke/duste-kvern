@@ -1,8 +1,5 @@
 const { error, warn, success, ignore } = require('../../lib/test-result')
 const systemNames = require('../system-names')
-const { APPREG: { TENANT_NAME } } = require('../../config')
-
-const teacherGroupName = `${TENANT_NAME === 'vestfoldfylke' ? '*V-VFK-ALLE-LÆRERE*' : '*T-TFK-ALLE-LÆRERE*'}`
 
 /**
  * Sjekker om brukeren har VIS-data
