@@ -198,7 +198,7 @@ const azurePwdKluss = {
     const data = {
       userSignInErrors: systemData.userSignInErrors.filter(err => err.status.errorCode === 50126) // pwd kluss
     }
-    if (systemData.userSignInErrors.length > 0) return error({ message: `Har skrevet feil passord ${systemData.userSignInErrors.length} gang${systemData.userSignInErrors.length > 1 ? 'er' : ''} idag 🤦‍♂️`, raw: data, solution: 'Bruker må ta av boksehanskene 🥊' })
+    if (data.userSignInErrors.length > 0) return error({ message: `Har skrevet feil passord ${data.userSignInErrors.length} gang${data.userSignInErrors.length > 1 ? 'er' : ''} idag 🤦‍♂️`, raw: data, solution: 'Bruker må ta av boksehanskene 🥊' })
     return success({ message: 'Ingen klumsing med passord idag', raw: data })
   }
 }
