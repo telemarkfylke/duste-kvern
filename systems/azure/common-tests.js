@@ -343,8 +343,8 @@ const azureLastSignin = {
  */
 const azureSignInInfo = {
   id: 'azure_signin_info',
-  title: 'Feilsituasjoner eller hendelser',
-  description: 'Sjekker feilsituasjoner eller hendelser',
+  title: 'Bemerkelsesverdige påloggingshendelser',
+  description: 'Sjekker bemerkelsesverdige påloggingshendelser',
   waitForAllData: false,
   /**
    *
