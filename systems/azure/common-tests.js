@@ -196,7 +196,7 @@ const azurePwdKluss = {
    */
   test: (user, systemData) => {
     const data = {
-      userSignInErrors: systemData.userSignInErrors
+      userSignInErrors: systemData.userSignInErrors.filter(err => err.status.errorCode === 50126) // pwd kluss
     }
     if (systemData.userSignInErrors.length > 0) return error({ message: `Har skrevet feil passord ${systemData.userSignInErrors.length} gang${systemData.userSignInErrors.length > 1 ? 'er' : ''} idag 🤦‍♂️`, raw: data, solution: 'Bruker må ta av boksehanskene 🥊' })
     return success({ message: 'Ingen klumsing med passord idag', raw: data })
@@ -338,4 +338,26 @@ const azureLastSignin = {
   }
 }
 
-module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureMfa, azurePwdKluss, azureAdInSync, azureGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup }
+/**
+ * Sjekker hvilke feilsituasjoner eller hendelser bruker har møtt idag
+ */
+const azureSignInInfo = {
+  id: 'azure_signin_info',
+  title: 'Feilsituasjoner eller hendelser',
+  description: 'Sjekker feilsituasjoner eller hendelser',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    const data = {
+      userSignInErrors: systemData.userSignInErrors
+    }
+    if (systemData.userSignInErrors.length > 0) return warn({ message: `Har møtt på ${systemData.userSignInErrors.length} feilsituasjon${Math.floor(systemData.userSignInErrors.length) > 1 ? 'er' : ''} eller hendelse${Math.floor(systemData.userSignInErrors.length) > 1 ? 'r' : ''} idag`, raw: data })
+    return success({ message: 'Har ikke møtt på noen feilsituasjoner eller hendelser idag', raw: data })
+  }
+}
+
+module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureMfa, azurePwdKluss, azureAdInSync, azureGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo }
