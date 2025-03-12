@@ -95,12 +95,12 @@ const getData = async (user) => {
       {
         id: '4',
         method: 'GET',
-        url: `/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode eq 0 and createdDateTime gt ${entraIdDate(threeDaysBack)}&$top=1` // last succesful signins
+        url: `/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode eq 0 and createdDateTime gt ${entraIdDate(threeDaysBack)}&$top=1` // last successful sign ins
       },
       {
         id: '5',
         method: 'GET',
-        url: `/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode ne 0 and createdDateTime gt ${entraIdDate()}&$top=30` // error signins
+        url: `/auditLogs/signIns?$filter=userPrincipalName eq '${user.userPrincipalName}' and status/errorCode ne 0 and createdDateTime gt ${entraIdDate()}&$top=30` // error sign ins
       },
       {
         id: '6',
@@ -128,7 +128,7 @@ const getData = async (user) => {
     ids = retryRequests.map(req => req.id)
     */
     // throw new Error(`Batch request fikk retry-after.. ider: ${ids.join(', ')}, retryAfters: ${retryAfters.join(', ')} json: ${JSON.stringify(retryRequests)}`)
-    throw new Error('Aiaai, for mange spørringer mot MS Graph på en gang - her må vi bare vente altså, ta en kaffe...')
+    throw new Error('Aiaiai, for mange spørringer mot MS Graph på en gang - her må vi bare vente altså, ta en kaffe...')
   }
 
   const userData = responses.find(res => res.id === '1').body

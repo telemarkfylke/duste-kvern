@@ -378,7 +378,7 @@ const azureUserDevices = {
      * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
      */
   test: (user, systemData) => {
-    if (systemData.userDevices.length === 0) return warn({ message: 'Har ingen registrete enheter. Kan dette stemme da?', solution: 'Dersom brukeren egentlig har en enhet må denne registreres i InTune' })
+    if (systemData.userDevices.length === 0) return warn({ message: 'Har ingen registrerte enheter. Kan dette stemme da?', solution: 'Dersom brukeren egentlig har en enhet må denne registreres i InTune' })
     return success({ message: `Har ${systemData.userDevices.length} registrert${systemData.userDevices.length > 1 ? 'e' : ''} enhet${systemData.userDevices.length > 1 ? 'er' : ''}`, raw: systemData.userDevices })
   }
 }
