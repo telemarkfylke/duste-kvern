@@ -359,7 +359,7 @@ const azureSignInInfo = {
     const data = {
       userSignInErrors: systemData.userSignInErrors
     }
-    if (systemData.userSignInErrors.length > 0) return warn({ message: `Har møtt på ${systemData.userSignInErrors.length} bemerkelsesverdig${systemData.userSignInErrors.length > 1 ? 'e' : ''} påloggingshendelse${systemData.userSignInErrors.length > 1 ? 'r' : ''} i dag`, raw: data })
+    if (systemData.userSignInErrors.length > 0) return success({ message: `Har møtt på ${systemData.userSignInErrors.length} bemerkelsesverdig${systemData.userSignInErrors.length > 1 ? 'e' : ''} påloggingshendelse${systemData.userSignInErrors.length > 1 ? 'r' : ''} i dag`, raw: data })
     return success({ message: 'Har ikke møtt på noen bemerkelsesverdige påloggingshendelser i dag', raw: data })
   }
 }
