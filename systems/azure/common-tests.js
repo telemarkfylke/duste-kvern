@@ -19,6 +19,7 @@ const azureAktiveringAnsatt = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData Kan slenge inn jsDocs for at dette er data for alle systemer f. eks
    */
   test: (user, systemData, allData) => {
     if (!allData['fint-ansatt']) return error({ message: `Mangler data i ${systemNames.fintAnsatt}`, raw: { user }, solution: `Rettes i ${systemNames.fintAnsatt}` })
@@ -46,6 +47,7 @@ const azureAktiveringElev = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData Kan slenge inn jsDocs for at dette er data for alle systemer f. eks
    */
   test: (user, systemData, allData) => {
     if (!allData['fint-elev']) return error({ message: `Mangler data i ${systemNames.vis}`, raw: { user }, solution: `Rettes i ${systemNames.vis}` })
@@ -105,6 +107,7 @@ const azurePwdSync = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData Kan slenge inn jsDocs for at dette er data for alle systemer f. eks
    */
   test: (user, systemData, allData) => {
     if (!allData.ad) return error({ message: `Mangler ${systemNames.ad}-data`, raw: allData.ad })
@@ -215,6 +218,7 @@ const azureAdInSync = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData Kan slenge inn jsDocs for at dette er data for alle systemer f. eks
    */
   test: (user, systemData, allData) => {
     if (!allData.ad) return error({ message: `Mangler data i ${systemNames.ad}`, raw: { user } })
