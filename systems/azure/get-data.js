@@ -4,6 +4,10 @@ const axios = require('axios').default
 const { entraIdDate } = require('../../lib/helpers/date-time-output')
 const { logger } = require('@vtfk/logger')
 
+const excludeSignInErrors = [
+  70043
+]
+
 const callGraph = async (resource, accessToken) => {
   const { data } = await axios.get(`${GRAPH.URL}/v1.0/${resource}`, { headers: { Authorization: `Bearer ${accessToken}` } })
   return data
@@ -143,6 +147,7 @@ const getData = async (user) => {
   const userSignInSuccess = responses.find(res => res.id === '4').body
 
   const userSignInErrors = responses.find(res => res.id === '5').body
+  const filteredSignInErrors = userSignInErrors.value && userSignInErrors.value.filter(signIn => !excludeSignInErrors.includes(signIn.status.errorCode))
 
   const graphRiskyUser = responses.find(res => res.id === '6').body
 
@@ -157,7 +162,7 @@ const getData = async (user) => {
     sdsGroups: graphSDSGroups,
     memberOf: graphUserGroupsDisplayName,
     authenticationMethods: graphUserAuthMethods,
-    userSignInErrors: userSignInErrors.value,
+    userSignInErrors: filteredSignInErrors,
     userSignInSuccess: userSignInSuccess.value,
     graphRiskyUser: graphRiskyUser.value,
     userDevices: mappedUserDevices
