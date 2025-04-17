@@ -18,6 +18,18 @@ const batchGraph = async (batchRequest, accessToken) => {
   return data
 }
 
+const getSchoolYear = (yearsBack = 0) => {
+  const today = new Date()
+  const currentMonth = today.getMonth() + 1
+  const currentYear = Number.parseInt(today.getFullYear().toString().slice(-2)) - yearsBack
+
+  if (currentMonth >= 8 && currentMonth <= 12) {
+    return `${currentYear}${currentYear + 1}`
+  }
+
+  return `${currentYear - 1}${currentYear}`
+}
+
 const getData = async (user) => {
   const clientConfig = {
     clientId: APPREG.CLIENT_ID,
@@ -135,11 +147,16 @@ const getData = async (user) => {
     throw new Error('Aiaiai, for mange spørringer mot MS Graph på en gang - her må vi bare vente altså, ta en kaffe...')
   }
 
+  const currentSchoolYear = getSchoolYear()
+  const previousSchoolYear = getSchoolYear(1)
+
   const userData = responses.find(res => res.id === '1').body
 
   const graphUserGroups = responses.find(res => res.id === '2').body
   const graphUserGroupsDisplayName = (graphUserGroups?.value && graphUserGroups.value.map(group => group.displayName).sort()) || []
   const graphSDSGroups = (graphUserGroups && graphUserGroups.value && Array.isArray(graphUserGroups.value) && graphUserGroups.value.filter(group => group.mailNickname && group.mailNickname.startsWith('Section_'))) || []
+  const graphSDSGroupsCurrentYearDisplayName = graphSDSGroups.filter(group => group.mailNickname.includes(currentSchoolYear)).map(group => group.displayName).sort()
+  const graphSDSGroupsPreviousYearDisplayName = graphSDSGroups.filter(group => group.mailNickname.includes(previousSchoolYear)).map(group => group.displayName).sort()
 
   const graphUserAuth = responses.find(res => res.id === '3').body
   const graphUserAuthMethods = graphUserAuth?.value && graphUserAuth.value.length && graphUserAuth.value.filter(method => !method['@odata.type'].includes('passwordAuthenticationMethod'))
@@ -159,7 +176,10 @@ const getData = async (user) => {
 
   return {
     ...userData,
-    sdsGroups: graphSDSGroups,
+    sdsGroups: {
+      currentYear: graphSDSGroupsCurrentYearDisplayName,
+      previousYear: graphSDSGroupsPreviousYearDisplayName
+    },
     memberOf: graphUserGroupsDisplayName,
     authenticationMethods: graphUserAuthMethods,
     userSignInErrors: filteredSignInErrors,

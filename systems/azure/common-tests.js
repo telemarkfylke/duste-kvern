@@ -269,6 +269,51 @@ const azureGroups = {
 }
 
 /**
+ * Sjekker brukers SDS-gruppemedlemskap i år og forrige år
+ */
+const azureSDSGroups = {
+  id: 'azure_sds_groups',
+  title: 'Sjekker medlemskap i SDS-grupper',
+  description: 'Sjekker brukers SDS-gruppemedlemskap',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    if (systemData.sdsGroups.currentYear.length === 0 && systemData.sdsGroups.previousYear.length === 0) {
+      if (user.userType === 'elev') {
+        return warn({
+          message: `Er ikke medlem av noen ${systemNames.sds} grupper 🤔`,
+          solution: 'Hvis dette er feil, meld sak til arbeidsgruppe identitet',
+          raw: systemData.sdsGroups
+        })
+      }
+
+      return success({
+        message: `Er ikke medlem av noen ${systemNames.sds} grupper`,
+        solution: 'Hvis dette er feil, meld sak til arbeidsgruppe identitet',
+        raw: systemData.sdsGroups
+      })
+    }
+
+    let message = ''
+    if (systemData.sdsGroups.currentYear.length > 0) {
+      message = `Er medlem i ${systemData.sdsGroups.currentYear.length} av årets ${systemNames.sds} grupper`
+    }
+    if (systemData.sdsGroups.previousYear.length > 0) {
+      message += ` og ${systemData.sdsGroups.previousYear.length} av forrige års ${systemNames.sds} grupper`
+    }
+
+    return success({
+      message,
+      raw: systemData.sdsGroups
+    })
+  }
+}
+
+/**
  * Sjekker om bruker er medlem av en conditional access persona group
  */
 const azureConditionalAccessPersonaGroup = {
@@ -383,4 +428,4 @@ const azureUserDevices = {
   }
 }
 
-module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureMfa, azurePwdKluss, azureAdInSync, azureGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }
+module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureMfa, azurePwdKluss, azureAdInSync, azureGroups, azureSDSGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }
