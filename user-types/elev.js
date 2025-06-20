@@ -37,6 +37,7 @@ const systemsAndTests = [
       azureTests.azureUpnEqualsMail,
       azureTests.azureLicense,
       azureTests.azurePwdKluss,
+      azureTests.azureProxyAddresses,
       azureTests.azureMfa,
       azureTests.azureGroups,
       azureTests.azureSDSGroups,

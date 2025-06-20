@@ -248,6 +248,35 @@ const azurePwdKluss = {
 }
 
 /**
+ * Test som viser brukerens proxyAddresses
+ */
+const azureProxyAddresses = {
+  id: 'azure_proxy_addresses',
+  title: 'Brukers proxyAddresses',
+  description: 'Brukers proxyAddresses',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    if (systemData.proxyAddresses.length === 0) {
+      return error({
+        message: 'Bruker har ingen proxyAddresses',
+        solution: 'Hvis dette er feil, meld sak til arbeidsgruppe identitet',
+        raw: systemData.proxyAddresses
+      })
+    }
+
+    return success({
+      message: `Bruker har ${systemData.proxyAddresses.length} proxyAddresses`,
+      raw: systemData.proxyAddresses
+    })
+  }
+}
+
+/**
  * Sjekker at AD-bruker og Entra ID-bruker er i sync (krever ad data)
  */
 const azureAdInSync = {
@@ -469,4 +498,4 @@ const azureUserDevices = {
   }
 }
 
-module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureLicenseDowngrade, azureMfa, azurePwdKluss, azureAdInSync, azureGroups, azureSDSGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }
+module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureLicenseDowngrade, azureMfa, azurePwdKluss, azureProxyAddresses, azureAdInSync, azureGroups, azureSDSGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }
