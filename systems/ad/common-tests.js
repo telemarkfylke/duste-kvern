@@ -9,7 +9,7 @@ const systemNames = require('../system-names')
 const adAktiveringAnsatt = {
   id: 'ad-aktivering-ansatt',
   title: 'Kontoen er aktivert',
-  description: 'Sjekker at ansatt-kontoen er aktivert i AD',
+  description: `Sjekker at ansatt-kontoen er aktivert i ${systemNames.ad}`,
   waitForAllData: true,
   /**
    *
@@ -37,7 +37,7 @@ const adAktiveringAnsatt = {
 const adAktiveringElev = {
   id: 'ad-aktivering-elev',
   title: 'Kontoen er aktivert',
-  description: 'Sjekker at elev-kontoen er aktivert i AD',
+  description: `Sjekker at elev-kontoen er aktivert i ${systemNames.ad}`,
   waitForAllData: true,
   /**
    *
@@ -89,7 +89,7 @@ const adHvilkenOU = {
 const adLocked = {
   id: 'ad-locked',
   title: 'Kontoen er ulåst',
-  description: 'Sjekker at kontoen ikke er sperret for pålogging i AD',
+  description: `Sjekker at kontoen ikke er sperret for pålogging i ${systemNames.ad}`,
   waitForAllData: false,
   /**
    *

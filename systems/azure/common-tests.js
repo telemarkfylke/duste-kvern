@@ -33,7 +33,7 @@ const generateRawLicenseData = systemData => {
 const azureAktiveringAnsatt = {
   id: 'azure_aktivering_ansatt',
   title: 'Kontoen er aktivert',
-  description: `Sjekker at kontoen er aktivert i ${systemNames.aad}`,
+  description: `Sjekker at ansatt-kontoen er aktivert i ${systemNames.azure}`,
   waitForAllData: true,
   /**
    *
@@ -61,7 +61,7 @@ const azureAktiveringAnsatt = {
 const azureAktiveringElev = {
   id: 'azure_aktivering_elev',
   title: 'Kontoen er aktivert',
-  description: `Sjekker at kontoen er aktivert i ${systemNames.aad}`,
+  description: `Sjekker at elev-kontoen er aktivert i ${systemNames.azure}`,
   waitForAllData: true,
   /**
    *
@@ -91,7 +91,7 @@ const azureAktiveringElev = {
 const azureUpnEqualsMail = {
   id: 'azure_equal_mail',
   title: 'UPN er lik e-postadressen',
-  description: 'Sjekker at UPN-et er lik e-postadressen i AD',
+  description: `Sjekker at UPN-et er lik e-postadressen i ${systemNames.ad}`,
   waitForAllData: false,
   /**
    *
@@ -120,8 +120,8 @@ const azureUpnEqualsMail = {
  */
 const azurePwdSync = {
   id: 'azure_pwd_sync',
-  title: 'Passord synkronisert til Azure AD',
-  description: 'Sjekker at passordet er synkronisert til Azure AD innenfor 40 minutter',
+  title: `Passord synkronisert til ${systemNames.azure}`,
+  description: `Sjekker at passordet er synkronisert til ${systemNames.azure} innenfor 40 minutter`,
   waitForAllData: true,
   /**
    *
@@ -149,12 +149,12 @@ const azurePwdSync = {
 }
 
 /**
- * Sjekker at passordet er synkronisert til Azure AD innenfor 40 minutter
+ * Sjekker at bruker har Microsoft 365-lisenser
  */
 const azureLicense = {
   id: 'azure_license',
-  title: 'Passord synkronisert til Azure AD',
-  description: 'Sjekker at passordet er synkronisert til Azure AD innenfor 40 minutter',
+  title: 'Bruker har Microsoft 365-lisenser',
+  description: 'Sjekker at bruker har Microsoft 365-lisenser',
   waitForAllData: false,
   /**
    *
@@ -173,7 +173,7 @@ const azureLicense = {
 }
 
 /**
- * Sjekker om ansattbruker har fått sin lisens nedgradert til A1
+ * Sjekker om bruker har fått sin lisens nedgradert til A1
  */
 const azureLicenseDowngrade = {
   id: 'azure_license_downgrade',
