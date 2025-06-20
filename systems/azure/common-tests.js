@@ -1,11 +1,31 @@
 const { APPREG: { TENANT_NAME } } = require('../../config')
 const { isWithinTimeRange } = require('../../lib/helpers/is-within-timerange')
-const { error, warn, success } = require('../../lib/test-result')
+const { error, warn, success, ignore } = require('../../lib/test-result')
 const systemNames = require('../system-names')
 const licenses = require('./licenses')
 
 const aadSyncInMinutes = 30
 const aadSyncInSeconds = aadSyncInMinutes * 60
+
+const generateRawLicenseData = systemData => {
+  const data = {
+    licenses: [],
+    hasNecessaryLicenses: false
+  }
+
+  // ??? Bare legge inn riktig skuId for ansatt her??? Og test det i stedet  -ref at vi kanskje Bumper ned lisens på noen
+  data.licenses = systemData.assignedLicenses.map(license => {
+    const lic = licenses.find(lic => lic.skuId === license.skuId)
+    if (lic) {
+      data.hasNecessaryLicenses = data.hasNecessaryLicenses ? true : Boolean(lic.skuPartNumber !== 'FLOW_FREE')
+      return lic
+    }
+
+    return license
+  })
+
+  return data
+}
 
 /**
  * Sjekker at ansatt-kontoen er aktivert i azure (bruker data fra HR)
@@ -144,21 +164,42 @@ const azureLicense = {
   test: (user, systemData) => {
     if (systemData.accountEnabled && systemData.assignedLicenses.length === 0) return error({ message: 'Har ingen Microsoft 365-lisenser 😬', solution: 'Meld sak til arbeidsgruppe identitet' })
     if (!systemData.accountEnabled && systemData.assignedLicenses.length === 0) return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Bruker må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
-    const data = {
-      licenses: [],
-      hasNecessaryLicenses: false
-    }
-    // ??? Bare legge inn riktig skuId for ansatt her??? Og test det i stedet  -ref at vi kanskje Bumper ned lisens på noen
-    data.licenses = systemData.assignedLicenses.map(license => {
-      const lic = licenses.find(lic => lic.skuId === license.skuId)
-      if (lic) {
-        data.hasNecessaryLicenses = data.hasNecessaryLicenses ? true : Boolean(lic.skuPartNumber !== 'FLOW_FREE')
-        return lic
-      } else return license
-    })
+
+    const data = generateRawLicenseData(systemData)
     if (data.hasNecessaryLicenses) return success({ message: 'Har Microsoft 365-lisenser', solution: data.licenses.map(lic => lic.name || lic.skuId), raw: data })
     if (systemData.accountEnabled) return warn({ message: `Har ${data.licenses.length} ${data.licenses.length > 1 ? 'lisenser' : 'lisens'} men mangler nødvendige lisenser`, raw: data, solution: 'Sjekk at bruker har aktive lisenser på brukerobjektet i Azure AD under Licenses. Hvis noen av lisensene tildelt til bruker ikke er aktive, sjekk at det er lisenser tilgjengelig og deretter kjør en Reprocess i License vinduet. Hvis bruker ikke har noen lisenser tildelt, meld sak til arbeidsgruppe identitet' })
     return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Ansatt må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+  }
+}
+
+/**
+ * Sjekker om ansattbruker har fått sin lisens nedgradert til A1
+ */
+const azureLicenseDowngrade = {
+  id: 'azure_license_downgrade',
+  title: 'Lisens er nedgradert til A1',
+  description: 'Sjekker om bruker har fått sin lisens nedgradert til A1',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    if (!systemData.accountEnabled || systemData.assignedLicenses.length === 0) {
+      return ignore()
+    }
+
+    if (systemData.onPremisesExtensionAttributes.extensionAttribute2 !== 'IDM-A1') {
+      return ignore()
+    }
+
+    const { licenses } = generateRawLicenseData(systemData)
+    return warn({
+      message: 'Lisens er nedgradert til A1. Med denne lisensen fungerer Office-pakken kun på web',
+      solution: 'Vent på neste synkronisering av IDM, eller fjern "IDM-A1" fra ExtensionAttribute2 i lokalt AD og vent inntil 30 minutter. Spør i vaktrommet ved behov.',
+      raw: licenses
+    })
   }
 }
 
@@ -428,4 +469,4 @@ const azureUserDevices = {
   }
 }
 
-module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureMfa, azurePwdKluss, azureAdInSync, azureGroups, azureSDSGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }
+module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureLicenseDowngrade, azureMfa, azurePwdKluss, azureAdInSync, azureGroups, azureSDSGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }

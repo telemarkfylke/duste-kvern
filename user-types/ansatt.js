@@ -49,6 +49,8 @@ const systemsAndTests = [
     name: systemNames.azure,
     // Tester
     tests: [
+      azureTests.azureLicense,
+      azureTests.azureLicenseDowngrade,
       {
         id: 'azure_upn',
         title: 'UPN er korrekt',
@@ -70,7 +72,6 @@ const systemsAndTests = [
       },
       azureTests.azureAktiveringAnsatt,
       azureTests.azureUpnEqualsMail,
-      azureTests.azureLicense,
       azureTests.azurePwdSync,
       azureTests.azurePwdKluss,
       azureTests.azureMfa,
