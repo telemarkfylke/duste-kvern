@@ -142,6 +142,7 @@ const fintFodselsnummer = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData
    */
   test: (user, systemData, allData) => {
     if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
@@ -196,6 +197,7 @@ const fintFeideVis = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData
    */
   test: (user, systemData, allData) => {
     if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })

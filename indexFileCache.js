@@ -67,7 +67,7 @@
         return handleDustReport(report)
       })
 
-      // Run all tests - I/O (network and file-system) in parallell, consider CPU (threads) in parallell as well if too slow)
+      // Run all tests - I/O (network and file-system) in parallell, consider CPU (threads) in parallell as well if too slow
       const results = await Promise.all(runPromises)
       */
 

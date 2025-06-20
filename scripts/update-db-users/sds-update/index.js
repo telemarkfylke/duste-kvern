@@ -12,7 +12,7 @@
   console.timeEnd('parseSdsFiles')
   debug && console.log('Parsing SDS files finished')
 
-  // this can't be required before one of it's dependencies has been created above.....
+  // this can't be required before one of its dependencies has been created above.....
   const mergePersons = require('./lib/merge-persons')
 
   // merge students to export

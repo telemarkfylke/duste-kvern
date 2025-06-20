@@ -39,4 +39,5 @@ const getData = async (user, system) => {
     futureNettsperrer: futureNettsperrer.map(sperring => repackNettsperre(sperring, user))
   }
 }
+
 module.exports = { getData }

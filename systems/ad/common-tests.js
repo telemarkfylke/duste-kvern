@@ -15,6 +15,7 @@ const adAktiveringAnsatt = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData
    */
   test: (user, systemData, allData) => {
     if (!allData['fint-ansatt']) return error({ message: `Mangler data i ${systemNames.fintAnsatt}`, raw: { user }, solution: `Rettes i ${systemNames.fintAnsatt}` })
@@ -42,6 +43,7 @@ const adAktiveringElev = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData
    */
   test: (user, systemData, allData) => {
     if (!allData['fint-elev']) return error({ message: `Mangler data i ${systemNames.vis}`, raw: { user }, solution: `Rettes i ${systemNames.vis}` })

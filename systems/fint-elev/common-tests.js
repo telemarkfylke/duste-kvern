@@ -177,6 +177,7 @@ const fintFodselsnummer = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData
    */
   test: (user, systemData, allData) => {
     if (!allData.ad) return error({ message: `Mangler data fra ${systemNames.ad}` })
@@ -222,6 +223,7 @@ const fintStudentFeidenavn = {
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} allData
    */
   test: (user, systemData, allData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
