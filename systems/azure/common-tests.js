@@ -1,5 +1,6 @@
 const { APPREG: { TENANT_NAME } } = require('../../config')
 const { isWithinTimeRange } = require('../../lib/helpers/is-within-timerange')
+const { isVestfold } = require('../../lib/helpers/county')
 const { error, warn, success, ignore } = require('../../lib/test-result')
 const systemNames = require('../system-names')
 const licenses = require('./licenses')
@@ -190,14 +191,15 @@ const azureLicenseDowngrade = {
       return ignore()
     }
 
-    if (systemData.onPremisesExtensionAttributes.extensionAttribute2 !== 'IDM-A1') {
+    if (systemData.onPremisesExtensionAttributes.extensionAttribute11 !== 'IDM-A1') {
       return ignore()
     }
 
+    const groupName = `${isVestfold() ? 'V' : 'T'}-TILGANG-NULLSTILL-EXTENSIONATTRIBUTE11`
     const { licenses } = generateRawLicenseData(systemData)
     return warn({
       message: 'Lisens er nedgradert til A1. Med denne lisensen fungerer Office-pakken kun på web',
-      solution: 'Vent på neste synkronisering av IDM, eller fjern "IDM-A1" fra ExtensionAttribute2 i lokalt AD og vent inntil 30 minutter. Spør i vaktrommet ved behov.',
+      solution: `Etter at bruker har logget seg på vil dette nullstilles automatisk. Vent på neste synkronisering av IDM. Om det haster, fjern "IDM-A1" fra ExtensionAttribute11 i lokalt AD og vent inntil 30 minutter. Legg bruker i gruppe "${groupName}". Spør i vaktrommet ved behov.`,
       raw: licenses
     })
   }
