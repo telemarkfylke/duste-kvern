@@ -206,6 +206,40 @@ const azureLicenseDowngrade = {
 }
 
 /**
+ * Sjekker om bruker har fått sin lisens manuelt endret
+ */
+const azureLicenseManuallyChanged = {
+  id: 'azure_license_manually_changed',
+  title: 'Lisens er manuelt endret',
+  description: 'Sjekker om bruker har fått sin lisens manuelt endret',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    if (!systemData.accountEnabled || systemData.assignedLicenses.length === 0) {
+      return ignore()
+    }
+
+    if (!systemData.onPremisesExtensionAttributes.extensionAttribute2) {
+      return ignore()
+    }
+
+    const { licenses } = generateRawLicenseData(systemData)
+    return warn({
+      message: 'Lisens er manuelt endret',
+      solution: 'Lisens er endret manuelt ved å gi en verdi i ExtensionAttribute2. Dersom dette er feil, fjern verdien i lokalt AD og vent inntil 30 minutter. Spør i vaktrommet om du er i tvil',
+      raw: {
+        extensionAttribute2: systemData.onPremisesExtensionAttributes.extensionAttribute2,
+        licenses
+      }
+    })
+  }
+}
+
+/**
  * Sjekker at MFA er satt opp
  */
 const azureMfa = {
@@ -500,4 +534,4 @@ const azureUserDevices = {
   }
 }
 
-module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureLicenseDowngrade, azureMfa, azurePwdKluss, azureProxyAddresses, azureAdInSync, azureGroups, azureSDSGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }
+module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureLicenseDowngrade, azureLicenseManuallyChanged, azureMfa, azurePwdKluss, azureProxyAddresses, azureAdInSync, azureGroups, azureSDSGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }

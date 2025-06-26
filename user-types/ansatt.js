@@ -51,6 +51,7 @@ const systemsAndTests = [
     tests: [
       azureTests.azureLicense,
       azureTests.azureLicenseDowngrade,
+      azureTests.azureLicenseManuallyChanged,
       {
         id: 'azure_upn',
         title: 'UPN er korrekt',
