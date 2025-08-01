@@ -13,7 +13,7 @@ const getData = async (user) => {
   }
   const accessToken = await getMsalToken(clientConfig)
   try {
-    const fintStudent = await callFintFolk(`student/feidenavn/${user.feidenavn}`, accessToken)
+    const fintStudent = await callFintFolk(`student/feidenavn/${user.feidenavn}?skipCache=true`, accessToken) // Kan legge til skipCache=true for å alltid hente fra FINT dersom det trengs (gjelder også de andre fint-kallene)
     delete fintStudent.bostedsadresse // Just in case
     delete fintStudent.hybeladresse // Just in case
     return fintStudent

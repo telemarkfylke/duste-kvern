@@ -19,7 +19,7 @@ const getData = async (user) => {
   const accessToken = await getMsalToken(clientConfig)
 
   try {
-    const fintEmployee = await callFintFolk(`employee/ansattnummer/${user.onPremisesExtensionAttributes.extensionAttribute9}`, accessToken) // Kan legge til skipCache=true for å alltid hente fra FINT dersom det trengs (gjelder også de andre fint-kallene)
+    const fintEmployee = await callFintFolk(`employee/ansattnummer/${user.onPremisesExtensionAttributes.extensionAttribute9}?skipCache=true`, accessToken) // Kan legge til skipCache=true for å alltid hente fra FINT dersom det trengs (gjelder også de andre fint-kallene)
     delete fintEmployee.bostedsadresse // Just in case
     return fintEmployee
   } catch (error) {
