@@ -1,5 +1,6 @@
 const { APPREG: { TENANT_NAME } } = require('../../config')
 const { isValidFnr } = require('../../lib/helpers/is-valid-fnr')
+const { pluralizeText } = require('../../lib/helpers/pluralize-text')
 const { error, warn, success } = require('../../lib/test-result')
 const systemNames = require('../system-names')
 
@@ -25,9 +26,9 @@ const adAktiveringAnsatt = {
       enabledInSdWorx: allData['fint-ansatt'].arbeidsforhold.some(forhold => forhold.aktiv || new Date() < new Date(forhold.gyldighetsperiode.start))
     }
     if (data.enabledInAD && data.enabledInSdWorx) return success({ message: 'Kontoen er aktivert', raw: data })
-    if (data.enabledInAD && !data.enabledInSdWorx) return error({ message: 'Kontoen er aktivert selvom ansatt ikke har aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
-    if (!data.enabledInAD && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selvom ansatt har et aktivt ansettelsesforhold. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
-    if (!data.enabledInAD && !data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert i AD og ansatt har ikke et aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
+    if (data.enabledInAD && !data.enabledInSdWorx) return error({ message: 'Kontoen er aktivert selv om ansatt ikke har aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
+    if (!data.enabledInAD && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selv om ansatt har et aktivt ansettelsesforhold', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!data.enabledInAD && !data.enabledInSdWorx) return warn({ message: `Kontoen er deaktivert i ${systemNames.ad} og ansatt har ikke et aktivt ansettelsesforhold`, raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
   }
 }
 
@@ -55,8 +56,8 @@ const adAktiveringElev = {
       }
     }
     if (data.enabled && data.vis.active) return success({ message: 'Kontoen er aktivert', raw: data })
-    if (data.enabled && !data.vis.active) return error({ message: 'Kontoen er aktivert selvom elev ikke har noen aktive elevforhold' })
-    if (!data.enabled && data.vis.active) return warn({ message: 'Kontoen er deaktivert. Elev må aktivere sin konto', raw: data, solution: `Elev må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+    if (data.enabled && !data.vis.active) return error({ message: 'Kontoen er aktivert selv om elev ikke har noen aktive elevforhold' })
+    if (!data.enabled && data.vis.active) return warn({ message: 'Kontoen er deaktivert. Elev må aktivere sin konto', raw: data, solution: `Elev må aktivere sin konto via minkonto.${TENANT_NAME}.no/elev eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
     if (!data.enabled && !data.vis.active) return warn({ message: 'Ingen aktive elevforhold', raw: data, solution: `Rettes i ${systemNames.vis}` })
   }
 }
@@ -165,7 +166,7 @@ const adExt4 = {
     const data = {
       extensionAttribute4: systemData.extensionAttribute4.split(',').map(ext => ext.trim())
     }
-    return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom- og ${data.extensionAttribute4.length === 0 || data.extensionAttribute4.length > 1 ? 'mailinglister' : 'mailingliste'} ekstra`, solution: `extensionAttribute4 fører til medlemskap i personalrom- og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i ${systemNames.ad}`, raw: data })
+    return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom- og ${pluralizeText('mailingliste', data.extensionAttribute4.length, 'r')} ekstra`, solution: `extensionAttribute4 fører til medlemskap i personalrom- og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i ${systemNames.ad}`, raw: data })
   }
 }
 
@@ -204,7 +205,7 @@ const adGroupMembership = {
   test: (user, systemData) => {
     if (!systemData.memberOf || !Array.isArray(systemData.memberOf)) return error({ message: `Er ikke medlem av noen ${systemNames.ad}-grupper 🤔` })
     const groups = systemData.memberOf.map(member => member.replace('CN=', '').split(',')[0]).sort()
-    return success({ message: `Er direkte medlem av ${groups.length} ${systemNames.ad}-gruppe${groups.length === 0 || groups.length > 1 ? 'r' : ''}`, raw: groups })
+    return success({ message: `Er direkte medlem av ${groups.length} ${systemNames.ad}-${pluralizeText('gruppe', groups.length, 'r')}`, raw: groups })
   }
 }
 

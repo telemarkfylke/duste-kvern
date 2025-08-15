@@ -1,4 +1,5 @@
 const { error, warn, success, ignore } = require('../../lib/test-result')
+const { pluralizeText } = require('../../lib/helpers/pluralize-text')
 const systemNames = require('../system-names')
 
 /**
@@ -72,7 +73,7 @@ const nettsperrePending = {
    */
   test: (user, systemData) => {
     if (systemData.futureNettsperrer.length === 0) return success({ message: 'Brukeren har ingen planlagte nettsperrer' })
-    if (systemData.futureNettsperrer.length > 0) return success({ message: `Brukeren har ${systemData.futureNettsperrer.length} planlagt${systemData.futureNettsperrer.length > 1 ? 'e' : ''} nettsperre${systemData.futureNettsperrer.length > 1 ? 'r' : ''}`, raw: systemData.futureNettsperrer })
+    if (systemData.futureNettsperrer.length > 0) return success({ message: `Brukeren har ${systemData.futureNettsperrer.length} ${pluralizeText('planlagt', systemData.futureNettsperrer.length, 'e')} ${pluralizeText('nettsperre', systemData.futureNettsperrer.length, 'r')}`, raw: systemData.futureNettsperrer })
   }
 }
 
@@ -129,7 +130,7 @@ const nettsperreOverlappende = {
     })
 
     if (overlappendeSperringer.length === 0) return ignore()
-    if (overlappendeSperringer.length > 0) return warn({ message: `Brukeren har ${repackedOverlappendeSperringer.length} overlappende nettsperringer - dette kan by på problemer...`, raw: repackedOverlappendeSperringer, solution: 'Sjekk rawdata og be aktuelle lærere sjekke at de har satt sperringen sin på korrekt tidspunkt' })
+    if (overlappendeSperringer.length > 0) return warn({ message: `Brukeren har ${repackedOverlappendeSperringer.length} overlappende ${pluralizeText('nettsperr', repackedOverlappendeSperringer.length, 'inger', 'e')} - dette kan by på problemer...`, raw: repackedOverlappendeSperringer, solution: 'Sjekk rawdata og be aktuelle lærere sjekke at de har satt sperringen sin på korrekt tidspunkt' })
   }
 }
 

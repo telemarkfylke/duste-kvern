@@ -1,4 +1,5 @@
 const { isValidFnr } = require('../../lib/helpers/is-valid-fnr')
+const { pluralizeText } = require('../../lib/helpers/pluralize-text')
 const { error, warn, success } = require('../../lib/test-result')
 const systemNames = require('../system-names')
 
@@ -15,11 +16,11 @@ const fintElevforhold = {
   test: (user, systemData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const aktiveElevforhold = systemData.elevforhold.filter(forhold => forhold.aktiv)
-    if (aktiveElevforhold.length > 0) return success({ message: `Har ${aktiveElevforhold.length} aktiv${aktiveElevforhold.length === 1 ? 't' : 'e'} elevforhold` })
+    if (aktiveElevforhold.length > 0) return success({ message: `Har ${aktiveElevforhold.length} ${pluralizeText('aktiv', secondaryPositions.length, 'e', 't')} elevforhold` })
     const inaktiveElevforhold = systemData.elevforhold.filter(forhold => !forhold.aktiv)
     if (inaktiveElevforhold.length === 0) return warn({ message: 'Har ingen elevforhold i det hele tatt', solution: `Rettes i ${systemNames.vis} dersom eleven skal ha elevforhold` })
-    const elevfoholdInTheFuture = inaktiveElevforhold.find(forhold => new Date() < new Date(forhold.gyldighetsperiode.start))
-    if (elevfoholdInTheFuture) return warn({ message: `Elevens elevforhold begynner ikke før ${elevfoholdInTheFuture.gyldighetsperiode.start.substring(0, 10)}`, solution: `Sannsynligvis ikke noe problem, hvertfall ikke hvis det er like før skolestart. Men om det er midt i skoleåret kan det rettes i ${systemNames.vis}` })
+    const elevforholdInTheFuture = inaktiveElevforhold.find(forhold => new Date() < new Date(forhold.gyldighetsperiode.start))
+    if (elevforholdInTheFuture) return warn({ message: `Elevens elevforhold begynner ikke før ${elevforholdInTheFuture.gyldighetsperiode.start.substring(0, 10)}`, solution: `Sannsynligvis ikke noe problem, hvert fall ikke hvis det er like før skolestart. Men om det er midt i skoleåret kan det rettes i ${systemNames.vis}` })
     return warn({ message: 'Utvikler har driti seg ut og mangler en case her....' })
   }
 }
@@ -38,7 +39,7 @@ const fintStudentKontaktlarer = {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const kontaktlarere = systemData.kontaktlarere
     if (kontaktlarere.length === 0) return error({ message: 'Har ikke kontaktlærer(e) 😬', solution: `Rettes i ${systemNames.vis}` })
-    else return success({ message: `Har ${kontaktlarere.length} ${kontaktlarere.length > 1 ? 'kontaktlærere' : 'kontaktlærer'}`, raw: kontaktlarere })
+    return success({ message: `Har ${kontaktlarere.length} ${pluralizeText('kontaktlærer', kontaktlarere.length, 'e')}`, raw: kontaktlarere })
   }
 }
 
@@ -58,7 +59,7 @@ const fintStudentSkoleforhold = {
     if (skoleforhold.length === 0) return error({ message: 'Har ingen skoleforhold 😬', solution: `Rettes i ${systemNames.vis}` })
     const primarySchools = skoleforhold.filter(school => school.hovedskole)
     if (primarySchools.length > 1) {
-      return error({ message: `Har ${primarySchools.length} hovedskoler`, raw: primarySchools, solution: `Dette er fei og må det rettes i ${systemNames.vis}` })
+      return error({ message: `Har ${primarySchools.length} hovedskoler`, raw: primarySchools, solution: `Dette er feil og må rettes i ${systemNames.vis}` })
     }
     if (primarySchools.length === 0) {
       return error({ message: 'Har ingen hovedskole', raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
@@ -91,7 +92,7 @@ const fintStudentBasisgrupper = {
       basisgrupper = [...basisgrupper, ...bGrupper]
     })
 
-    if (basisgrupper.length > 0) return success({ message: `Har ${basisgrupper.length} ${basisgrupper.length > 1 ? 'basisgrupper' : 'basisgruppe'}`, raw: basisgrupper })
+    if (basisgrupper.length > 0) return success({ message: `Har ${basisgrupper.length} ${pluralizeText('basisgruppe', basisgrupper.length, 'r')}`, raw: basisgrupper })
     return error({ message: 'Mangler medlemskap i basisgruppe(r) 😬', solution: `Rettes i ${systemNames.vis}` })
   }
 }
@@ -114,7 +115,7 @@ const fintStudentUndervisningsgrupper = {
       undervisningsgrupper = [...undervisningsgrupper, ...uGrupper]
     })
 
-    if (undervisningsgrupper.length > 0) return success({ message: `Har ${undervisningsgrupper.length} ${undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: undervisningsgrupper })
+    if (undervisningsgrupper.length > 0) return success({ message: `Har ${undervisningsgrupper.length} ${pluralizeText('undervisningsgruppe', undervisningsgrupper.length, 'r')}`, raw: undervisningsgrupper })
     return error({ message: 'Mangler medlemskap i undervisningsgruppe(r) 😬', solution: `Rettes i ${systemNames.vis}` })
   }
 }
@@ -137,7 +138,7 @@ const fintStudentFaggrupper = {
       faggrupper = [...faggrupper, ...fGrupper]
     })
 
-    if (faggrupper.length > 0) return success({ message: `Har ${faggrupper.length} ${faggrupper.length > 1 ? 'faggrupper' : 'faggruppe'}`, raw: faggrupper })
+    if (faggrupper.length > 0) return success({ message: `Har ${faggrupper.length} ${pluralizeText('faggruppe', faggrupper.length, 'r')}`, raw: faggrupper })
     return error({ message: 'Mangler medlemskap i faggruppe(r) 😬', solution: `Rettes i ${systemNames.vis}` })
   }
 }
@@ -160,7 +161,7 @@ const fintStudentProgramomrader = {
       programomrader = [...programomrader, ...pOmrader]
     })
 
-    if (programomrader.length > 0) return success({ message: `Har ${programomrader.length} ${programomrader.length > 1 ? 'programomrader' : 'programomrade'}`, raw: programomrader })
+    if (programomrader.length > 0) return success({ message: `Har ${programomrader.length} ${pluralizeText('programomrade', programomrader.length, 'r')}`, raw: programomrader })
     return error({ message: 'Mangler medlemskap i programomrade(r) 😬', solution: `Rettes i ${systemNames.vis}` })
   }
 }
@@ -170,8 +171,8 @@ const fintStudentProgramomrader = {
  */
 const fintFodselsnummer = {
   id: 'fint_fodselsnummer',
-  title: 'Fødselsnummer er likt i AD',
-  description: 'Sjekker at fødselsnummeret er likt i AD og ViS',
+  title: `Fødselsnummer er likt i ${systemNames.ad}`,
+  description: `Sjekker at fødselsnummeret er likt i ${systemNames.ad} og ${systemNames.vis}`,
   waitForAllData: true,
   /**
    *
@@ -216,8 +217,8 @@ const fintGyldigFodselsnummer = {
 
 const fintStudentFeidenavn = {
   id: 'fint_student_feidenavn',
-  title: 'Har samme feidenavn i VIS og Feide',
-  description: 'Sjekker at feidenavn er skrevet tilbake i ViS',
+  title: `Har samme feidenavn i ${systemNames.vis} og ${systemNames.feide}`,
+  description: `Sjekker at feidenavn er skrevet tilbake i ${systemNames.vis}`,
   waitForAllData: true,
   /**
    *
@@ -227,7 +228,7 @@ const fintStudentFeidenavn = {
    */
   test: (user, systemData, allData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
-    if (!allData.feide) return error({ message: 'Mangler data fra FEIDE' })
+    if (!allData.feide) return error({ message: `Mangler data fra ${systemNames.feide}` })
     if (allData.feide.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.feide}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.feide}` })
 
     const data = {
@@ -253,8 +254,8 @@ const fintStudentUtgattElevforhold = {
   test: (user, systemData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const utgatteElevforhold = systemData.elevforhold.filter(forhold => forhold.gyldighetsperiode.slutt && (new Date() > new Date(forhold.gyldighetsperiode.slutt)))
-    if (utgatteElevforhold.length > 0) return warn({ message: `Har utgått skoleforhold ved skole${utgatteElevforhold.length > 1 ? 'r' : ''}: ${utgatteElevforhold.map(forhold => forhold.skole.navn).join(', ')}.`, raw: utgatteElevforhold, solution: `Dette er i de fleste tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
-    return success({ message: 'Har ingen utgåtte elevfohold' })
+    if (utgatteElevforhold.length > 0) return warn({ message: `Har utgått skoleforhold ved ${pluralizeText('skole', utgatteElevforhold.length, 'r')}: ${utgatteElevforhold.map(forhold => forhold.skole.navn).join(', ')}.`, raw: utgatteElevforhold, solution: `Dette er i de fleste tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
+    return success({ message: 'Har ingen utgåtte elevforhold' })
   }
 }
 

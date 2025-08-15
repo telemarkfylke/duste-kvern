@@ -1,4 +1,5 @@
 const { error, warn, success, ignore } = require('../../lib/test-result')
+const { pluralizeText } = require('../../lib/helpers/pluralize-text')
 const systemNames = require('../system-names')
 
 /**
@@ -42,7 +43,7 @@ const fintKontaktlarer = {
       kontaktlarergrupper = [...kontaktlarergrupper, ...kGrupper]
     })
     if (kontaktlarergrupper.length === 0) return success({ message: 'Er ikke kontaktlærer for noen klasser' })
-    return success({ message: `Er kontaktlærer for ${kontaktlarergrupper.length} ${kontaktlarergrupper.length > 1 ? 'klasser' : 'klasse'}`, raw: kontaktlarergrupper })
+    return success({ message: `Er kontaktlærer for ${kontaktlarergrupper.length} ${pluralizeText('klasse', kontaktlarergrupper.length, 'r')}`, raw: kontaktlarergrupper })
   }
 }
 
@@ -78,7 +79,7 @@ const fintDuplicateKontaktlarergrupper = {
     }
 
     if (duplicates.length === 0) return success({ message: 'Har ikke duplikate kontaktlærergrupper' })
-    return warn({ message: `Har ${duplicates.length} ${duplicates.length === 1 ? 'duplikat undervisningsgruppe' : 'duplikate undervisningsgrupper'}`, raw: { duplicates }, solution: `Rettes i ${systemNames.fintLarer}. Hvis det allerede er korrekt i ${systemNames.fintLarer}, meld sak til arbeidsgruppe identitet` })
+    return warn({ message: `Har ${duplicates.length} ${pluralizeText('duplikat', duplicates.length, 'e')} ${pluralizeText('kontaktlærergruppe', duplicates.length, 'r')}`, raw: { duplicates }, solution: `Rettes i ${systemNames.fintLarer}. Hvis det allerede er korrekt i ${systemNames.fintLarer}, meld sak til arbeidsgruppe identitet` })
   }
 }
 
@@ -126,7 +127,7 @@ const fintUndervisningsgrupper = {
       undervisningsgrupper = [...undervisningsgrupper, ...uGrupper]
     })
     if (undervisningsgrupper.length === 0) return success({ message: 'Har ingen undervisningsgruppe(r)', raw: undervisningsgrupper, solution: `Rettes i ${systemNames.fintLarer}, dersom det savnes noe medlemskap. Hvis det allerede er korrekt i ${systemNames.fintLarer}` })
-    return success({ message: `Underviser i ${undervisningsgrupper.length} ${undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: undervisningsgrupper })
+    return success({ message: `Underviser i ${undervisningsgrupper.length} ${pluralizeText('undervisningsgruppe', undervisningsgrupper.length, 'r')}`, raw: undervisningsgrupper })
   }
 }
 
@@ -135,8 +136,8 @@ const fintUndervisningsgrupper = {
  */
 const fintFodselsnummer = {
   id: 'fint_fodselsnummer',
-  title: 'Fødselsnummer er likt i AD',
-  description: 'Sjekker at fødselsnummeret er likt i AD og ViS',
+  title: `Fødselsnummer er likt i ${systemNames.ad}`,
+  description: `Sjekker at fødselsnummeret er likt i ${systemNames.ad} og ${systemNames.vis}`,
   waitForAllData: true,
   /**
    *
@@ -147,7 +148,7 @@ const fintFodselsnummer = {
   test: (user, systemData, allData) => {
     if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
-    if (!allData.ad) return error({ message: 'Mangler data fra AD' })
+    if (!allData.ad) return error({ message: `Mangler data fra ${systemNames.ad}` })
     if (allData.ad.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.ad}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.ad}` })
     const data = {
       adFnr: allData.ad.employeeNumber,
@@ -166,7 +167,7 @@ const fintFodselsnummer = {
 const fintMobilnummer = {
   id: 'fint_mobilnummer',
   title: 'Har mobiltelefonnummer',
-  description: 'Sjekker at mobiltelefonnummer er registrert i ViS',
+  description: `Sjekker at mobiltelefonnummer er registrert i ${systemNames.vis}`,
   waitForAllData: false,
   /**
    *
@@ -190,8 +191,8 @@ const fintMobilnummer = {
  */
 const fintFeideVis = {
   id: 'fint_feide_vis',
-  title: 'Har samme feidenavn i VIS og Feide',
-  description: 'Sjekker at feidenavn er skrevet tilbake i ViS',
+  title: `Har samme feidenavn i ${systemNames.vis} og ${systemNames.feide}`,
+  description: `Sjekker at feidenavn er skrevet tilbake i ${systemNames.vis}`,
   waitForAllData: true,
   /**
    *
@@ -202,9 +203,9 @@ const fintFeideVis = {
   test: (user, systemData, allData) => {
     if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
-    if (!allData.feide) return error({ message: 'Mangler data fra FEIDE' })
+    if (!allData.feide) return error({ message: `Mangler data fra ${systemNames.feide}` })
     if (allData.feide.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.feide}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.feide}` })
-    if (!user.isTeacher && Array.isArray(allData.feide) && allData.feide.length === 0) return success({ message: 'Er ikke lærer, og har ikke Feide-bruker' })
+    if (!user.isTeacher && Array.isArray(allData.feide) && allData.feide.length === 0) return success({ message: `Er ikke lærer, og har ikke ${systemNames.feide}-bruker` })
     const data = {
       feide: allData.feide.eduPersonPrincipalName,
       vis: systemData.feidenavn

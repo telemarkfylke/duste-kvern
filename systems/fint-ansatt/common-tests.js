@@ -2,6 +2,7 @@ const { error, warn, success, ignore } = require('../../lib/test-result')
 const systemNames = require('../system-names')
 const { APPREG: { TENANT_NAME }, SDWORX } = require('../../config')
 const { isValidFnr } = require('../../lib/helpers/is-valid-fnr')
+const { pluralizeText } = require('../../lib/helpers/pluralize-text')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
 const { prettifyDateToLocaleString } = require('../../lib/helpers/date-time-output')
 
@@ -30,7 +31,7 @@ const fintAnsattData = {
 const fintAnsattAktivStilling = {
   id: 'fint_ansatt_aktiv_stilling',
   title: 'Aktivt arbeidsforhold',
-  description: `Sjekker bruker har et aktivt arbeidsforhold i ${systemNames.fintAnsatt}`,
+  description: `Sjekker at bruker har et aktivt arbeidsforhold i ${systemNames.fintAnsatt}`,
   waitForAllData: false,
   /**
    *
@@ -107,7 +108,7 @@ const fintAnsattOrgTilknytning = {
     if (!systemData) return ignore() // Første test tar seg av dette
     if (!systemData.arbeidsforhold || systemData.arbeidsforhold.length === 0) return error({ message: 'Mangler data for organisasjonstilknytning', raw: systemData.arbeidsforhold })
     const missingOrg = systemData.arbeidsforhold.filter(forhold => !forhold.arbeidssted.organisasjonsId)
-    if (missingOrg.length > 0) return error({ message: `Mangler organisasjonstilknytning (arbeidssted) i ${missingOrg.length} stilling${missingOrg.length > 1 ? 'er' : ''}. Må rettes i ${systemNames.fintAnsatt}`, raw: missingOrg, solution: `Rettes i ${systemNames.fintAnsatt}` })
+    if (missingOrg.length > 0) return error({ message: `Mangler organisasjonstilknytning (arbeidssted) i ${missingOrg.length} ${pluralizeText('stilling', missingOrg.length, 'er')}. Må rettes i ${systemNames.fintAnsatt}`, raw: missingOrg, solution: `Rettes i ${systemNames.fintAnsatt}` })
     return success({ message: 'Har organisasjonstilknytning', raw: systemData.arbeidsforhold.map(forhold => forhold.arbeidssted) })
   }
 }
@@ -181,9 +182,9 @@ const fintAnsattArbeidsforhold = {
     const primaryPositions = positions.filter(position => position.hovedstilling)
     const secondaryPositions = positions.filter(position => !position.hovedstilling)
 
-    if (primaryPositions.length === 0) return warn({ message: `Bruker har ingen hovedstillinger men ${secondaryPositions.length} ${secondaryPositions.length > 1 ? 'sekundærstillinger' : 'sekundærstilling'}`, raw: positions, solution: `Rettes i ${systemNames.fintAnsatt}` })
-    if (primaryPositions.length > 0 && secondaryPositions.length > 0) return success({ message: `Har ${primaryPositions.length} ${primaryPositions.length > 1 ? 'hovedstillinger' : 'hovedstilling'} og ${secondaryPositions.length} ${secondaryPositions.length > 1 ? 'sekundærstillinger' : 'sekundærstilling'}`, raw: positions })
-    if (primaryPositions.length > 0 && secondaryPositions.length === 0) return success({ message: `Har ${primaryPositions.length} ${primaryPositions.length > 1 ? 'hovedstillinger' : 'hovedstilling'}`, raw: positions })
+    if (primaryPositions.length === 0) return warn({ message: `Bruker har ingen hovedstillinger men ${secondaryPositions.length} ${pluralizeText('sekundærstilling', secondaryPositions.length, 'er')}`, raw: positions, solution: `Rettes i ${systemNames.fintAnsatt}` })
+    if (primaryPositions.length > 0 && secondaryPositions.length > 0) return success({ message: `Har ${primaryPositions.length} ${pluralizeText('hovedstilling', primaryPositions.length, 'er')} og ${secondaryPositions.length} ${pluralizeText('sekundærstilling', secondaryPositions.length, 'er')}`, raw: positions })
+    if (primaryPositions.length > 0 && secondaryPositions.length === 0) return success({ message: `Har ${primaryPositions.length} ${pluralizeText('hovedstilling', primaryPositions.length, 'er')}`, raw: positions })
     return error({ message: 'Dette burde ikke ha skjedd men det skjedde allikevel', raw: positions, solution: 'Vi legger oss flate og lover å se på rutiner 😝' })
   }
 }
