@@ -51,7 +51,7 @@ const azureAktiveringAnsatt = {
     }
     if (data.enabledInAd && data.enabledInSdWorx) return success({ message: 'Kontoen er aktivert', raw: data })
     if (data.enabledInAd && !data.enabledInSdWorx) return error({ message: 'Kontoen er aktivert selvom ansatt ikke har aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
-    if (!data.enabledInAd && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selvom ansatt har et aktivt ansettelsesforhold. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+    if (!data.enabledInAd && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selv om ansatt har et aktivt ansettelsesforhold', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
     if (!data.enabledInAd && !data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert i AD og ansatt har ikke et aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
   }
 }
