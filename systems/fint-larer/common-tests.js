@@ -126,7 +126,7 @@ const fintUndervisningsgrupper = {
       const uGrupper = forhold.undervisningsgrupper.filter(uGruppe => uGruppe.aktiv).map(uGruppe => { return { systemId: uGruppe.systemId, navn: uGruppe.navn, skole: uGruppe.skole.navn } })
       undervisningsgrupper = [...undervisningsgrupper, ...uGrupper]
     })
-    if (undervisningsgrupper.length === 0) return success({ message: 'Har ingen undervisningsgruppe(r)', raw: undervisningsgrupper, solution: `Rettes i ${systemNames.fintLarer}, dersom det savnes noe medlemskap. Hvis det allerede er korrekt i ${systemNames.fintLarer}` })
+    if (undervisningsgrupper.length === 0) return success({ message: 'Har ingen undervisningsgrupper', raw: undervisningsgrupper, solution: `Rettes i ${systemNames.fintLarer}, dersom det savnes noe medlemskap. Hvis det allerede er korrekt i ${systemNames.fintLarer}, meld sak til arbeidsgruppe identitet` })
     return success({ message: `Underviser i ${undervisningsgrupper.length} ${pluralizeText('undervisningsgruppe', undervisningsgrupper.length, 'r')}`, raw: undervisningsgrupper })
   }
 }
