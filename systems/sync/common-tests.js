@@ -17,7 +17,7 @@ const syncIdm = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData.lastIdmRun?.lastRunTime) return warn('Mangler kjøretidspunkt for brukersynkronisering 😬')
+    if (!systemData.lastIdmRun?.lastRunTime) return warn({ message: 'Mangler kjøretidspunkt for brukersynkronisering 😬'})
 
     const lastRunTimeCheck = isWithinTimeRange(new Date(systemData.lastIdmRun.lastRunTime), new Date(), (24 * 60 * 60)) // is last run performed less than 24 hours ago?
     const data = {
@@ -35,7 +35,7 @@ const syncIdm = {
 const syncAzure = {
   id: 'sync_azure',
   title: 'Har azure lastEntraIDSyncTime',
-  description: 'Sjekker siste synkroniseringstidspunkt for Entra ID',
+  description: `Sjekker siste synkroniseringstidspunkt for ${systemNames.azure}`,
   waitForAllData: false,
   /**
    *
@@ -43,15 +43,15 @@ const syncAzure = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData.azureSync || !systemData.azureSync.lastEntraIDSyncTime) return warn(`Mangler synkroniseringstidspunkt for ${systemNames.azure} 😬`)
+    if (!systemData.azureSync || !systemData.azureSync.lastEntraIDSyncTime) return warn({ message: `Mangler synkroniseringstidspunkt for ${systemNames.azure} 😬` })
 
     const lastRunTimeCheck = isWithinTimeRange(new Date(systemData.azureSync.lastEntraIDSyncTime), new Date(), (40 * 60)) // is last run performed less than 40 minutes ago?
     const data = {
       lastEntraIDSyncTime: systemData.azureSync.lastEntraIDSyncTime,
       check: lastRunTimeCheck
     }
-    if (!lastRunTimeCheck.result) return warn({ message: 'Det er mer enn 40 minutter siden siste synkronisering av Entra ID', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    return success({ message: `Entra ID : ${prettifyDateToLocaleString(new Date(systemData.azureSync.lastEntraIDSyncTime))}`, raw: data })
+    if (!lastRunTimeCheck.result) return warn({ message: `Det er mer enn 40 minutter siden siste synkronisering av ${systemNames.azure}`, raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    return success({ message: `${systemNames.azure} : ${prettifyDateToLocaleString(new Date(systemData.azureSync.lastEntraIDSyncTime))}`, raw: data })
   }
 }
 
