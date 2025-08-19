@@ -1,4 +1,4 @@
-// const axios = require('axios').default
+// const axios = require('axios')
 // const { logger } = require('@vtfk/logger')
 
 const { NETTSPERRE } = require('../../config')

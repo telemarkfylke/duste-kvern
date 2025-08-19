@@ -2,7 +2,7 @@ const { join } = require('path')
 require('dotenv').config({ path: join(__dirname, '../../../../.env') }) // User the same env as duste-kvern testene (appreg there has what we need)
 
 const { getMsalToken } = require('../../../../lib/get-msal-token')
-const { default: axios } = require('axios')
+const axios = require('axios')
 const { logger } = require('@vtfk/logger')
 
 /**

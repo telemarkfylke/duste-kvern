@@ -1,6 +1,6 @@
 const { getMsalToken } = require('../../lib/get-msal-token')
 const { APPREG, FINTFOLK } = require('../../config')
-const axios = require('axios').default
+const axios = require('axios')
 
 const callFintFolk = async (resource, accessToken) => {
   const { data } = await axios.get(`${FINTFOLK.URL}/${resource}`, { headers: { Authorization: `Bearer ${accessToken}` } })
