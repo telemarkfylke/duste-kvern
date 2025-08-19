@@ -79,6 +79,7 @@ const adHvilkenOU = {
     const data = {
       distinguishedName: systemData.distinguishedName
     }
+    if (!data.distinguishedName) return error({ message: `Bruker ikke funnet i ${systemNames.ad} 😬`, raw: data, solution: `Rettes i ${systemNames.ad}` })
     if (data.distinguishedName.toUpperCase().includes('OU=AUTO DISABLED USERS')) return warn({ message: 'Bruker ligger i OU\'en AUTO DISABLED USERS', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
     return success({ message: 'Bruker ligger ikke i OU\'en AUTO DISABLED USERS', raw: data })
   }
