@@ -35,7 +35,7 @@ const fintKontaktlarer = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (!systemData && !user.isTeacher) return ignore()
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     let kontaktlarergrupper = []
     systemData.undervisningsforhold.forEach(forhold => {
@@ -61,7 +61,7 @@ const fintDuplicateKontaktlarergrupper = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (!systemData && !user.isTeacher) return ignore()
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     let kontaktlarergrupper = []
     systemData.undervisningsforhold.forEach(forhold => {
@@ -97,7 +97,7 @@ const fintSkoleforhold = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (!systemData && !user.isTeacher) return ignore()
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     const skoleforhold = systemData.undervisningsforhold.filter(forhold => forhold.aktiv).map(forhold => forhold.skole)
     if (skoleforhold.length === 0) return error({ message: 'Har ingen skoleforhold 😬', solution: `Rettes i ${systemNames.fintLarer}` })
@@ -119,7 +119,7 @@ const fintUndervisningsgrupper = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (!systemData && !user.isTeacher) return ignore()
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     let undervisningsgrupper = []
     systemData.undervisningsforhold.forEach(forhold => {
@@ -146,7 +146,7 @@ const fintFodselsnummer = {
    * @param {*} allData
    */
   test: (user, systemData, allData) => {
-    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (!systemData && !user.isTeacher) return ignore()
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     if (!allData.ad) return error({ message: `Mangler data fra ${systemNames.ad}` })
     if (allData.ad.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.ad}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.ad}` })
@@ -175,7 +175,7 @@ const fintMobilnummer = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (!systemData && !user.isTeacher) return ignore()
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     const data = {
       larerMobiltelefonnummer: systemData.larerMobiltelefonnummer,
@@ -201,7 +201,7 @@ const fintFeideVis = {
    * @param {*} allData
    */
   test: (user, systemData, allData) => {
-    if (!systemData && !user.isTeacher) return ignore({ message: 'E itj lærer' })
+    if (!systemData && !user.isTeacher) return ignore()
     if (user.isTeacher && !systemData) return error({ message: `Er lærer, men mangler bruker i ${systemNames.fintLarer}` })
     if (!allData.feide) return error({ message: `Mangler data fra ${systemNames.feide}` })
     if (allData.feide.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.feide}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.feide}` })
