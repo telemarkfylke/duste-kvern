@@ -16,7 +16,7 @@ const fintElevforhold = {
   test: (user, systemData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const aktiveElevforhold = systemData.elevforhold.filter(forhold => forhold.aktiv)
-    if (aktiveElevforhold.length > 0) return success({ message: `Har ${aktiveElevforhold.length} ${pluralizeText('aktiv', secondaryPositions.length, 'e', 't')} elevforhold` })
+    if (aktiveElevforhold.length > 0) return success({ message: `Har ${aktiveElevforhold.length} ${pluralizeText('aktiv', aktiveElevforhold.length, 'e', 't')} elevforhold` })
     const inaktiveElevforhold = systemData.elevforhold.filter(forhold => !forhold.aktiv)
     if (inaktiveElevforhold.length === 0) return warn({ message: 'Har ingen elevforhold i det hele tatt', solution: `Rettes i ${systemNames.vis} dersom eleven skal ha elevforhold` })
     const elevforholdInTheFuture = inaktiveElevforhold.find(forhold => new Date() < new Date(forhold.gyldighetsperiode.start))
