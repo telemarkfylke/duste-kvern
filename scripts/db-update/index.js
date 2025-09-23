@@ -61,6 +61,7 @@
     await db.drop()
   } catch (error) {
     logger('error', ['lib', 'update-database', updateType, 'unable to clear collection', error])
+    await sleep(1000)
     process.exit(1)
   }
 
@@ -70,6 +71,7 @@
     logger('info', ['lib', 'update-database', updateType, 'insert data', 'inserted', result.insertedCount])
   } catch (error) {
     logger('error', ['lib', 'update-database', updateType, 'update data', 'failed to insert data', error])
+    await sleep(1000)
     process.exit(2)
   }
 
