@@ -10,7 +10,7 @@
   const { writeFileSync } = require('fs')
   const { logger, logConfig } = require('@vtfk/logger')
   const { getDusteUsers } = require('./lib/get-duste-users')
-  const { createLocalLogger } = require('../../../lib/local-logger')
+  const { createLocalLogger } = require('../../lib/local-logger')
   const { MONGODB_USERS_NAME, MONGODB_USERS_COLLECTION } = require('./config')
 
   logConfig({
