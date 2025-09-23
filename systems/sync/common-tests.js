@@ -17,7 +17,7 @@ const syncIdm = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData.lastIdmRun?.lastRunTime) return warn({ message: 'Mangler kjøretidspunkt for brukersynkronisering 😬'})
+    if (!systemData.lastIdmRun?.lastRunTime) return warn({ message: 'Mangler kjøretidspunkt for brukersynkronisering 😬' })
 
     const lastRunTimeCheck = isWithinTimeRange(new Date(systemData.lastIdmRun.lastRunTime), new Date(), (24 * 60 * 60)) // is last run performed less than 24 hours ago?
     const data = {

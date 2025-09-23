@@ -38,10 +38,10 @@ const feideAnsatt = {
         feideFnr = systemData.norEduPersonLIN[0].replace(`${feidePrincipalName}:fin:`, '')
       }
     }
-    if (!feideFnr) return error({message: 'Fødselsnummer mangler 😬'})
+    if (!feideFnr) return error({ message: 'Fødselsnummer mangler 😬' })
     const validFnr = isValidFnr(feideFnr)
-    if (validFnr.valid) return success({message: `Ansatt har ${systemNames.feide}-konto og gyldig FNR`, raw: {feideFnr, validFnr}})
-    return error({message: `Ansatt har ${systemNames.feide}-konto, men ikke gyldig fnr i ${systemNames.feide}`})
+    if (validFnr.valid) return success({ message: `Ansatt har ${systemNames.feide}-konto og gyldig FNR`, raw: { feideFnr, validFnr } })
+    return error({ message: `Ansatt har ${systemNames.feide}-konto, men ikke gyldig fnr i ${systemNames.feide}` })
   }
 }
 
@@ -80,10 +80,10 @@ const feideElev = {
         feideFnr = systemData.norEduPersonLIN[0].replace(`${feidePrincipalName}:fin:`, '')
       }
     }
-    if (!feideFnr) return error({message: 'Fødselsnummer mangler 😬'})
+    if (!feideFnr) return error({ message: 'Fødselsnummer mangler 😬' })
     const validFnr = isValidFnr(feideFnr)
-    if (validFnr.valid) return success({message: `Elev har ${systemNames.feide}-konto og gyldig FNR`, raw: {feideFnr, validFnr}})
-    return error({message: `Elev har ${systemNames.feide}-konto, men ikke gyldig fnr i ${systemNames.feide}`})
+    if (validFnr.valid) return success({ message: `Elev har ${systemNames.feide}-konto og gyldig FNR`, raw: { feideFnr, validFnr } })
+    return error({ message: `Elev har ${systemNames.feide}-konto, men ikke gyldig fnr i ${systemNames.feide}` })
   }
 }
 
