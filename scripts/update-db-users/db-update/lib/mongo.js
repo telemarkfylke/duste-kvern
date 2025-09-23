@@ -4,7 +4,11 @@ const { MONGODB_CONNECTION } = config
 
 let client = null
 
-module.exports = type => {
+/**
+ * 
+ * @returns {MongoClient}
+ */
+module.exports = () => {
   if (!MONGODB_CONNECTION) {
     console.error('mongo', 'missing MONGODB_CONNECTION')
     throw new Error('Missing env MONGODB_CONNECTION')
@@ -13,9 +17,9 @@ module.exports = type => {
   if (client === null) {
     client = new MongoClient(MONGODB_CONNECTION)
     console.log('mongo', 'new client init')
-  } else {
-    console.log('mongo', 'client already exists. quick return')
+    return client
   }
 
-  return client.db(config[`MONGODB_${type.toUpperCase()}_NAME`]).collection(config[`MONGODB_${type.toUpperCase()}_COLLECTION`])
+  console.log('mongo', 'client already exists. quick return')
+  return client
 }

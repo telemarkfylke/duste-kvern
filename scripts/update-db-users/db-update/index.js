@@ -1,3 +1,4 @@
+
 (async () => {
   const args = process.argv.slice(2)
   if (args.length === 0) {
@@ -11,6 +12,8 @@
   const { logger, logConfig } = require('@vtfk/logger')
   const { getDusteUsers } = require('./lib/get-duste-users')
   const { createLocalLogger } = require('../../../lib/local-logger')
+  const { MONGODB_USERS_NAME, MONGODB_USERS_COLLECTION } = require('./config')
+
 
   logConfig({
     localLogger: createLocalLogger('db-update')
@@ -35,7 +38,8 @@
     data = require(`./data/${updateType}.json`)
   }
 
-  const db = await mongo(updateType)
+  const mongoClient = mongo()
+  const db = mongoClient.db(MONGODB_USERS_NAME).collection(MONGODB_USERS_COLLECTION)
 
   if (updateType === 'users') {
     const now = new Date().toISOString()
@@ -62,7 +66,7 @@
     process.exit(1)
   }
 
-  console.log('lib', 'update-database', updateType, 'insert data', data.length, 'start')
+  logger('info', ['lib', 'update-database', updateType, 'insert data', data.length, 'start'])
   try {
     const result = await db.insertMany(data)
     logger('info', ['lib', 'update-database', updateType, 'insert data', 'inserted', result.insertedCount])
