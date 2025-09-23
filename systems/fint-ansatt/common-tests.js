@@ -28,10 +28,10 @@ const fintAnsattData = {
 /**
  * Sjekker om brukeren har VIS-data
  */
-const fintAnsattAktivStilling = {
-  id: 'fint_ansatt_aktiv_stilling',
-  title: 'Aktivt arbeidsforhold',
-  description: `Sjekker at bruker har et aktivt arbeidsforhold i ${systemNames.fintAnsatt}`,
+const fintAnsattAktivAnsettelsesperiode = {
+  id: 'fint_ansatt_aktiv_ansettelsesperiode',
+  title: 'Aktiv ansettelsesperiode',
+  description: `Sjekker at bruker har et aktivt ansettelsesperiode i ${systemNames.fintAnsatt}`,
   waitForAllData: false,
   /**
    *
@@ -40,8 +40,9 @@ const fintAnsattAktivStilling = {
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
-    if (!systemData.aktiv) return error({ message: `Bruker har ikke et aktivt arbeidsforhold i ${systemNames.fintAnsatt}`, solution: 'Meld sak til arbeidsgruppe identitet', raw: systemData.arbeidsforhold })
-    return success({ message: `Bruker har minst et aktivt arbeidsforhold i ${systemNames.fintAnsatt}`, raw: systemData.arbeidsforhold })
+    if (!systemData.ansettelsesperiode) return error({ message: `Mangler ansettelsesperiode i ${systemNames.fintAnsatt}`, solution: 'Meld sak til arbeidsgruppe identitet', raw: systemData.ansettelsesperiode })
+    if (!systemData.ansettelsesperiode.aktiv) return warn({ message: `Bruker har ikke en aktiv ansettelsesperiode i ${systemNames.fintAnsatt}`, solution: 'Dersom ansettelsesperioden skal være aktiv, meld sak HR', raw: systemData.ansettelsesperiode })
+    return success({ message: `Bruker har aktiv ansettelsesperiode i ${systemNames.fintAnsatt}`, raw: systemData.ansettelsesperiode })
   }
 }
 
@@ -221,4 +222,4 @@ const fintAnsattSlutterBruker = {
 const vismaPermisjon = {}
 */
 
-module.exports = { fintAnsattData, fintAnsattAktivStilling, fintAnsattKategori, fintAnsattFnr, fintAnsattOrgTilknytning, fintAnsattMobile, fintAnsattRopebokstaver, fintAnsattArbeidsforhold, fintAnsattSlutterBruker }
+module.exports = { fintAnsattData, fintAnsattAktivAnsettelsesperiode, fintAnsattKategori, fintAnsattFnr, fintAnsattOrgTilknytning, fintAnsattMobile, fintAnsattRopebokstaver, fintAnsattArbeidsforhold, fintAnsattSlutterBruker }

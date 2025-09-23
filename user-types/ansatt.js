@@ -91,7 +91,7 @@ const systemsAndTests = [
     name: systemNames.fintAnsatt,
     tests: [
       fintAnsattTests.fintAnsattData,
-      fintAnsattTests.fintAnsattAktivStilling,
+      fintAnsattTests.fintAnsattAktivAnsettelsesperiode,
       fintAnsattTests.fintAnsattKategori,
       fintAnsattTests.fintAnsattFnr,
       fintAnsattTests.fintAnsattOrgTilknytning,
