@@ -84,6 +84,8 @@
     await db.createIndex({ userPrincipalName: 1 }, { background: true })
   }
 
-  await logger('info', ['lib', 'update-database', updateType, 'finished'])
+  logger('info', ['lib', 'update-database', updateType, 'finished'])
+  await mongoClient.close()
+  await sleep(1000)
   process.exit(0)
 })()
