@@ -215,11 +215,4 @@ const fintAnsattSlutterBruker = {
   }
 }
 
-/**
- * Er bruker i permisjon? IKKE AKTIV ENDA, FINN EKSEMPEL PÅ NOEN SOM ER I PERMISJON! Husk å skrive om og
- */
-/*
-const vismaPermisjon = {}
-*/
-
 module.exports = { fintAnsattData, fintAnsattAktivAnsettelsesperiode, fintAnsattKategori, fintAnsattFnr, fintAnsattOrgTilknytning, fintAnsattMobile, fintAnsattRopebokstaver, fintAnsattArbeidsforhold, fintAnsattSlutterBruker }
