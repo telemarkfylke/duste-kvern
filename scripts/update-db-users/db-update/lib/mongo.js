@@ -5,7 +5,7 @@ const { MONGODB_CONNECTION } = config
 let client = null
 
 /**
- * 
+ *
  * @returns {MongoClient}
  */
 module.exports = () => {

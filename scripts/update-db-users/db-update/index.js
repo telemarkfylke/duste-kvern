@@ -1,4 +1,3 @@
-
 (async () => {
   const args = process.argv.slice(2)
   if (args.length === 0) {
@@ -13,7 +12,6 @@
   const { getDusteUsers } = require('./lib/get-duste-users')
   const { createLocalLogger } = require('../../../lib/local-logger')
   const { MONGODB_USERS_NAME, MONGODB_USERS_COLLECTION } = require('./config')
-
 
   logConfig({
     localLogger: createLocalLogger('db-update')
