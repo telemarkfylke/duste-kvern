@@ -45,8 +45,8 @@ const fintStudentKontaktlarer = {
 
 const fintStudentSkoleforhold = {
   id: 'fint_student_skoleforhold',
-  title: 'Har kontaktlærer',
-  description: 'Sjekker at elev har kontaktlærer',
+  title: 'Har skoleforhold',
+  description: 'Sjekker at elev har skoleforhold',
   waitForAllData: false,
   /**
    *
@@ -56,7 +56,9 @@ const fintStudentSkoleforhold = {
   test: (user, systemData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const skoleforhold = systemData.elevforhold.map(forhold => forhold.skole)
-    if (skoleforhold.length === 0) return error({ message: 'Har ingen skoleforhold 😬', solution: `Rettes i ${systemNames.vis}` })
+    if (skoleforhold.length === 0) {
+      return error({ message: 'Har ingen skoleforhold 😬', solution: `Rettes i ${systemNames.vis}` })
+    }
     const primarySchools = skoleforhold.filter(school => school.hovedskole)
     if (primarySchools.length > 1) {
       return error({ message: `Har ${primarySchools.length} hovedskoler`, raw: primarySchools, solution: `Dette er feil og må rettes i ${systemNames.vis}` })
@@ -67,9 +69,13 @@ const fintStudentSkoleforhold = {
 
     const primarySchool = primarySchools[0]
     if (skoleforhold.length > 1) {
-      return primarySchool ? warn({ message: `Har ${skoleforhold.length} skoleforhold. ${primarySchool.navn} er hovedskole`, raw: skoleforhold, solution: `Dette er i mange tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` }) : error({ message: `Har ${skoleforhold.length} skoleforhold men ingen hovedskole`, raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
+      return primarySchool
+        ? success({ message: `Har ${skoleforhold.length} skoleforhold. ${primarySchool.navn} er hovedskole`, raw: skoleforhold, solution: `Dette er i mange tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
+        : error({ message: `Har ${skoleforhold.length} skoleforhold men ingen hovedskole`, raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
     }
-    if (!primarySchool) return warn({ message: 'Har ett skoleforhold, men dette er ikke satt som hovedskole', raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
+    if (!primarySchool) {
+      return warn({ message: 'Har ett skoleforhold, men dette er ikke satt som hovedskole', raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
+    }
     return success({ message: 'Har ett skoleforhold', raw: skoleforhold })
   }
 }
