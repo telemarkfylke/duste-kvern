@@ -205,6 +205,45 @@ const azureLicenseDowngrade = {
 }
 
 /**
+ * Sjekker om bruker har A1 lisens
+ */
+const azureLicenseA1 = {
+  id: 'azure_license_a1',
+  title: 'Lisens er A1',
+  description: 'Sjekker om bruker har A1 lisens',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   */
+  test: (user, systemData) => {
+    if (!systemData.accountEnabled || systemData.assignedLicenses.length === 0) {
+      return ignore()
+    }
+
+    const { licenses } = generateRawLicenseData(systemData)
+
+    if (!licenses.some(license => license.name.includes(' A1 '))) {
+      return ignore()
+    }
+
+    if (['Eksamensvakt', 'Sensor', 'Prøve-/oppgavenemnd'].includes(user.jobTitle)) {
+      return warn({
+        message: `Bruker har A1 lisens grunnet at stillingstittel er ${user.jobTitle}`,
+        solution: 'Stillingstittel må endres i HR for å få en annen lisens',
+        raw: licenses
+      })
+    }
+
+    return warn({
+      message: 'Bruker har A1 lisens grunnet et eller annet 🤷‍♂️',
+      raw: licenses
+    })
+  }
+}
+
+/**
  * Sjekker om bruker har fått sin lisens manuelt endret
  */
 const azureLicenseManuallyChanged = {
@@ -533,4 +572,4 @@ const azureUserDevices = {
   }
 }
 
-module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureLicenseDowngrade, azureLicenseManuallyChanged, azureMfa, azurePwdKluss, azureProxyAddresses, azureAdInSync, azureGroups, azureSDSGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }
+module.exports = { azureUpnEqualsMail, azurePwdSync, azureLicense, azureLicenseDowngrade, azureLicenseManuallyChanged, azureLicenseA1, azureMfa, azurePwdKluss, azureProxyAddresses, azureAdInSync, azureGroups, azureSDSGroups, azureRiskyUser, azureLastSignin, azureAktiveringAnsatt, azureAktiveringElev, azureConditionalAccessPersonaGroup, azureSignInInfo, azureUserDevices }
