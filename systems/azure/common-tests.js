@@ -473,8 +473,8 @@ const azureConditionalAccessPersonaGroup = {
   test: (user, systemData) => {
     const conditionalAccessPersonaGroups = systemData.memberOf.filter(group => group.trim().toLowerCase().startsWith('conditional access persona'))
 
-    if (conditionalAccessPersonaGroups.length === 0) return error({ message: `Er ikke medlem av noen Conditional Acccess Persona-grupper i ${systemNames.azure}, og vil ikke kunne logge på 😧`, solution: 'Ta kontakt med sikkerhet' })
-    return success({ message: `Er medlem av ${conditionalAccessPersonaGroups.length} Conditional Acccess Persona-${pluralizeText('gruppe', conditionalAccessPersonaGroups.length, 'r')}`, raw: conditionalAccessPersonaGroups })
+    if (conditionalAccessPersonaGroups.length === 0) return error({ message: `Er ikke medlem av noen Conditional Access Persona-grupper i ${systemNames.azure}, og vil ikke kunne logge på 😧`, solution: 'Ta kontakt med sikkerhet' })
+    return success({ message: `Er medlem av ${conditionalAccessPersonaGroups.length} Conditional Access Persona-${pluralizeText('gruppe', conditionalAccessPersonaGroups.length, 'r')}`, raw: conditionalAccessPersonaGroups })
   }
 }
 
