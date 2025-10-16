@@ -224,7 +224,7 @@ const azureLicenseA1 = {
 
     const { licenses } = generateRawLicenseData(systemData)
 
-    if (!licenses.some(license => license.name.includes(' A1 '))) {
+    if (!licenses.some(license => license.name?.includes(' A1 '))) {
       return ignore()
     }
 
