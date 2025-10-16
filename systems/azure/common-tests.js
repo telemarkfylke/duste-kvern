@@ -144,7 +144,7 @@ const azurePwdSync = {
     }
     if (allData.ad.pwdLastSet === 0) return warn({ message: 'Passord vil synkroniseres når konto er blitt aktivert', raw: data })
     if (pwdCheck.result) return success({ message: `Passord synkronisert til ${systemNames.azure}`, raw: data })
-    return error({ message: 'Passord ikke synkronisert', raw: data })
+    return error({ message: 'Passord ikke synkronisert', solution: 'Bruker må bytte passord', raw: data })
   }
 }
 
