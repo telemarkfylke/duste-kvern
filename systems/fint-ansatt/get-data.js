@@ -1,6 +1,7 @@
 const { getMsalToken } = require('../../lib/get-msal-token')
 const { APPREG, FINTFOLK } = require('../../config')
 const axios = require('axios')
+const { CustomError } = require('../../lib/CustomError')
 
 const callFintFolk = async (resource, accessToken) => {
   const { data } = await axios.get(`${FINTFOLK.URL}/${resource}`, { headers: { Authorization: `Bearer ${accessToken}` } })
@@ -25,6 +26,14 @@ const getData = async (user) => {
   } catch (error) {
     if (error.response?.status === 404) {
       return null
+    }
+    /*
+    if (error.response?.data?.data?.includes('Query param ansattnummers')) {
+      throw new CustomError(error, 'Loller boller, 2,5 cm er mer enn nok for meg!')
+    }
+    */
+    if (error.response?.data?.data?.includes("Cannot return null for non-nullable type: 'Personalressurskategori' within parent 'Personalressurs'")) {
+      throw new CustomError(error, 'Sannsynligvis er det satt sluttdato-FK i HR. Ta kontakt med HR for å få dette rettet.')
     }
     throw error
   }
