@@ -53,5 +53,20 @@ module.exports = [
     skuId: 'f30db892-07e9-47e9-837c-80727f46fd3d',
     skuPartNumber: 'FLOW_FREE',
     name: 'MICROSOFT FLOW FREE 🩸'
+  },
+  {
+    skuId: 'bf95fd32-576a-4742-8d7a-6dc4940b9532',
+    skuPartNumber: 'VISIOCLIENT_FACULTY',
+    name: 'Visio Plan 2 for Faculty'
+  },
+  {
+    skuId: '46974aed-363e-423c-9e6a-951037cec495',
+    skuPartNumber: 'PROJECTPROFESSIONAL_FACULTY',
+    name: 'Project Plan 3 for Faculty'
+  },
+  {
+    skuId: '32b47245-eb31-44fc-b945-a8b1576c439f',
+    skuPartNumber: 'SPE_F5_SECCOMP',
+    name: 'Microsoft 365 F5 Security + Compliance Add-on'
   }
 ]
