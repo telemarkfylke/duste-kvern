@@ -85,19 +85,19 @@ const fintAnsattHarArbeidsforholdstype = {
     if (!systemData) return ignore() // Første test tar seg av dette
     if (!systemData.arbeidsforhold || systemData.arbeidsforhold.length === 0) return ignore() // fint_ansatt_arbeidsforhold tar seg av dette
 
-    const activePositions = systemData.arbeidsforhold.filter(arbeidsforhold => arbeidsforhold.aktiv);
+    const activePositions = systemData.arbeidsforhold.filter(arbeidsforhold => arbeidsforhold.aktiv)
     if (activePositions.length === 0) return ignore() // fint_ansatt_arbeidsforhold tar seg av dette
 
-    const activePositionsWithType = activePositions.filter(arbeidsforhold => arbeidsforhold.arbeidsforholdstype !== null);
+    const activePositionsWithType = activePositions.filter(arbeidsforhold => arbeidsforhold.arbeidsforholdstype !== null)
     if (activePositions.length === activePositionsWithType.length) {
       return success({
-        message: `Alle aktive arbeidsforhold har arbeidsforholdstype`,
-        raw: activePositionsWithType.map(arbeidsforhold => ({id: arbeidsforhold.systemId, arbeidsforholdstype: arbeidsforhold.arbeidsforholdstype}))
+        message: 'Alle aktive arbeidsforhold har arbeidsforholdstype',
+        raw: activePositionsWithType.map(arbeidsforhold => ({ id: arbeidsforhold.systemId, arbeidsforholdstype: arbeidsforhold.arbeidsforholdstype }))
       })
     }
 
     const activePositionsWithoutType = activePositions.filter(arbeidsforhold => arbeidsforhold.arbeidsforholdstype === null).map(arbeidsforhold => ({ id: arbeidsforhold.systemId }))
-    return error({ message: `${activePositionsWithoutType.length} ${pluralizeText("aktiv", activePositionsWithoutType.length, "e", "")} arbeidsforhold mangler arbeidsforholdstype`, raw: activePositionsWithoutType , solution: `Rettes i ${systemNames.fintAnsatt}` })
+    return error({ message: `${activePositionsWithoutType.length} ${pluralizeText('aktiv', activePositionsWithoutType.length, 'e', '')} arbeidsforhold mangler arbeidsforholdstype`, raw: activePositionsWithoutType, solution: `Rettes i ${systemNames.fintAnsatt}` })
   }
 }
 
