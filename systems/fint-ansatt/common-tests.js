@@ -69,6 +69,39 @@ const fintAnsattKategori = {
 }
 
 /**
+ * Har arbeidsforholdstype på aktive arbeidsforhold
+ */
+const fintAnsattHarArbeidsforholdstype = {
+  id: 'fint_ansatt_arbeidsforholdstype',
+  title: 'Har arbeidsforholdstype',
+  description: 'Har arbeidsforholdstype på aktive arbeidsforhold',
+  waitForAllData: false,
+  /**
+   *
+   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
+   */
+  test: (user, systemData) => {
+    if (!systemData) return ignore() // Første test tar seg av dette
+    if (!systemData.arbeidsforhold || systemData.arbeidsforhold.length === 0) return ignore() // fint_ansatt_arbeidsforhold tar seg av dette
+
+    const activePositions = systemData.arbeidsforhold.filter(arbeidsforhold => arbeidsforhold.aktiv);
+    if (activePositions.length === 0) return ignore() // fint_ansatt_arbeidsforhold tar seg av dette
+
+    const activePositionsWithType = activePositions.filter(arbeidsforhold => arbeidsforhold.arbeidsforholdstype !== null);
+    if (activePositions.length === activePositionsWithType.length) {
+      return success({
+        message: `Alle aktive arbeidsforhold har arbeidsforholdstype`,
+        raw: activePositionsWithType.map(arbeidsforhold => ({id: arbeidsforhold.systemId, arbeidsforholdstype: arbeidsforhold.arbeidsforholdstype}))
+      })
+    }
+
+    const activePositionsWithoutType = activePositions.filter(arbeidsforhold => arbeidsforhold.arbeidsforholdstype === null).map(arbeidsforhold => ({ id: arbeidsforhold.systemId }))
+    return error({ message: `${activePositionsWithoutType.length} ${pluralizeText("aktiv", activePositionsWithoutType.length, "e", "")} arbeidsforhold mangler arbeidsforholdstype`, raw: activePositionsWithoutType , solution: `Rettes i ${systemNames.fintAnsatt}` })
+  }
+}
+
+/**
  * Kontrollerer at ansettelsesforholdet ikke har en kategori som er unntatt fra å få brukerkonto
  */
 const fintAnsattFnr = {
@@ -215,4 +248,4 @@ const fintAnsattSlutterBruker = {
   }
 }
 
-module.exports = { fintAnsattData, fintAnsattAktivAnsettelsesperiode, fintAnsattKategori, fintAnsattFnr, fintAnsattOrgTilknytning, fintAnsattMobile, fintAnsattRopebokstaver, fintAnsattArbeidsforhold, fintAnsattSlutterBruker }
+module.exports = { fintAnsattData, fintAnsattAktivAnsettelsesperiode, fintAnsattKategori, fintAnsattHarArbeidsforholdstype, fintAnsattFnr, fintAnsattOrgTilknytning, fintAnsattMobile, fintAnsattRopebokstaver, fintAnsattArbeidsforhold, fintAnsattSlutterBruker }
