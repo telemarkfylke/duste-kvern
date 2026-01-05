@@ -94,6 +94,7 @@ const systemsAndTests = [
       fintAnsattTests.fintAnsattData,
       fintAnsattTests.fintAnsattAktivAnsettelsesperiode,
       fintAnsattTests.fintAnsattKategori,
+      fintAnsattTests.fintAnsattHarArbeidsforholdstype,
       fintAnsattTests.fintAnsattFnr,
       fintAnsattTests.fintAnsattOrgTilknytning,
       fintAnsattTests.fintAnsattMobile,
