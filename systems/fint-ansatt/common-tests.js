@@ -17,7 +17,7 @@ const fintAnsattData = {
   /**
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
     if (!systemData) return error({ message: `Har ikke bruker i ${systemNames.fintAnsatt}`, solution: 'Meld sak til arbeidsgruppe identitet' })
@@ -36,7 +36,7 @@ const fintAnsattAktivAnsettelsesperiode = {
   /**
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
@@ -57,7 +57,7 @@ const fintAnsattKategori = {
   /**
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
@@ -79,7 +79,7 @@ const fintAnsattFnr = {
   /**
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
@@ -103,7 +103,7 @@ const fintAnsattOrgTilknytning = {
   /**
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
@@ -125,7 +125,7 @@ const fintAnsattMobile = {
   /**
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
@@ -145,7 +145,7 @@ const fintAnsattRopebokstaver = {
   /**
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
@@ -171,7 +171,7 @@ const fintAnsattArbeidsforhold = {
   /**
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
@@ -201,7 +201,7 @@ const fintAnsattSlutterBruker = {
   /**
    *
    * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
+   * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
