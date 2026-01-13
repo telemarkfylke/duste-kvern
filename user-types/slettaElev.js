@@ -42,7 +42,7 @@ const systemsAndTests = [
         test: (user, systemData) => {
           if (!systemData) return warn({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis} dersom eleven ikke skal være sletta` })
           const aktiveElevforhold = systemData.elevforhold.filter(forhold => forhold.aktiv)
-          if (aktiveElevforhold.length > 0) return warn({ message: `Har ${aktiveElevforhold.length} aktiv${aktiveElevforhold.length === 1 ? 't' : 'e'} elevforhold, men er sletta!`, raw: systemData.elevforhold, solution: 'Vent på sync, om det ikke hjelper ta kontakt med arbeidsgruppe identitet' })
+          if (aktiveElevforhold.length > 0) return warn({ message: `Har ${aktiveElevforhold.length} aktiv${aktiveElevforhold.length === 1 ? 't' : 'e'} elevforhold, men er sletta!`, raw: systemData.elevforhold, solution: 'Vent på sync, om det ikke hjelper ta kontakt med arbeidsgruppe IDM i Pureservice' })
           const inaktiveElevforhold = systemData.elevforhold.filter(forhold => !forhold.aktiv)
           if (inaktiveElevforhold.length === 0) return warn({ message: 'Har ingen elevforhold i det hele tatt', solution: `Rettes i ${systemNames.vis} dersom eleven skal ha elevforhold` })
           const elevfoholdInTheFuture = inaktiveElevforhold.find(forhold => new Date() < new Date(forhold.gyldighetsperiode.start))

@@ -136,3 +136,6 @@ dist
 # datafiles
 users.json
 users.txt
+
+# VS files
+.vs/

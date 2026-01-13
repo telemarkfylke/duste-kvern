@@ -1,4 +1,3 @@
-const { APPREG: { TENANT_NAME } } = require('../../config')
 const { isValidFnr } = require('../../lib/helpers/is-valid-fnr')
 const { pluralizeText } = require('../../lib/helpers/pluralize-text')
 const { error, warn, success } = require('../../lib/test-result')
@@ -27,38 +26,8 @@ const adAktiveringAnsatt = {
     }
     if (data.enabledInAD && data.enabledInSdWorx) return success({ message: 'Kontoen er aktivert', raw: data })
     if (data.enabledInAD && !data.enabledInSdWorx) return error({ message: 'Kontoen er aktivert selv om ansatt ikke har aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
-    if (!data.enabledInAD && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selv om ansatt har et aktivt ansettelsesforhold', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!data.enabledInAD && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selv om ansatt har et aktivt ansettelsesforhold', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     if (!data.enabledInAD && !data.enabledInSdWorx) return warn({ message: `Kontoen er deaktivert i ${systemNames.ad} og ansatt har ikke et aktivt ansettelsesforhold`, raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
-  }
-}
-
-/**
- * Sjekker at elev-kontoen er aktivert i AD (bruker data fra VIS)
- */
-const adAktiveringElev = {
-  id: 'ad-aktivering-elev',
-  title: 'Kontoen er aktivert',
-  description: `Sjekker at elev-kontoen er aktivert i ${systemNames.ad}`,
-  waitForAllData: true,
-  /**
-   *
-   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
-   * @param {*} allData
-   */
-  test: (user, systemData, allData) => {
-    if (!allData['fint-elev']) return error({ message: `Mangler data i ${systemNames.vis}`, raw: { user }, solution: `Rettes i ${systemNames.vis}` })
-    if (allData['fint-elev'].getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.vis}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.vis}` })
-    const data = {
-      enabled: systemData.enabled,
-      vis: {
-        active: allData['fint-elev'].elevforhold.find(forhold => forhold.aktiv)
-      }
-    }
-    if (data.enabled && data.vis.active) return success({ message: 'Kontoen er aktivert', raw: data })
-    if (data.enabled && !data.vis.active) return error({ message: 'Kontoen er aktivert selv om elev ikke har noen aktive elevforhold' })
-    if (!data.enabled && data.vis.active) return warn({ message: 'Kontoen er deaktivert. Elev må aktivere sin konto', raw: data, solution: `Elev må aktivere sin konto via minkonto.${TENANT_NAME}.no/elev eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
-    if (!data.enabled && !data.vis.active) return warn({ message: 'Ingen aktive elevforhold', raw: data, solution: `Rettes i ${systemNames.vis}` })
   }
 }
 
@@ -81,7 +50,7 @@ const adHvilkenOU = {
     }
     if (!data.distinguishedName) return error({ message: `Bruker ikke funnet i ${systemNames.ad} 😬`, raw: data, solution: `Rettes i ${systemNames.ad}` })
     if (data.distinguishedName.toUpperCase().includes('OU=AUTO DISABLED USERS')) return warn({ message: 'Bruker ligger i OU\'en AUTO DISABLED USERS', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
-    return success({ message: 'Bruker ligger ikke i OU\'en AUTO DISABLED USERS', raw: data })
+    return success({ message: `Bruker ligger plassert riktig i ${systemNames.ad}`, raw: data })
   }
 }
 
@@ -102,7 +71,7 @@ const adLocked = {
     const data = {
       lockedOut: systemData.lockedOut
     }
-    if (!systemData.lockedOut) return success({ message: 'Kontoen er ikke sperret for pålogging', raw: data })
+    if (!systemData.lockedOut) return success({ message: 'Kontoen er åpen for pålogging', raw: data })
     return error({ message: 'Kontoen er sperret for pålogging', raw: data, solution: `Servicedesk må åpne brukerkontoen for pålogging i ${systemNames.ad}. Dette gjøres i Properties på brukerobjektet under fanen Account` })
   }
 }
@@ -126,7 +95,7 @@ const adFnr = {
       employeeNumber: systemData.employeeNumber,
       fnr: isValidFnr(systemData.employeeNumber)
     }
-    return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
+    return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
   }
 }
 
@@ -145,7 +114,7 @@ const adStateLicense = {
    */
   test: (user, systemData) => {
     if (systemData.state && systemData.state.length > 0) return success({ message: 'Felt for kortkode som styrer lisens er fylt ut', raw: { state: systemData.state } })
-    return error({ message: 'Felt for kortkode som styrer lisens mangler 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
+    return error({ message: 'Felt for kortkode som styrer lisens mangler 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
   }
 }
 
@@ -185,7 +154,7 @@ const adExt9 = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData.extensionAttribute9) return error({ message: 'Ansattnummer mangler i extensionAttribute9 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!systemData.extensionAttribute9) return error({ message: 'Ansattnummer mangler i extensionAttribute9 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     return success({ message: 'Har ansattnummer i extensionAttribute9' })
   }
 }
@@ -210,4 +179,4 @@ const adGroupMembership = {
   }
 }
 
-module.exports = { adHvilkenOU, adLocked, adFnr, adStateLicense, adExt4, adExt9, adGroupMembership, adAktiveringAnsatt, adAktiveringElev }
+module.exports = { adHvilkenOU, adLocked, adFnr, adStateLicense, adExt4, adExt9, adGroupMembership, adAktiveringAnsatt }

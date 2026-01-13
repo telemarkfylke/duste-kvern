@@ -9,7 +9,7 @@ const systemNames = require('../system-names')
 const syncIdm = {
   id: 'sync_idm',
   title: 'Har IDM lastRunTime',
-  description: 'Sjekker siste kjøringstidspunkt for Brukersynkronisering',
+  description: 'Sjekker siste kjøringstidspunkt for brukersynkronisering',
   waitForAllData: false,
   /**
    *
@@ -24,7 +24,7 @@ const syncIdm = {
       lastRunTime: systemData.lastIdmRun.lastRunTime,
       check: lastRunTimeCheck
     }
-    if (!lastRunTimeCheck.result) return warn({ message: 'Det er mer enn 24 timer siden siste brukersynkronisering', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!lastRunTimeCheck.result) return warn({ message: 'Det er mer enn 24 timer siden siste brukersynkronisering', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     return success({ message: `Brukersynkronisering : ${prettifyDateToLocaleString(new Date(systemData.lastIdmRun.lastRunTime))}`, raw: data })
   }
 }
@@ -50,7 +50,7 @@ const syncAzure = {
       lastEntraIDSyncTime: systemData.azureSync.lastEntraIDSyncTime,
       check: lastRunTimeCheck
     }
-    if (!lastRunTimeCheck.result) return warn({ message: `Det er mer enn 40 minutter siden siste synkronisering av ${systemNames.azure}`, raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!lastRunTimeCheck.result) return warn({ message: `Det er mer enn 40 minutter siden siste synkronisering av ${systemNames.azure}`, raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     return success({ message: `${systemNames.azure} : ${prettifyDateToLocaleString(new Date(systemData.azureSync.lastEntraIDSyncTime))}`, raw: data })
   }
 }

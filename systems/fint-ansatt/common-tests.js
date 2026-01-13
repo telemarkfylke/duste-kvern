@@ -20,7 +20,7 @@ const fintAnsattData = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er fint-ansatt-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData) return error({ message: `Har ikke bruker i ${systemNames.fintAnsatt}`, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!systemData) return error({ message: `Har ikke bruker i ${systemNames.fintAnsatt}`, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     return success({ message: `Har bruker i ${systemNames.fintAnsatt}` })
   }
 }
@@ -31,7 +31,7 @@ const fintAnsattData = {
 const fintAnsattAktivAnsettelsesperiode = {
   id: 'fint_ansatt_aktiv_ansettelsesperiode',
   title: 'Aktiv ansettelsesperiode',
-  description: `Sjekker at bruker har et aktivt ansettelsesperiode i ${systemNames.fintAnsatt}`,
+  description: `Sjekker at bruker har en aktiv ansettelsesperiode i ${systemNames.fintAnsatt}`,
   waitForAllData: false,
   /**
    *
@@ -40,8 +40,8 @@ const fintAnsattAktivAnsettelsesperiode = {
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
-    if (!systemData.ansettelsesperiode) return error({ message: `Mangler ansettelsesperiode i ${systemNames.fintAnsatt}`, solution: 'Meld sak til arbeidsgruppe identitet', raw: systemData.ansettelsesperiode })
-    if (!systemData.ansettelsesperiode.aktiv) return warn({ message: `Bruker har ikke en aktiv ansettelsesperiode i ${systemNames.fintAnsatt}`, solution: 'Dersom ansettelsesperioden skal være aktiv, meld sak HR', raw: systemData.ansettelsesperiode })
+    if (!systemData.ansettelsesperiode) return error({ message: `Mangler ansettelsesperiode i ${systemNames.fintAnsatt}`, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice', raw: systemData.ansettelsesperiode })
+    if (!systemData.ansettelsesperiode.aktiv) return warn({ message: `Bruker har ikke en aktiv ansettelsesperiode i ${systemNames.fintAnsatt}`, solution: `Dersom ansettelsesperioden skal være aktiv må det rettes i ${systemNames.fintAnsatt}`, raw: systemData.ansettelsesperiode })
     return success({ message: `Bruker har aktiv ansettelsesperiode i ${systemNames.fintAnsatt}`, raw: systemData.ansettelsesperiode })
   }
 }
@@ -62,9 +62,9 @@ const fintAnsattKategori = {
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
     const category = systemData.personalressurskategori
-    if (!category.kode) return error({ message: 'Mangler personalressurskategori', raw: category })
-    if (SDWORX.EXCLUDED_CATEGORIES.includes(category.kode.toUpperCase())) return error({ message: `Kategorien på personalressursen (${category.kode}) er ekskludert, som tilsier at det ikke skal opprettes noen brukerkonto`, raw: category })
-    return success({ message: `Kategorien på ansettelsesforholdet (${category.kode}) er ikke ekskludert, som tilsier at det skal opprettes brukerkonto`, raw: category })
+    if (!category.kode) return error({ message: 'Mangler personalressurskategori', raw: category, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
+    if (SDWORX.EXCLUDED_CATEGORIES.includes(category.kode.toUpperCase())) return error({ message: `Kategorien på personalressursen (${category.kode}) er ekskludert, som tilsier at det ikke skal opprettes noen brukerkonto`, raw: category, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
+    return success({ message: `Kategorien på ansettelsesforholdet (${category.kode}) er korrekt`, raw: category })
   }
 }
 
@@ -101,9 +101,6 @@ const fintAnsattHarArbeidsforholdstype = {
   }
 }
 
-/**
- * Kontrollerer at ansettelsesforholdet ikke har en kategori som er unntatt fra å få brukerkonto
- */
 const fintAnsattFnr = {
   id: 'fint_ansatt_fnr',
   title: 'Personalressurs har gyldig fødselsnummer',
@@ -117,9 +114,9 @@ const fintAnsattFnr = {
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
     const fnr = systemData.fodselsnummer
-    if (!fnr) return error({ message: 'Mangler fødselsnummer...', solution: 'Be HR legge inn fødselsnummer', raw: fnr })
+    if (!fnr) return error({ message: 'Mangler fødselsnummer...', solution: `Rettes i ${systemNames.fintAnsatt}` })
     const validationResult = isValidFnr(fnr)
-    if (!validationResult.valid) return error({ message: validationResult.error, raw: { fnr, validationResult } })
+    if (!validationResult.valid) return error({ message: validationResult.error, raw: { fnr, validationResult }, solution: `Rettes i ${systemNames.fintAnsatt}` })
     if (validationResult.type !== 'Fødselsnummer') return warn({ message: `Fødselsnummeret som er registrert er et ${validationResult.type}. Dette kan skape problemer i enkelte systemer`, raw: { fnr, validationResult } })
     return success({ message: `Fødselsnummeret registrert i ${systemNames.fintAnsatt} er gyldig`, raw: { fnr, validationResult } })
   }
@@ -140,7 +137,7 @@ const fintAnsattOrgTilknytning = {
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
-    if (!systemData.arbeidsforhold || systemData.arbeidsforhold.length === 0) return error({ message: 'Mangler data for organisasjonstilknytning', raw: systemData.arbeidsforhold })
+    if (!systemData.arbeidsforhold || systemData.arbeidsforhold.length === 0) return error({ message: 'Mangler organisasjonstilknytning', raw: systemData.arbeidsforhold, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     const missingOrg = systemData.arbeidsforhold.filter(forhold => !forhold.arbeidssted.organisasjonsId)
     if (missingOrg.length > 0) return error({ message: `Mangler organisasjonstilknytning (arbeidssted) i ${missingOrg.length} ${pluralizeText('stilling', missingOrg.length, 'er')}. Må rettes i ${systemNames.fintAnsatt}`, raw: missingOrg, solution: `Rettes i ${systemNames.fintAnsatt}` })
     return success({ message: 'Har organisasjonstilknytning', raw: systemData.arbeidsforhold.map(forhold => forhold.arbeidssted) })
@@ -162,7 +159,7 @@ const fintAnsattMobile = {
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
-    if (!systemData.kontaktMobiltelefonnummer && !systemData.privatMobiltelefonnummer) return warn({ message: `Bruker har ikke mobiltelefonnummer registrert på personalressurs eller person i ${systemNames.fintAnsatt} og har ikke mottatt oppstartsmelding på SMS`, solution: `Dersom brukeren trenger å sette opp konto, send brukeren til minkonto.${TENANT_NAME}.no/ansatt. Dersom brukeren har satt opp kontoen sin, rettes dette i ${systemNames.fintAnsatt}.` })
+    if (!systemData.kontaktMobiltelefonnummer && !systemData.privatMobiltelefonnummer) { return warn({ message: `Bruker har ikke mobiltelefonnummer registrert på personalressurs eller person i ${systemNames.fintAnsatt}, og har ikke mottatt oppstartsmelding på SMS`, solution: `Bruker kan sette opp konto på minkonto.${TENANT_NAME}.no/ansatt.` }) }
     return success({ message: `Bruker har ☎️ korrekt satt i ${systemNames.fintAnsatt}` })
   }
 }
@@ -208,10 +205,10 @@ const fintAnsattArbeidsforhold = {
    */
   test: (user, systemData) => {
     if (!systemData) return ignore() // Første test tar seg av dette
-    if (!systemData.arbeidsforhold || systemData.arbeidsforhold.length === 0) return error({ message: 'Mangler arbeidsforhold', solution: `Dersom brukeren jobber hos oss, rettes i ${systemNames.fintAnsatt}.` })
+    if (!systemData.arbeidsforhold || systemData.arbeidsforhold.length === 0) return error({ message: 'Mangler arbeidsforhold', solution: `Rettes i ${systemNames.fintAnsatt}` })
 
     const positions = systemData.arbeidsforhold.filter(forhold => forhold.aktiv)
-    if (positions.length === 0) return error({ message: 'Bruker har ingen aktive arbeidsforhold', raw: systemData.arbeidsforhold, solution: `Dersom brukeren jobber hos oss, rettes i ${systemNames.fintAnsatt}.` })
+    if (positions.length === 0) return error({ message: 'Bruker har ingen aktive arbeidsforhold', raw: systemData.arbeidsforhold, solution: `Rettes i ${systemNames.fintAnsatt}` })
 
     const primaryPositions = positions.filter(position => position.hovedstilling)
     const secondaryPositions = positions.filter(position => !position.hovedstilling)
@@ -240,7 +237,7 @@ const fintAnsattSlutterBruker = {
     if (!systemData) return ignore() // Første test tar seg av dette
     const employmentPeriod = systemData.ansettelsesperiode
     if (user.displayName === 'Bjørn Kaarstein') return warn({ message: 'Denne brukeren har ikke lov til å slutte, og alle forsøk på oppsigelse vil bli anmeldt 🐻', raw: employmentPeriod, solution: 'Dersom du opplever at brukeren ønsker å si opp, gi han et par pils og si at alle andre arbeidsplasser spiller Erlend Ropstad på høy lyd' })
-    if (!employmentPeriod.aktiv) return error({ message: 'Brukeren har ikke et aktivt ansettelsesforhold...', raw: employmentPeriod })
+    if (!employmentPeriod.aktiv) return ignore() // fint_ansatt_aktiv_ansettelsesperiode tar seg av dette
     if (!employmentPeriod.slutt) return success({ message: 'Brukeren skal være med oss i all overskuelig fremtid 🎺', raw: employmentPeriod })
     const isWithin = isWithinDaterange(null, employmentPeriod.slutt)
     const prettyDate = prettifyDateToLocaleString(new Date(employmentPeriod.slutt), true)

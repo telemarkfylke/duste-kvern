@@ -18,13 +18,6 @@ const feideAnsatt = {
    */
   test: (user, systemData) => {
     if (!systemData || (Array.isArray(systemData) && systemData.length === 0)) return success({ message: `Ingen ${systemNames.feide}-bruker her`, raw: systemData })
-    if (!systemData?.displayName) {
-      return error({
-        message: `Ansatt har ${systemNames.feide}-konto, men itj no displayName??`,
-        raw: systemData,
-        solution: `Rettes vel i ${systemNames.feide} ellerno da`
-      })
-    }
 
     let feideFnr = typeof systemData.norEduPersonNIN === 'string' ? systemData.norEduPersonNIN : null
     if (!feideFnr) {
@@ -41,7 +34,7 @@ const feideAnsatt = {
     if (!feideFnr) return error({ message: 'Fødselsnummer mangler 😬' })
     const validFnr = isValidFnr(feideFnr)
     if (validFnr.valid) return success({ message: `Ansatt har ${systemNames.feide}-konto og gyldig FNR`, raw: { feideFnr, validFnr } })
-    return error({ message: `Ansatt har ${systemNames.feide}-konto, men ikke gyldig fnr i ${systemNames.feide}` })
+    return error({ message: `Ansatt har ${systemNames.feide}-konto, men ikke gyldig fnr i ${systemNames.feide}`, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
   }
 }
 
@@ -59,14 +52,7 @@ const feideElev = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (!systemData || (Array.isArray(systemData) && systemData.length === 0)) return error({ message: `Ingen ${systemNames.feide}-bruker her`, raw: systemData, solution: '??? Hva gjør vi nå egt?' })
-    if (!systemData?.displayName) {
-      return error({
-        message: `Elev har ${systemNames.feide}-konto, men itj no displayName??`,
-        raw: systemData,
-        solution: `Rettes vel i ${systemNames.feide} ellerno da`
-      })
-    }
+    if (!systemData || (Array.isArray(systemData) && systemData.length === 0)) return error({ message: `Ingen ${systemNames.feide}-bruker her`, raw: systemData, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
 
     let feideFnr = typeof systemData.norEduPersonNIN === 'string' ? systemData.norEduPersonNIN : null
     if (!feideFnr) {
