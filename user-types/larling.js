@@ -27,8 +27,8 @@ const systemsAndTests = [
           const data = {
             enabled: systemData.accountEnabled
           }
-          if (!data.enabled) return error({ message: 'Konto er ikke aktivert 😬', raw: data, solution: `Bruker må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
-          return success({ message: 'Kontoen er aktivert', raw: data })
+          if (!data.enabled) return error({ message: 'Konto er ikke aktiv 😬', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
+          return success({ message: 'Kontoen er aktiv', raw: data })
         }
       },
       {
@@ -45,8 +45,8 @@ const systemsAndTests = [
           const data = {
             userPrincipalName: systemData.userPrincipalName
           }
-          if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-          if (!data.userPrincipalName.endsWith(`@skole.${TENANT_NAME}.no`)) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+          if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 😬', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
+          if (!data.userPrincipalName.endsWith(`@skole.${TENANT_NAME}.no`)) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
           return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data })
         }
       },
@@ -93,3 +93,4 @@ const systemsAndTests = [
 ]
 
 module.exports = { systemsAndTests }
+

@@ -61,7 +61,7 @@ const fintStudentSkoleforhold = {
     }
     const primarySchools = skoleforhold.filter(school => school.hovedskole)
     if (primarySchools.length > 1) {
-      return error({ message: `Har ${primarySchools.length} hovedskoler`, raw: primarySchools, solution: `Dette er feil og må rettes i ${systemNames.vis}` })
+      return error({ message: `Har ${primarySchools.length} hovedskoler`, raw: primarySchools, solution: `Rettes i ${systemNames.vis}` })
     }
     if (primarySchools.length === 0) {
       return error({ message: 'Har ingen hovedskole', raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
@@ -73,9 +73,7 @@ const fintStudentSkoleforhold = {
         ? success({ message: `Har ${skoleforhold.length} skoleforhold. ${primarySchool.navn} er hovedskole`, raw: skoleforhold, solution: `Dette er i mange tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
         : error({ message: `Har ${skoleforhold.length} skoleforhold men ingen hovedskole`, raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
     }
-    if (!primarySchool) {
-      return warn({ message: 'Har ett skoleforhold, men dette er ikke satt som hovedskole', raw: skoleforhold, solution: `Rettes i ${systemNames.vis}` })
-    }
+
     return success({ message: 'Har ett skoleforhold', raw: skoleforhold })
   }
 }
@@ -172,35 +170,6 @@ const fintStudentProgramomrader = {
   }
 }
 
-/**
- * Sjekker at fødselsnummeret er likt i AD og ViS
- */
-const fintFodselsnummer = {
-  id: 'fint_fodselsnummer',
-  title: `Fødselsnummer er likt i ${systemNames.ad}`,
-  description: `Sjekker at fødselsnummeret er likt i ${systemNames.ad} og ${systemNames.vis}`,
-  waitForAllData: true,
-  /**
-   *
-   * @param {*} user kan slenge inn jsDocs for en user fra mongodb
-   * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
-   * @param {*} allData
-   */
-  test: (user, systemData, allData) => {
-    if (!allData.ad) return error({ message: `Mangler data fra ${systemNames.ad}` })
-    if (allData.ad.getDataFailed) return error({ message: `Feilet ved henting av data fra ${systemNames.ad}`, raw: { user }, solution: `Sjekk feilmelding i ${systemNames.ad}` })
-    if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
-    const data = {
-      adFnr: allData.ad.employeeNumber,
-      visFnr: systemData.fodselsnummer
-    }
-    if (!data.adFnr) return error({ message: `Mangler fødselsnummer i ${systemNames.ad}`, solution: 'Meld sak til arbeidsgruppe identitet', raw: data })
-    if (!data.visFnr) return error({ message: `Mangler fødselsnummer i ${systemNames.fintLarer}`, solution: `Rettes i ${systemNames.fintLarer}`, raw: data })
-    if (data.adFnr.toString() !== data.visFnr.toString()) return error({ message: `Fødselsnummer er forskjellig i ${systemNames.ad} og ${systemNames.vis}`, raw: data })
-    return success({ message: `Fødselsnummer er likt i ${systemNames.ad} og ${systemNames.vis}`, raw: data })
-  }
-}
-
 const fintGyldigFodselsnummer = {
   id: 'fint_gyldig_fodselsnummer',
   title: 'Har gyldig fødselsnummer',
@@ -217,7 +186,7 @@ const fintGyldigFodselsnummer = {
       id: systemData.fodselsnummer,
       fnr: isValidFnr(systemData.fodselsnummer)
     }
-    return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
+    return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data, solution: `Rettes i ${systemNames.vis}` })
   }
 }
 
@@ -241,9 +210,9 @@ const fintStudentFeidenavn = {
       feide: allData.feide.eduPersonPrincipalName,
       vis: systemData.feidenavn
     }
-    if ((data.feide && data.vis) && data.feide === data.vis) return success({ message: `${systemNames.feide}-navn er skrevet tilbake til ${systemNames.vis}`, raw: data })
-    if ((data.feide && data.vis) && data.feide !== data.vis) return error({ message: `${systemNames.feide}-id skrevet tilbake er ikke riktig 😱`, raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    return error({ message: `${systemNames.feide}-id er ikke skrevet tilbake 😬`, raw: data, solution: `${systemNames.vis} systemansvarlig må kontakte leverandør da dette må fikses i bakkant!` })
+    if (data.feide && data.vis && data.feide === data.vis) return success({ message: `${systemNames.feide}-navn er skrevet tilbake til ${systemNames.vis}`, raw: data })
+    if (data.feide && data.vis && data.feide !== data.vis) return error({ message: `${systemNames.feide}-id skrevet tilbake er ikke riktig 😱`, raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
+    return error({ message: `${systemNames.feide}-id er ikke skrevet tilbake 😬`, raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
   }
 }
 
@@ -260,9 +229,9 @@ const fintStudentUtgattElevforhold = {
   test: (user, systemData) => {
     if (!systemData) return error({ message: `Mangler data i ${systemNames.vis}`, solution: `Rettes i ${systemNames.vis}` })
     const utgatteElevforhold = systemData.elevforhold.filter(forhold => forhold.gyldighetsperiode.slutt && (new Date() > new Date(forhold.gyldighetsperiode.slutt)))
-    if (utgatteElevforhold.length > 0) return warn({ message: `Har utgått skoleforhold ved ${pluralizeText('skole', utgatteElevforhold.length, 'r')}: ${utgatteElevforhold.map(forhold => forhold.skole.navn).join(', ')}.`, raw: utgatteElevforhold, solution: `Dette er i de fleste tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
+    if (utgatteElevforhold.length > 0) return warn({ message: `Har utgått elevforhold ved ${pluralizeText('skole', utgatteElevforhold.length, 'r')}: ${utgatteElevforhold.map(forhold => forhold.skole.navn).join(', ')}.`, raw: utgatteElevforhold, solution: `Dette er i de fleste tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
     return success({ message: 'Har ingen utgåtte elevforhold' })
   }
 }
 
-module.exports = { fintStudentKontaktlarer, fintStudentSkoleforhold, fintStudentBasisgrupper, fintStudentUndervisningsgrupper, fintStudentFaggrupper, fintStudentProgramomrader, fintFodselsnummer, fintGyldigFodselsnummer, fintStudentUtgattElevforhold, fintStudentFeidenavn, fintElevforhold }
+module.exports = { fintStudentKontaktlarer, fintStudentSkoleforhold, fintStudentBasisgrupper, fintStudentUndervisningsgrupper, fintStudentFaggrupper, fintStudentProgramomrader, fintGyldigFodselsnummer, fintStudentUtgattElevforhold, fintStudentFeidenavn, fintElevforhold }

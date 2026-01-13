@@ -28,8 +28,8 @@ const systemsAndTests = [
           const data = {
             userPrincipalName: systemData.userPrincipalName
           }
-          if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-          if (!data.userPrincipalName.endsWith(`@skole.${TENANT_NAME}.no`)) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+          if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 😬', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
+          if (!data.userPrincipalName.endsWith(`@skole.${TENANT_NAME}.no`)) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
           return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data })
         }
       },

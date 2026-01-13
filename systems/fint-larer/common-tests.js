@@ -79,7 +79,7 @@ const fintDuplicateKontaktlarergrupper = {
     }
 
     if (duplicates.length === 0) return success({ message: 'Har ikke duplikate kontaktlærergrupper' })
-    return warn({ message: `Har ${duplicates.length} ${pluralizeText('duplikat', duplicates.length, 'e')} ${pluralizeText('kontaktlærergruppe', duplicates.length, 'r')}`, raw: { duplicates }, solution: `Rettes i ${systemNames.fintLarer}. Hvis det allerede er korrekt i ${systemNames.fintLarer}, meld sak til arbeidsgruppe identitet` })
+    return warn({ message: `Har ${duplicates.length} ${pluralizeText('duplikat', duplicates.length, 'e')} ${pluralizeText('kontaktlærergruppe', duplicates.length, 'r')}`, raw: { duplicates }, solution: `Rettes i ${systemNames.fintLarer}` })
   }
 }
 
@@ -126,7 +126,7 @@ const fintUndervisningsgrupper = {
       const uGrupper = forhold.undervisningsgrupper.filter(uGruppe => uGruppe.aktiv).map(uGruppe => { return { systemId: uGruppe.systemId, navn: uGruppe.navn, skole: uGruppe.skole.navn } })
       undervisningsgrupper = [...undervisningsgrupper, ...uGrupper]
     })
-    if (undervisningsgrupper.length === 0) return success({ message: 'Har ingen undervisningsgrupper', raw: undervisningsgrupper, solution: `Rettes i ${systemNames.fintLarer}, dersom det savnes noe medlemskap. Hvis det allerede er korrekt i ${systemNames.fintLarer}, meld sak til arbeidsgruppe identitet` })
+    if (undervisningsgrupper.length === 0) return success({ message: 'Har ingen undervisningsgrupper', raw: undervisningsgrupper })
     return success({ message: `Underviser i ${undervisningsgrupper.length} ${pluralizeText('undervisningsgruppe', undervisningsgrupper.length, 'r')}`, raw: undervisningsgrupper })
   }
 }
@@ -154,9 +154,9 @@ const fintFodselsnummer = {
       adFnr: allData.ad.employeeNumber,
       visFnr: systemData.fodselsnummer
     }
-    if (!data.adFnr) return error({ message: `Mangler fødselsnummer i ${systemNames.ad}`, solution: 'Meld sak til arbeidsgruppe identitet', raw: data })
+    if (!data.adFnr) return error({ message: `Mangler fødselsnummer i ${systemNames.ad}`, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice', raw: data })
     if (!data.visFnr) return error({ message: `Mangler fødselsnummer i ${systemNames.fintLarer}`, solution: `Rettes i ${systemNames.fintLarer}`, raw: data })
-    if (data.adFnr.toString() !== data.visFnr.toString()) return error({ message: `Fødselsnummer er forskjellig i ${systemNames.ad} og ${systemNames.fintLarer}`, raw: data })
+    if (data.adFnr.toString() !== data.visFnr.toString()) return error({ message: `Fødselsnummer er forskjellig i ${systemNames.ad} og ${systemNames.fintLarer}`, raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     return success({ message: `Fødselsnummer er likt i ${systemNames.ad} og ${systemNames.fintLarer}`, raw: data })
   }
 }
@@ -166,8 +166,8 @@ const fintFodselsnummer = {
  */
 const fintMobilnummer = {
   id: 'fint_mobilnummer',
-  title: 'Har mobiltelefonnummer',
-  description: `Sjekker at mobiltelefonnummer er registrert i ${systemNames.vis}`,
+  title: 'Har telefonnummer',
+  description: `Sjekker at telefonnummer er registrert i ${systemNames.fintLarer}`,
   waitForAllData: false,
   /**
    *
@@ -181,8 +181,8 @@ const fintMobilnummer = {
       larerMobiltelefonnummer: systemData.larerMobiltelefonnummer,
       kontaktMobiltelefonnummer: systemData.kontaktMobiltelefonnummer
     }
-    if (!data.larerMobiltelefonnummer && !data.kontaktMobiltelefonnummer) return warn({ message: `Mobiltelefonnummer ikke registrert i ${systemNames.fintLarer}`, raw: data, solution: `Rettes i ${systemNames.fintLarer}` })
-    return success({ message: 'Har registrert mobiltelefonnummer', raw: data })
+    if (!data.larerMobiltelefonnummer && !data.kontaktMobiltelefonnummer) return warn({ message: `Telefonnummer ikke registrert i ${systemNames.fintLarer}`, raw: data, solution: `Rettes i ${systemNames.fintLarer}` })
+    return success({ message: 'Har registrert telefonnummer', raw: data })
   }
 }
 
@@ -210,9 +210,9 @@ const fintFeideVis = {
       feide: allData.feide.eduPersonPrincipalName,
       vis: systemData.feidenavn
     }
-    if ((data.feide && data.vis) && data.feide === data.vis) return success({ message: `${systemNames.feide}-navn er skrevet tilbake til ${systemNames.fintLarer}`, raw: data })
-    if ((data.feide && data.vis) && data.feide !== data.vis) return error({ message: `${systemNames.feide}-id skrevet tilbake er ikke riktig 😱`, raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    return error({ message: `${systemNames.feide}-id er ikke skrevet tilbake 😬`, raw: data, solution: `${systemNames.fintLarer} systemansvarlig må kontakte leverandør da dette må fikses i bakkant!` })
+    if (data.feide && data.vis && data.feide === data.vis) return success({ message: `${systemNames.feide}-navn er skrevet tilbake til ${systemNames.fintLarer}`, raw: data })
+    if (data.feide && data.vis && data.feide !== data.vis) return error({ message: `${systemNames.feide}-id skrevet tilbake er ikke riktig 😱`, raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
+    return error({ message: `${systemNames.feide}-id er ikke skrevet tilbake 😬`, raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
   }
 }
 

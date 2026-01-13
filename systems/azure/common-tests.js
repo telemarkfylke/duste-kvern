@@ -1,4 +1,3 @@
-const { APPREG: { TENANT_NAME } } = require('../../config')
 const { isWithinTimeRange } = require('../../lib/helpers/is-within-timerange')
 const { isVestfold } = require('../../lib/helpers/county')
 const { pluralizeText } = require('../../lib/helpers/pluralize-text')
@@ -52,7 +51,7 @@ const azureAktiveringAnsatt = {
     }
     if (data.enabledInAd && data.enabledInSdWorx) return success({ message: 'Kontoen er aktivert', raw: data })
     if (data.enabledInAd && !data.enabledInSdWorx) return error({ message: 'Kontoen er aktivert selv om ansatt ikke har aktivt ansettelsesforhold', raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
-    if (!data.enabledInAd && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selv om ansatt har et aktivt ansettelsesforhold', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!data.enabledInAd && data.enabledInSdWorx) return warn({ message: 'Kontoen er deaktivert selv om ansatt har et aktivt ansettelsesforhold', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     if (!data.enabledInAd && !data.enabledInSdWorx) return warn({ message: `Kontoen er deaktivert i ${systemNames.azure} og ansatt har ikke et aktivt ansettelsesforhold`, raw: data, solution: `Rettes i ${systemNames.fintAnsatt}` })
   }
 }
@@ -81,8 +80,8 @@ const azureAktiveringElev = {
       }
     }
     if (data.enabled && data.vis.active) return success({ message: 'Kontoen er aktivert', raw: data })
-    if (data.enabled && !data.vis.active) return error({ message: 'Kontoen er aktivert selv om elev ikke har noen aktive elevforhold' })
-    if (!data.enabled && data.vis.active) return warn({ message: 'Kontoen er deaktivert. Elev må aktivere sin konto', raw: data, solution: `Elev må aktivere sin konto via minkonto.${TENANT_NAME}.no/elev eller servicedesk kan gjøre det direkte i ${systemNames.ad}` })
+    if (data.enabled && !data.vis.active) return warn({ message: 'Kontoen er aktivert selv om elev ikke har noen aktive elevforhold' })
+    if (!data.enabled && data.vis.active) return warn({ message: `Kontoen er deaktivert i ${systemNames.azure}, men eleven har aktivt elevforhold i ${systemNames.vis}.`, raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     if (!data.enabled && !data.vis.active) return warn({ message: 'Ingen aktive elevforhold', raw: data, solution: `Rettes i ${systemNames.vis}` })
   }
 }
@@ -106,12 +105,11 @@ const azureUpnEqualsMail = {
       mail: systemData.mail || null,
       userPrincipalName: systemData.userPrincipalName || null
     }
-    if (!systemData.userPrincipalName) return error({ message: 'UPN (brukernavn til Microsoft 365) mangler 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!systemData.userPrincipalName) return error({ message: 'UPN (brukernavn til Microsoft 365) mangler 😬', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     if (!systemData.mail) {
-      if (systemData.accountEnabled) return error({ message: 'E-postadresse mangler 😬', raw: data })
-      return warn({ message: 'E-postadresse blir satt når konto er blitt aktivert', raw: data, solution: `Bruker må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Entra ID Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+      return error({ message: 'E-postadresse mangler 😬', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
     }
-    return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success({ message: 'UPN (brukernavn til Microsoft 365) er lik e-postadressen', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke lik e-postadressen', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success({ message: 'UPN (brukernavn til Microsoft 365) er lik e-postadressen', raw: data }) : warn({ message: 'UPN (brukernavn til Microsoft 365) er ikke lik e-postadressen', raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
   }
 }
 
@@ -142,7 +140,7 @@ const azurePwdSync = {
       },
       seconds: pwdCheck.seconds
     }
-    if (allData.ad.pwdLastSet === 0) return warn({ message: 'Passord vil synkroniseres når konto er blitt aktivert', raw: data })
+    if (allData.ad.pwdLastSet === 0) return warn({ message: 'Passord vil synkroniseres når passordet byttes', raw: data })
     if (pwdCheck.result) return success({ message: `Passord synkronisert til ${systemNames.azure}`, raw: data })
     return error({ message: 'Passord ikke synkronisert', solution: 'Bruker må bytte passord', raw: data })
   }
@@ -162,13 +160,12 @@ const azureLicense = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (systemData.accountEnabled && systemData.assignedLicenses.length === 0) return error({ message: 'Har ingen Microsoft 365-lisenser 😬', solution: 'Meld sak til arbeidsgruppe identitet' })
-    if (!systemData.accountEnabled && systemData.assignedLicenses.length === 0) return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Bruker må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+    if (systemData.assignedLicenses.length === 0) return error({ message: 'Har ingen Microsoft 365-lisenser 😬', solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
 
     const data = generateRawLicenseData(systemData)
     if (data.hasNecessaryLicenses) return success({ message: 'Har Microsoft 365-lisenser', solution: data.licenses.map(lic => lic.name || lic.skuId).join(', '), raw: data })
-    if (systemData.accountEnabled) return warn({ message: `Har ${data.licenses.length} ${pluralizeText('lisens', data.licenses.length, 'er')} men mangler nødvendige lisenser`, raw: data, solution: 'Sjekk at bruker har aktive lisenser på brukerobjektet i Azure AD under Licenses. Hvis noen av lisensene tildelt til bruker ikke er aktive, sjekk at det er lisenser tilgjengelig og deretter kjør en Reprocess i License vinduet. Hvis bruker ikke har noen lisenser tildelt, meld sak til arbeidsgruppe identitet' })
-    return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Ansatt må aktivere sin konto via minkonto.${TENANT_NAME}.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+    if (systemData.accountEnabled) return warn({ message: `Har ${data.licenses.length} ${pluralizeText('lisens', data.licenses.length, 'er')} men mangler nødvendige lisenser`, raw: data, solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
+    return warn({ message: 'Kontoen er deaktivert', solution: 'Meld sak til arbeidsgruppe IDM i Pureservice' })
   }
 }
 
@@ -238,7 +235,8 @@ const azureLicenseA1 = {
 
     return warn({
       message: 'Bruker har A1 lisens grunnet et eller annet 🤷‍♂️',
-      raw: licenses
+      raw: licenses,
+      solution: 'Meld sak til arbeidsgruppe IDM i Pureservice'
     })
   }
 }
@@ -338,7 +336,7 @@ const azureProxyAddresses = {
     if (systemData.proxyAddresses.length === 0) {
       return error({
         message: 'Bruker har ingen proxyAddresses',
-        solution: 'Hvis dette er feil, meld sak til arbeidsgruppe identitet',
+        solution: 'Hvis dette er feil, meld sak til arbeidsgruppe IDM i Pureservice',
         raw: systemData.proxyAddresses
       })
     }
@@ -407,7 +405,7 @@ const azureGroups = {
       regular: systemData.memberOf.filter(group => !group.trim().startsWith('MEM-User-')),
       mem: systemData.memberOf.filter(group => group.trim().startsWith('MEM-User-'))
     }
-    if (groups.regular.length > groupWarningLimit) return warn({ message: `Er direkte medlem av ${groups.regular.length} ${systemNames.azure} ${pluralizeText('gruppe', groups.regular.length, 'r')}, og ${groups.mem.length} MEM-${pluralizeText('gruppe', groups.mem.length, 'r')} 😵`, solution: 'Det kan hende brukeren trenger å være medlem av alle disse gruppene, men om du tror det er et problem, meld en sak til arbeidsgruppe identitet', raw: groups })
+    if (groups.regular.length > groupWarningLimit) return warn({ message: `Er direkte medlem av ${groups.regular.length} ${systemNames.azure} ${pluralizeText('gruppe', groups.regular.length, 'r')}, og ${groups.mem.length} MEM-${pluralizeText('gruppe', groups.mem.length, 'r')} 😵`, solution: 'Det kan hende brukeren trenger å være medlem av alle disse gruppene, men om du tror det er et problem, meld en sak til arbeidsgruppe IDM i Pureservice', raw: groups })
     return success({ message: `Er direkte medlem av ${groups.regular.length} ${systemNames.azure} ${pluralizeText('gruppe', systemData.memberOf.length, 'r')}, og ${groups.mem.length} MEM-${pluralizeText('gruppe', groups.mem.length, 'r')}`, raw: groups })
   }
 }
@@ -430,14 +428,14 @@ const azureSDSGroups = {
       if (user.userType === 'elev') {
         return warn({
           message: `Er ikke medlem av noen ${systemNames.sds} grupper 🤔`,
-          solution: 'Hvis dette er feil, meld sak til arbeidsgruppe identitet',
+          solution: 'Hvis dette er feil, meld sak til arbeidsgruppe IDM i Pureservice',
           raw: systemData.sdsGroups
         })
       }
 
       return success({
         message: `Er ikke medlem av noen ${systemNames.sds} grupper`,
-        solution: 'Hvis dette er feil, meld sak til arbeidsgruppe identitet',
+        solution: 'Hvis dette er feil, meld sak til arbeidsgruppe IDM i Pureservice',
         raw: systemData.sdsGroups
       })
     }
@@ -473,7 +471,7 @@ const azureConditionalAccessPersonaGroup = {
   test: (user, systemData) => {
     const conditionalAccessPersonaGroups = systemData.memberOf.filter(group => group.trim().toLowerCase().startsWith('conditional access persona'))
 
-    if (conditionalAccessPersonaGroups.length === 0) return error({ message: `Er ikke medlem av noen Conditional Access Persona-grupper i ${systemNames.azure}, og vil ikke kunne logge på 😧`, solution: 'Ta kontakt med sikkerhet' })
+    if (conditionalAccessPersonaGroups.length === 0) return error({ message: `Er ikke medlem av noen Conditional Access Persona-grupper i ${systemNames.azure}, og vil ikke kunne logge på 😧`, solution: 'Meld sak til sikkerhet i Pureservice' })
     return success({ message: `Er medlem av ${conditionalAccessPersonaGroups.length} Conditional Access Persona-${pluralizeText('gruppe', conditionalAccessPersonaGroups.length, 'r')}`, raw: conditionalAccessPersonaGroups })
   }
 }
@@ -495,7 +493,7 @@ const azureRiskyUser = {
     const data = {
       riskyUser: systemData.graphRiskyUser
     }
-    if (data.riskyUser.length > 0) return error({ message: `Brukeren har havna i risky users, på nivå ${data.riskyUser.map(risk => risk.riskLevel).join('og ')} 😱`, solution: 'Send sak til sikkerhetsfolket', raw: data })
+    if (data.riskyUser.length > 0) return error({ message: `Brukeren har havna i risky users, på nivå ${data.riskyUser.map(risk => risk.riskLevel).join('og ')} 😱`, solution: 'Meld sak til sikkerhet i Pureservice', raw: data })
     if (user.displayName === 'Bjørn Kaarstein') return warn({ message: 'Brukeren er ikke i risky users, men ansees likevel som en risiko 🐻', solution: 'Send sak til viltnemnda' })
     return success({ message: 'Brukeren er ikke i risky users' })
   }
@@ -527,7 +525,7 @@ const azureLastSignin = {
     const hoursSinceLogin = minutesSinceLogin / 60
     if (hoursSinceLogin < 25) return success({ message: `Brukeren logget på for ${Math.floor(hoursSinceLogin)} time${Math.floor(hoursSinceLogin) > 1 ? 'r' : ''} siden`, raw: { ...data, timeSinceLastSignin } })
     const daysSinceLogin = hoursSinceLogin / 24
-    return success({ message: `Brukeren logget på for ${Math.floor(daysSinceLogin)} dage${Math.floor(daysSinceLogin) > 1 ? 'r' : ''} siden`, raw: { ...data, timeSinceLastSignin } })
+    return success({ message: `Brukeren logget på for ${Math.floor(daysSinceLogin)} dag${Math.floor(daysSinceLogin) > 1 ? 'er' : ''} siden`, raw: { ...data, timeSinceLastSignin } })
   }
 }
 
@@ -567,7 +565,7 @@ const azureUserDevices = {
      * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
      */
   test: (user, systemData) => {
-    if (systemData.userDevices.length === 0) return warn({ message: 'Har ingen registrerte enheter. Kan dette stemme da?', solution: 'Dersom brukeren egentlig har en enhet må denne registreres i InTune' })
+    if (systemData.userDevices.length === 0) return warn({ message: 'Har ingen registrerte enheter. Kan dette stemme da?', solution: 'Dersom brukeren egentlig har en enhet må denne registreres i Intune' })
     return success({ message: `Har ${systemData.userDevices.length} ${pluralizeText('registrert', systemData.userDevices.length, 'e')} ${pluralizeText('enhet', systemData.userDevices.length, 'er')}`, raw: systemData.userDevices })
   }
 }

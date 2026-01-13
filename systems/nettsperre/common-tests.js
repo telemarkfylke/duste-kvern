@@ -35,7 +35,7 @@ const nettsperreHarNettsperre = {
       activeNettsperrer: systemData.activeNettsperrer
     }
 
-    if (data.hasActiveNettsperre && !data.isInNettsperreGroup) return error({ message: `Brukeren skal ha nettsperre, men ligger ikke i nettsperre-gruppe i ${systemNames.azure} 💀`, raw: data, solution: 'Her har det skjedd noe galt - ta kontakt med nettsperre-ansvarlig' })
+    if (data.hasActiveNettsperre && !data.isInNettsperreGroup) return error({ message: `Brukeren skal ha nettsperre, men ligger ikke i nettsperre-gruppe i ${systemNames.azure} 💀`, raw: data, solution: 'Her har det skjedd noe galt - spør i vaktrommet' })
     if (!data.hasActiveNettsperre && data.isInNettsperreGroup) return error({ message: `Brukeren har ingen aktive nettsperrer, men ligger i nettsperre-gruppe i ${systemNames.azure}`, raw: data, solution: `Mulig brukeren har blitt lagt inn manuelt - brukeren må fjernes manuelt fra grupper: ${memberOfNettsperreGroups.join(', ')}` })
     if (!data.hasActiveNettsperre && !data.isInNettsperreGroup) return success({ message: 'Brukeren har ingen aktive nettsperrer' })
     if (data.hasActiveNettsperre && data.isInNettsperreGroup) {
@@ -72,7 +72,7 @@ const nettsperrePending = {
    * @param {*} systemData Kan slenge inn jsDocs for at dette er graph-data f. eks
    */
   test: (user, systemData) => {
-    if (systemData.futureNettsperrer.length === 0) return success({ message: 'Brukeren har ingen planlagte nettsperrer' })
+    if (systemData.futureNettsperrer.length === 0) return ignore()
     if (systemData.futureNettsperrer.length > 0) return success({ message: `Brukeren har ${systemData.futureNettsperrer.length} ${pluralizeText('planlagt', systemData.futureNettsperrer.length, 'e')} ${pluralizeText('nettsperre', systemData.futureNettsperrer.length, 'r')}`, raw: systemData.futureNettsperrer })
   }
 }
